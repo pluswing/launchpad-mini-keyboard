@@ -450,8 +450,8 @@ setInterval(() => {
   updateRainbow(bg, hue)
   // draw(bg.blend(buttons))
   // draw(createMatrixEffect().blend(buttons))
-  // draw(drawLines())
-  draw(drawCircles())
+  draw(drawLines())
+  // draw(drawCircles())
   hue = (hue + 3) % 360
 }, 16)
 
