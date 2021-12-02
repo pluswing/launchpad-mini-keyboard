@@ -21,7 +21,10 @@ if (isDev) {
 /// #endif
 
 const createWindow = () => {
-  const mainWindow = new BrowserWindow();
+  const mainWindow = new BrowserWindow({
+    width: 690,
+    height: 710,
+  });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.loadFile('dist/index.html');

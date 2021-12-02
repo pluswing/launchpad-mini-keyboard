@@ -2,6 +2,8 @@ import path from 'path';
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import TailwindCss from 'tailwindcss';
+import Autoprefixer from 'autoprefixer';
 
 const config: Configuration = {
   mode: 'development',
@@ -30,7 +32,7 @@ const config: Configuration = {
         use: 'ts-loader',
       },
       {
-        test: /\.s?css$/,
+        test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
@@ -41,10 +43,15 @@ const config: Configuration = {
             },
           },
           {
-            loader: 'sass-loader',
+            loader: 'postcss-loader',
             options: {
-              sourceMap: true,
-            },
+              postcssOptions: {
+                plugins: [
+                  TailwindCss,
+                  Autoprefixer
+                ]
+              }
+            }
           },
         ],
       },
