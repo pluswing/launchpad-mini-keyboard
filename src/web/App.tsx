@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { BlackButton } from './components/BlackButton';
 import { Button } from './components/Button';
 
+
 export const App = (): JSX.Element => {
 
   const [keys, setKeys] = useState<string[]>([]);
@@ -18,6 +19,10 @@ export const App = (): JSX.Element => {
     console.log(api)
     api.selectColors()
   }, [])
+
+  window.api.sendMessage("CCC").then((value) => {
+    console.log("sendMessage Response", value)
+  })
 
   return (
     <div className="bg-gray-800 p-6">

@@ -1,6 +1,7 @@
 import path from 'path';
-import { BrowserWindow, app, session } from 'electron';
+import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
+import { IpcKeys } from './ipc';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -24,10 +25,21 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 690,
     height: 710,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
   });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.loadFile('dist/index.html');
+
+  ipcMain.handle(IpcKeys.AAA, (event, arg: string) => {
+    console.log("RECEIVE AAA", arg)
+    return `BBB ${arg}`
+  })
+  // ipcMain.emit("BBB")
 };
 
 app.whenReady().then(async () => {
