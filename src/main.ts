@@ -2,6 +2,7 @@ import path from 'path';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys } from './ipc';
+import { initLaunchpad } from './launchpad';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -53,6 +54,8 @@ app.whenReady().then(async () => {
   }
 
   createWindow();
+
+  initLaunchpad();
 });
 
 app.once('window-all-closed', () => app.quit());
