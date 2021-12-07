@@ -1,23 +1,48 @@
 const midi = require('midi');
 const robot = require("robotjs");
 
-const inputDAW = new midi.Input();
-const inputMIDI = new midi.Input();
+const input = new midi.Input();
 const output = new midi.Output();
 
-for (let i = 0; i < inputDAW.getPortCount(); i++) {
-  const name = inputDAW.getPortName(i);
-  console.log("INPUT", i, name)
-}
-for (let i = 0; i < output.getPortCount(); i++) {
-  const name = output.getPortName(i);
-  console.log("OUTPUT", i, name)
+const searchMidi = (io, search) => {
+  const names = range(io.getPortCount()).map((i) => io.getPortName(i))
+  return names.findIndex((name) => name.indexOf(search))
 }
 
-inputDAW.on('message', (deltaTime, message) => {
-  console.log(`DAW  m: ${message} d: ${deltaTime}`);
-});
-inputMIDI.on('message', (deltaTime, message) => {
+let connected = false
+setInterval(() => {
+  console.log("watch connect")
+  // 接続監視処理
+  const inputIndex = searchMidi(input, "LPMiniMK3 MIDI")
+  const outputIndex = searchMidi(output, "LPMiniMK3 MIDI")
+
+  console.log(inputIndex, outputIndex)
+  if (inputIndex == -1 || outputIndex == -1) {
+    if (connected) {
+      // 接続が切れた
+      input.closePort(inputIndex)
+      output.closePort(outputIndex)
+    }
+    connected = false
+    // 接続されてない
+    console.log("not connected")
+    return
+  }
+
+  if (connected) {
+    return
+  }
+
+  console.log("connected")
+  input.openPort(inputIndex)
+  output.openPort(outputIndex)
+  connected = true
+
+  // 初期化処理等々。。。
+}, 1000)
+
+/*
+input.on('message', (deltaTime, message) => {
   console.log(`MIDI m: ${message} d: ${deltaTime}`);
 
   const [_, note, velocity] = message;
@@ -31,8 +56,7 @@ inputMIDI.on('message', (deltaTime, message) => {
   robot.typeString(`note: ${note}`);
 });
 
-inputDAW.openPort(0);
-inputMIDI.openPort(1);
+input.openPort(1);
 
 // Sysex, timing, and active sensing messages are ignored
 // by default. To enable these message types, pass false for
@@ -41,8 +65,7 @@ inputMIDI.openPort(1);
 // For example if you want to receive only MIDI Clock beats
 // you should use
 // input.ignoreTypes(true, false, true)
-inputDAW.ignoreTypes(false, false, false);
-inputMIDI.ignoreTypes(false, false, false);
+input.ignoreTypes(false, false, false);
 
 output.openPort(1); // MIDI
 
@@ -121,9 +144,9 @@ function hsv2rgb(h, s, v, out) {
   }
   return out;
 }
-
+*/
 const range = (n) => [...new Array(n).keys()]
-
+/*
 class Pixel {
   constructor(r, g, b) {
     this.r = r || 0
@@ -448,18 +471,17 @@ buttons.set(1, 8, 0, 127, 0)
 buttons.set(2, 8, 0, 0, 127)
 setInterval(() => {
   updateRainbow(bg, hue)
-  // draw(bg.blend(buttons))
+  draw(bg.blend(buttons))
   // draw(createMatrixEffect().blend(buttons))
-  draw(drawLines())
+  // draw(drawLines())
   // draw(drawCircles())
   hue = (hue + 3) % 360
 }, 16)
 
-
+*/
 process.on("SIGINT", () => {
   console.log("exit!")
   output.closePort();
-  inputMIDI.closePort()
-  inputDAW.closePort()
+  input.closePort()
   process.exit(0)
 });
