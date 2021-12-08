@@ -4,47 +4,55 @@ import { Button } from './components/Button';
 import { Dialog } from './components/Dialog';
 import { Select } from './components/Select';
 
+const api = window.api;
+
 export const App = (): JSX.Element => {
 
-  const [keys, setKeys] = useState<string[]>([]);
+  const [keys, setKeys] = useState<string[]>([])
+  const [connected, setConnected] = useState<boolean>(false)
 
   const onKeyDown = useCallback((e) => {
     console.log(e)
     setKeys([...keys, e.keyCode])
   }, [keys]);
 
-  const onClickTest = useCallback(() => {
-    // @ts-ignore
-    const api: LaunchpadApi = window.api;
-    console.log(api)
-    api.selectColors()
-  }, [])
-
   const [bgColor, setBgColor] = useState<number>(0)
   const changeTapColor = useCallback((v) => {
     setBgColor(v)
   }, [bgColor, setBgColor])
 
+
+  api.onUpdateMessage({
+    connected: () => {
+      console.log("connected")
+      setConnected(true)
+    },
+    disconnected: () => {
+      console.log("disconnected")
+      setConnected(false)
+    }
+  })
+
   return (
     <div className="bg-gray-800 p-6">
       <div className="grid grid-cols-9 gap-1" style={{width: "650px", height: "650px"}} >
-        <BlackButton onClick={onClickTest}>
-          <svg className="h-8 w-8 text-white" style={{transform: "rotate(270deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
+        <BlackButton>
+          <svg className="h-8 w-8 text-white" style={{transform: "rotate(270deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
           <polygon points="8 6 17 12 8 18 8 6" />
           </svg>
         </BlackButton>
         <BlackButton>
-          <svg className="h-8 w-8 text-white" style={{transform: "rotate(90deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
+          <svg className="h-8 w-8 text-white" style={{transform: "rotate(90deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
           <polygon points="8 6 17 12 8 18 8 6" />
           </svg>
         </BlackButton>
         <BlackButton>
-          <svg className="h-8 w-8 text-white" style={{transform: "rotate(180deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
+          <svg className="h-8 w-8 text-white" style={{transform: "rotate(180deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
           <polygon points="8 6 17 12 8 18 8 6" />
           </svg>
         </BlackButton>
         <BlackButton>
-          <svg className="h-8 w-8 text-white" style={{transform: "rotate(0deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
+          <svg className="h-8 w-8 text-white" style={{transform: "rotate(0deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
             <polygon points="8 6 17 12 8 18 8 6" />
           </svg>
         </BlackButton>
@@ -63,7 +71,10 @@ export const App = (): JSX.Element => {
         </BlackButton>
 
         <BlackButton>
-          <span></span>
+        <svg className={`h-12 w-12 ${connected ? "text-red-500" : "text-gray-500"}`}  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+</svg>
+
         </BlackButton>
 
         <Button/>
@@ -75,7 +86,7 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
         <Button/>
@@ -87,7 +98,7 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
         <Button/>
@@ -99,20 +110,7 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
-        </BlackButton>
-
-
-        <Button/>
-        <Button/>
-        <Button/>
-        <Button/>
-        <Button/>
-        <Button/>
-        <Button/>
-        <Button/>
-        <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
 
@@ -125,7 +123,7 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
 
@@ -138,7 +136,20 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+        </BlackButton>
+
+
+        <Button/>
+        <Button/>
+        <Button/>
+        <Button/>
+        <Button/>
+        <Button/>
+        <Button/>
+        <Button/>
+        <BlackButton>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
         <Button/>
@@ -150,7 +161,7 @@ export const App = (): JSX.Element => {
         <Button/>
         <Button/>
         <BlackButton>
-          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
+          <svg className="h-6 w-6 text-white"  width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <polyline points="9 6 15 12 9 18" /></svg>
         </BlackButton>
 
 
@@ -168,7 +179,7 @@ export const App = (): JSX.Element => {
 
       </div>
 
-      <Dialog show={true}>
+      <Dialog show={false}>
         <>
           <div>Button Setting</div>
           <input type="text" placeholder="shortcut key" className="p-2 rounded m-2"/>

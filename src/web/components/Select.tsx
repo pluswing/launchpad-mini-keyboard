@@ -150,7 +150,11 @@ export const Select = ({prefix, value, onChange}: Props): JSX.Element => {
     const colors = COLOR_PALETTE.map(([r, g, b]) => `#${((r << 16) + (g << 8) + b).toString(16)}`)
 
     const colorList = colors.map((c, i) => {
-        return (<li onClick={() => onChange(i)}>{i} <span className="w-12 h-4 inline-block" style={{backgroundColor: c}}></span></li>)
+        return (
+          <li onClick={() => onChange(i)} key={i}>
+            {i} <span className="w-12 h-4 inline-block" style={{backgroundColor: c}}/>
+          </li>
+        )
     })
 
     const selected = <span>{value} <span className="w-12 h-4 inline-block" style={{backgroundColor: colors[value]}}></span></span>

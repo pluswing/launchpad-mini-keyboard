@@ -5,11 +5,19 @@ declare global {
 }
 
 export enum IpcKeys {
+  CONNECTED = "CONNECTED",
+  DISCONNECTED = "DISCONNECTED",
+  // for test
   AAA = "AAA",
   BBB = "BBB"
 }
 
+export interface LaunchpadListener {
+  connected: () => void;
+  disconnected: () => void;
+}
+
 export type Api = {
   sendMessage: (arg: string) => Promise<string>
-  onUpdateMessage: (listener: (message: string) => void) => void
+  onUpdateMessage: (listener: LaunchpadListener) => void
 }

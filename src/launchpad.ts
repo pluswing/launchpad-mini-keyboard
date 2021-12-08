@@ -1,4 +1,6 @@
+import { ipcMain } from "electron";
 import {Input, Output} from "midi"
+import { IpcKeys } from "./ipc";
 import { range } from "./util";
 
 const input = new Input();
@@ -49,9 +51,11 @@ const init = () => {
   // launchpadの初期化
   // ノートが押された時の対応(robotjs)
   // BGのアニメーション
+  ipcMain.emit(IpcKeys.CONNECTED)
 }
 
 const disconnect = () => {
+  ipcMain.emit(IpcKeys.DISCONNECTED)
   input.closePort()
   output.closePort()
 }
