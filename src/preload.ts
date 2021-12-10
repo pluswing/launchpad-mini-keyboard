@@ -7,6 +7,9 @@ const api: Api = {
     return await ipcRenderer.invoke(IpcKeys.AAA, arg)
   },
   onUpdateMessage: (listener: LaunchpadListener) => {
+    ipcRenderer.removeAllListeners(IpcKeys.CONNECTED);
+    ipcRenderer.removeAllListeners(IpcKeys.DISCONNECTED);
+
     ipcRenderer.on(IpcKeys.CONNECTED, (ev: IpcRendererEvent, message: string) => {
       listener.connected()
     })

@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import {Input, Output} from "midi"
-import { IpcKeys } from "./ipc";
+import { connected } from "process";
+import { IpcKeys, LaunchpadListener } from "./ipc";
 import { range } from "./util";
 
 const input = new Input();
@@ -46,16 +47,30 @@ const searchMidi = (io: Input|Output, search: string): number => {
   return names.findIndex((name) => name.indexOf(search))
 }
 
+let launchpadListener: LaunchpadListener = {
+  connected: () => {},
+  disconnected: () => {}
+}
+
+export const setLaunchpadListener = (listener: LaunchpadListener) : void => {
+  launchpadListener = listener
+
+  if (connected) {
+    launchpadListener.connected()
+  }
+}
+
 const init = () => {
   // 設定ファイル読み込み
   // launchpadの初期化
   // ノートが押された時の対応(robotjs)
   // BGのアニメーション
-  ipcMain.emit(IpcKeys.CONNECTED)
+  // ipcMain.emit(IpcKeys.CONNECTED)
+  launchpadListener.connected()
 }
 
 const disconnect = () => {
-  ipcMain.emit(IpcKeys.DISCONNECTED)
+  launchpadListener.disconnected()
   input.closePort()
   output.closePort()
 }

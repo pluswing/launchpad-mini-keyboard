@@ -2,7 +2,7 @@ import path from 'path';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys } from './ipc';
-import { initLaunchpad } from './launchpad';
+import { initLaunchpad, setLaunchpadListener } from './launchpad';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -40,7 +40,15 @@ const createWindow = () => {
     console.log("RECEIVE AAA", arg)
     return `BBB ${arg}`
   })
-  // ipcMain.emit("BBB")
+
+  setLaunchpadListener({
+    connected: () => {
+      mainWindow.webContents.send(IpcKeys.CONNECTED)
+    },
+    disconnected: () => {
+      mainWindow.webContents.send(IpcKeys.DISCONNECTED)
+    }
+  })
 };
 
 app.whenReady().then(async () => {

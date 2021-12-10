@@ -4,44 +4,6 @@ const robot = require("robotjs");
 const input = new midi.Input();
 const output = new midi.Output();
 
-const searchMidi = (io, search) => {
-  const names = range(io.getPortCount()).map((i) => io.getPortName(i))
-  return names.findIndex((name) => name.indexOf(search))
-}
-
-let connected = false
-setInterval(() => {
-  console.log("watch connect")
-  // 接続監視処理
-  const inputIndex = searchMidi(input, "LPMiniMK3 MIDI")
-  const outputIndex = searchMidi(output, "LPMiniMK3 MIDI")
-
-  console.log(inputIndex, outputIndex)
-  if (inputIndex == -1 || outputIndex == -1) {
-    if (connected) {
-      // 接続が切れた
-      input.closePort(inputIndex)
-      output.closePort(outputIndex)
-    }
-    connected = false
-    // 接続されてない
-    console.log("not connected")
-    return
-  }
-
-  if (connected) {
-    return
-  }
-
-  console.log("connected")
-  input.openPort(inputIndex)
-  output.openPort(outputIndex)
-  connected = true
-
-  // 初期化処理等々。。。
-}, 1000)
-
-/*
 input.on('message', (deltaTime, message) => {
   console.log(`MIDI m: ${message} d: ${deltaTime}`);
 
@@ -144,9 +106,8 @@ function hsv2rgb(h, s, v, out) {
   }
   return out;
 }
-*/
+
 const range = (n) => [...new Array(n).keys()]
-/*
 class Pixel {
   constructor(r, g, b) {
     this.r = r || 0
@@ -159,9 +120,9 @@ class Image {
     this.width = 9;
     this.height = 9;
     this.pixels = [];
-    range(this.width).forEach((x) => {
+    range(this.height).forEach(() => {
       const row = []
-      range(this.height).forEach((y) => {
+      range(this.width).forEach(() => {
         row.push(new Pixel())
       })
       this.pixels.push(row)
@@ -230,13 +191,10 @@ class Image {
   }
 }
 
-let v = 0
 const updateRainbow = (image, hue) => {
-  v += 1
   range(image.width).forEach((x) => {
     range(image.height).forEach((y) => {
       const saturation = 1
-//      let value = Math.sin((Math.PI / 2) * (v / 60)) / 2 + 0.5
       const value = 0.6
       const s = 36
       const h = hue + ((10 - y) * s) + (10 - x) * s
@@ -470,15 +428,14 @@ buttons.set(0, 8, 127, 0, 0)
 buttons.set(1, 8, 0, 127, 0)
 buttons.set(2, 8, 0, 0, 127)
 setInterval(() => {
-  updateRainbow(bg, hue)
-  draw(bg.blend(buttons))
+  // updateRainbow(bg, hue)
+  // draw(bg.stack(buttons))
   // draw(createMatrixEffect().blend(buttons))
   // draw(drawLines())
-  // draw(drawCircles())
+  draw(drawCircles())
   hue = (hue + 3) % 360
 }, 16)
 
-*/
 process.on("SIGINT", () => {
   console.log("exit!")
   output.closePort();
