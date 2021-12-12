@@ -8,20 +8,7 @@ const api = window.api;
 
 export const App = (): JSX.Element => {
 
-  const [keys, setKeys] = useState<string[]>([])
-  const [connected, setConnected] = useState<boolean>(false)
-
-  const onKeyDown = useCallback((e) => {
-    console.log(e)
-    setKeys([...keys, e.keyCode])
-  }, [keys]);
-
-  const [bgColor, setBgColor] = useState<number>(0)
-  const changeTapColor = useCallback((v) => {
-    setBgColor(v)
-  }, [bgColor, setBgColor])
-
-
+  const [connected, setConnected] = useState(false)
   api.onUpdateMessage({
     connected: () => {
       console.log("connected")
@@ -33,10 +20,25 @@ export const App = (): JSX.Element => {
     }
   })
 
+  // dialog
+  const [showDialog, setShowDialog] = useState(false)
+
+  const [keys, setKeys] = useState<string[]>([])
+  const [bgColor, setBgColor] = useState(0)
+
+  const onKeyDown = useCallback((e) => {
+    console.log(e)
+    setKeys([...keys, e.keyCode])
+  }, [keys]);
+
+  const changeTapColor = useCallback((v) => {
+    setBgColor(v)
+  }, [bgColor, setBgColor])
+
   return (
     <div className="bg-gray-800 p-6">
       <div className="grid grid-cols-9 gap-1" style={{width: "650px", height: "650px"}} >
-        <BlackButton>
+        <BlackButton onClick={() => setShowDialog(true)}>
           <svg className="h-8 w-8 text-white" style={{transform: "rotate(270deg)"}} viewBox="0 0 24 24"  fill="white"  stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"  strokeLinejoin="round">
           <polygon points="8 6 17 12 8 18 8 6" />
           </svg>
@@ -179,9 +181,8 @@ export const App = (): JSX.Element => {
 
       </div>
 
-      <Dialog show={false}>
+      <Dialog show={showDialog} onClose={() => setShowDialog(false)}>
         <>
-          <div>Button Setting</div>
           <input type="text" placeholder="shortcut key" className="p-2 rounded m-2"/>
           <Select prefix="tap color" value={bgColor} onChange={changeTapColor}/>
         </>
