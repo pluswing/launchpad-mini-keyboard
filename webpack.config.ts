@@ -46,12 +46,9 @@ const config: Configuration = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [
-                  TailwindCss,
-                  Autoprefixer
-                ]
-              }
-            }
+                plugins: [TailwindCss, Autoprefixer],
+              },
+            },
           },
         ],
       },

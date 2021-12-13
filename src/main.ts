@@ -29,26 +29,26 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
-    }
+      preload: path.join(__dirname, 'preload.js'),
+    },
   });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.loadFile('dist/index.html');
 
   ipcMain.handle(IpcKeys.AAA, (event, arg: string) => {
-    console.log("RECEIVE AAA", arg)
-    return `BBB ${arg}`
-  })
+    console.log('RECEIVE AAA', arg);
+    return `BBB ${arg}`;
+  });
 
   setLaunchpadListener({
     connected: () => {
-      mainWindow.webContents.send(IpcKeys.CONNECTED)
+      mainWindow.webContents.send(IpcKeys.CONNECTED);
     },
     disconnected: () => {
-      mainWindow.webContents.send(IpcKeys.DISCONNECTED)
-    }
-  })
+      mainWindow.webContents.send(IpcKeys.DISCONNECTED);
+    },
+  });
 };
 
 app.whenReady().then(async () => {

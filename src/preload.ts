@@ -1,22 +1,21 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import { IpcRendererEvent } from 'electron/main'
-import { Api, IpcKeys, LaunchpadListener } from './ipc'
+import { contextBridge, ipcRenderer } from 'electron';
+import { Api, IpcKeys, LaunchpadListener } from './ipc';
 
 const api: Api = {
   sendMessage: async (arg: string): Promise<string> => {
-    return await ipcRenderer.invoke(IpcKeys.AAA, arg)
+    return await ipcRenderer.invoke(IpcKeys.AAA, arg);
   },
   onUpdateMessage: (listener: LaunchpadListener) => {
     ipcRenderer.removeAllListeners(IpcKeys.CONNECTED);
     ipcRenderer.removeAllListeners(IpcKeys.DISCONNECTED);
 
-    ipcRenderer.on(IpcKeys.CONNECTED, (ev: IpcRendererEvent, message: string) => {
-      listener.connected()
-    })
-    ipcRenderer.on(IpcKeys.DISCONNECTED, (ev: IpcRendererEvent, message: string) => {
-      listener.disconnected()
-    })
-  }
-}
+    ipcRenderer.on(IpcKeys.CONNECTED, () => {
+      listener.connected();
+    });
+    ipcRenderer.on(IpcKeys.DISCONNECTED, () => {
+      listener.disconnected();
+    });
+  },
+};
 
-contextBridge.exposeInMainWorld('api', api)
+contextBridge.exposeInMainWorld('api', api);

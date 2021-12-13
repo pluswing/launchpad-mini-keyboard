@@ -1,15 +1,15 @@
 declare global {
   interface Window {
-    api: Api
+    api: Api;
   }
 }
 
 export enum IpcKeys {
-  CONNECTED = "CONNECTED",
-  DISCONNECTED = "DISCONNECTED",
+  CONNECTED = 'CONNECTED',
+  DISCONNECTED = 'DISCONNECTED',
   // for test
-  AAA = "AAA",
-  BBB = "BBB"
+  AAA = 'AAA',
+  BBB = 'BBB',
 }
 
 export interface LaunchpadListener {
@@ -18,6 +18,6 @@ export interface LaunchpadListener {
 }
 
 export type Api = {
-  sendMessage: (arg: string) => Promise<string>
-  onUpdateMessage: (listener: LaunchpadListener) => void
-}
+  sendMessage: (arg: string) => Promise<string>;
+  onUpdateMessage: (listener: LaunchpadListener) => void;
+};
