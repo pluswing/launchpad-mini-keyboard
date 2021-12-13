@@ -1,4 +1,3 @@
-import { Output } from 'midi';
 import { range } from './util';
 
 export interface Color {
@@ -13,7 +12,7 @@ export interface Image {
   pixels: Color[][];
 }
 
-export const color = (r: number, g: number, b: number): Color => {
+export const rgb = (r: number, g: number, b: number): Color => {
   return { r, g, b };
 };
 
@@ -21,7 +20,7 @@ export const newImage = (): Image => {
   const width = 9;
   const height = 9;
   const pixels = range(height).map(() => {
-    return range(width).map(() => color(0, 0, 0));
+    return range(width).map(() => rgb(0, 0, 0));
   });
   return { width, height, pixels };
 };
@@ -48,21 +47,6 @@ const outOfRange = (image: Image, x: number, y: number): boolean => {
   return false;
 };
 
-const toNote = (x: number, y: number): number => {
+export const toNote = (x: number, y: number): number => {
   return 0x0b + x + 10 * (8 - y);
-};
-
-const HEADER = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d];
-const DELIMITER = [0xf7];
-export const draw = (output: Output, image: Image) => {
-  const messages = range(image.width)
-    .map((x) => {
-      return range(image.height).map((y) => {
-        const p = getPixel(image, x, y);
-        return [0x03, toNote(x, y), p.r, p.g, p.b];
-      });
-    })
-    .flat();
-
-  output.sendMessage([...HEADER, 0x03, ...messages.flat(), ...DELIMITER]);
 };

@@ -2,8 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { Api, IpcKeys, LaunchpadListener } from './ipc';
 
 const api: Api = {
-  sendMessage: async (arg: string): Promise<string> => {
-    return await ipcRenderer.invoke(IpcKeys.AAA, arg);
+  changeBgColor: async (colorIndex: number): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_BG_COLOR, colorIndex);
   },
   onUpdateMessage: (listener: LaunchpadListener) => {
     ipcRenderer.removeAllListeners(IpcKeys.CONNECTED);

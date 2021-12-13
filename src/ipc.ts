@@ -7,9 +7,7 @@ declare global {
 export enum IpcKeys {
   CONNECTED = 'CONNECTED',
   DISCONNECTED = 'DISCONNECTED',
-  // for test
-  AAA = 'AAA',
-  BBB = 'BBB',
+  CHANGE_BG_COLOR = 'CHANGE_BG_COLOR',
 }
 
 export interface LaunchpadListener {
@@ -18,6 +16,6 @@ export interface LaunchpadListener {
 }
 
 export type Api = {
-  sendMessage: (arg: string) => Promise<string>;
+  changeBgColor: (colorIndex: number) => Promise<void>;
   onUpdateMessage: (listener: LaunchpadListener) => void;
 };

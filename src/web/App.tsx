@@ -36,6 +36,7 @@ export const App = (): JSX.Element => {
   const changeTapColor = useCallback(
     (v) => {
       setBgColor(v);
+      api.changeBgColor(v);
     },
     [setBgColor]
   );

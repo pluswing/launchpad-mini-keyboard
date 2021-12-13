@@ -2,7 +2,7 @@ import path from 'path';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys } from './ipc';
-import { initLaunchpad, setLaunchpadListener } from './launchpad';
+import { fillColor, initLaunchpad, setLaunchpadListener } from './launchpad';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -36,9 +36,10 @@ const createWindow = () => {
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.loadFile('dist/index.html');
 
-  ipcMain.handle(IpcKeys.AAA, (event, arg: string) => {
-    console.log('RECEIVE AAA', arg);
-    return `BBB ${arg}`;
+  ipcMain.handle(IpcKeys.CHANGE_BG_COLOR, (_, colorIndex: number) => {
+    console.log('RECEIVE CHANGE_BG_COLOR', colorIndex);
+    fillColor(colorIndex);
+    return;
   });
 
   setLaunchpadListener({
