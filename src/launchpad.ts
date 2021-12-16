@@ -48,12 +48,13 @@ export const initLaunchpad = () => {
 
 const searchMidi = (io: Input | Output, search: string): number => {
   const names = range(io.getPortCount()).map((i) => io.getPortName(i));
-  return names.findIndex((name) => name.indexOf(search));
+  return names.findIndex((name) => name.indexOf(search) != -1);
 };
 
 let launchpadListener: LaunchpadListener = {
   connected: () => 1,
   disconnected: () => 1,
+  onNote: () => 1,
 };
 
 export const setLaunchpadListener = (listener: LaunchpadListener): void => {
@@ -108,4 +109,14 @@ export const fillColor = (colorIndex: number) => {
     });
   });
   drawLaunchpad(output, image);
+};
+
+export const listenForSetting = () => {
+  input.on('message', (_, message) => {
+    console.log('ON MESSAGE', message);
+    //             channel, note, velocity
+    // message = [ 144, 11, 127 ]
+    const [, note, velocity] = message;
+    launchpadListener.onNote(velocity == 0 ? 'up' : 'down', note);
+  });
 };

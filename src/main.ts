@@ -2,7 +2,12 @@ import path from 'path';
 import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys } from './ipc';
-import { fillColor, initLaunchpad, setLaunchpadListener } from './launchpad';
+import {
+  fillColor,
+  initLaunchpad,
+  listenForSetting,
+  setLaunchpadListener,
+} from './launchpad';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -41,6 +46,10 @@ const createWindow = () => {
     fillColor(colorIndex);
     return;
   });
+  ipcMain.handle(IpcKeys.LISTEN_FOR_SETTING, () => {
+    console.log('RECEIVE LISTEN_FOR_SETTING');
+    listenForSetting();
+  });
 
   setLaunchpadListener({
     connected: () => {
@@ -48,6 +57,9 @@ const createWindow = () => {
     },
     disconnected: () => {
       mainWindow.webContents.send(IpcKeys.DISCONNECTED);
+    },
+    onNote: (event, note) => {
+      mainWindow.webContents.send(IpcKeys.ON_NOTE, event, note);
     },
   });
 };

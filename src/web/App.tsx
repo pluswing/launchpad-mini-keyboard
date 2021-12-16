@@ -12,10 +12,14 @@ export const App = (): JSX.Element => {
     connected: () => {
       console.log('connected');
       setConnected(true);
+      api.listenForSetting();
     },
     disconnected: () => {
       console.log('disconnected');
       setConnected(false);
+    },
+    onNote: (event, note) => {
+      console.log(event, note);
     },
   });
 
