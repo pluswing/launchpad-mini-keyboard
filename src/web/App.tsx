@@ -26,15 +26,32 @@ export const App = (): JSX.Element => {
   // dialog
   const [showDialog, setShowDialog] = useState(false);
 
-  const [keys, setKeys] = useState<string[]>([]);
+  const [shortcut, setShortcut] = useState('');
   const [bgColor, setBgColor] = useState(0);
 
   const onKeyDown = useCallback(
     (e) => {
+      const onSpecialKey = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
+      const specialKeys = ['Control', 'Alt', 'Meta', 'Shift'];
+
+      if (onSpecialKey && specialKeys.includes(e.key)) {
+        // special keyの単押しなので無視。
+        return;
+      }
+
+      const s = [
+        e.altKey ? 'alt' : '',
+        e.ctrlKey ? 'ctrl' : '',
+        e.metaKey ? 'meta' : '',
+        e.shiftKey ? 'shift' : '',
+        e.code.replace(/^Key/, '').toLowerCase(),
+      ].filter((v) => v);
+
       console.log(e);
-      setKeys([...keys, e.keyCode]);
+      setShortcut(s.join('+'));
+      e.preventDefault();
     },
-    [keys]
+    [setShortcut]
   );
 
   const changeTapColor = useCallback(
@@ -344,6 +361,8 @@ export const App = (): JSX.Element => {
         <>
           <input
             type="text"
+            value={shortcut}
+            onKeyDown={onKeyDown}
             placeholder="shortcut key"
             className="p-2 rounded m-2"
           />
@@ -354,9 +373,6 @@ export const App = (): JSX.Element => {
           />
         </>
       </Dialog>
-
-      <br />
-      <input type="text" onKeyDown={onKeyDown} />
     </div>
   );
 };

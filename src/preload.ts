@@ -19,8 +19,7 @@ const api: Api = {
     ipcRenderer.on(IpcKeys.DISCONNECTED, () => {
       listener.disconnected();
     });
-    ipcRenderer.on(IpcKeys.ON_NOTE, (e, event, note) => {
-      // @ts-ignore
+    ipcRenderer.on(IpcKeys.ON_NOTE, (_, event, note) => {
       listener.onNote(event, note);
     });
   },
