@@ -120,3 +120,99 @@ export const listenForSetting = () => {
     launchpadListener.onNote(velocity == 0 ? 'up' : 'down', note);
   });
 };
+
+export const drawCircle = () => {
+  const image = newImage();
+
+  const r = 4;
+  const x = 4;
+  const y = 4;
+  const c = rgb(127, 0, 0);
+
+  // 現状実装
+  // const dots = range(360).map((d) => {
+  //   const rad = (d * Math.PI) / 180;
+  //   return [~~(r * Math.cos(rad)) + x, ~~(r * Math.sin(rad)) + y];
+  // });
+  // dots.forEach((d) => {
+  //   setPixel(image, d[0], d[1], c);
+  // });
+
+  // ブレゼンハム
+  // let cx = 0,
+  //   cy = 0,
+  //   d = 0;
+
+  // const radius = r;
+
+  // cx = 0;
+  // cy = radius;
+  // d = 2 - 2 * radius;
+
+  // const hdc = image;
+  // const center = { x, y };
+  // const col = c;
+
+  // // 開始点の描画
+  // setPixel(hdc, cx + center.x, cy + center.y, col); //  (0, R);
+  // setPixel(hdc, cx + center.x, -cy + center.y, col); //  (0, -R);
+  // setPixel(hdc, cy + center.x, cx + center.y, col); //  (R, 0);
+  // setPixel(hdc, -cy + center.x, cx + center.y, col); //  (-R, 0);
+
+  // for (;;) {
+  //   if (d > -cy) {
+  //     --cy;
+  //     d += 1 - 2 * cy;
+  //   }
+
+  //   if (d <= cx) {
+  //     ++cx;
+  //     d += 1 + 2 * cx;
+  //   }
+
+  //   if (!cy) break; // 描画終了
+
+  //   // 描画
+  //   setPixel(hdc, cx + center.x, cy + center.y, col); // 0～90度の間
+  //   setPixel(hdc, -cx + center.x, cy + center.y, col); // 90～180度の間
+  //   setPixel(hdc, -cx + center.x, -cy + center.y, col); // 180～270度の間
+  //   setPixel(hdc, cx + center.x, -cy + center.y, col); // 270～360度の間
+  // }
+
+  // ミッチェナー
+  let cx = 0,
+    cy = 0,
+    d = 0;
+
+  const radius = r;
+
+  d = 3 - 2 * radius;
+  cy = radius;
+
+  const hdc = image;
+  const center = { x, y };
+  const col = c;
+
+  // 開始点の描画
+  setPixel(hdc, center.x, radius + center.y, col); // point (0, R);
+  setPixel(hdc, center.x, -radius + center.y, col); // point (0, -R);
+  setPixel(hdc, radius + center.x, center.y, col); // point (R, 0);
+  setPixel(hdc, -radius + center.x, center.y, col); // point (-R, 0);
+
+  for (cx = 0; cx <= cy; cx++) {
+    if (d < 0) d += 6 + 4 * cx;
+    else d += 10 + 4 * cx - 4 * cy--;
+
+    // 描画
+    setPixel(hdc, cy + center.x, cx + center.y, col); // 0-45     度の間
+    setPixel(hdc, cx + center.x, cy + center.y, col); // 45-90    度の間
+    setPixel(hdc, -cx + center.x, cy + center.y, col); // 90-135   度の間
+    setPixel(hdc, -cy + center.x, cx + center.y, col); // 135-180  度の間
+    setPixel(hdc, -cy + center.x, -cx + center.y, col); // 180-225  度の間
+    setPixel(hdc, -cx + center.x, -cy + center.y, col); // 225-270  度の間
+    setPixel(hdc, cx + center.x, -cy + center.y, col); // 270-315  度の間
+    setPixel(hdc, cy + center.x, -cx + center.y, col); // 315-360  度の間
+  }
+
+  drawLaunchpad(output, image);
+};

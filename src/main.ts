@@ -3,6 +3,7 @@ import { BrowserWindow, app, session, ipcMain } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys } from './ipc';
 import {
+  drawCircle,
   fillColor,
   initLaunchpad,
   listenForSetting,
@@ -54,6 +55,7 @@ const createWindow = () => {
   setLaunchpadListener({
     connected: () => {
       mainWindow.webContents.send(IpcKeys.CONNECTED);
+      drawCircle();
     },
     disconnected: () => {
       mainWindow.webContents.send(IpcKeys.DISCONNECTED);
