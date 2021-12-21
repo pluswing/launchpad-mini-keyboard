@@ -17,5 +17,6 @@ declare module 'midi' {
     closePort(): void;
     openPort(n: number): void;
     sendMessage(message: number[]): void;
+    isPortOpen(): boolean;
   }
 }

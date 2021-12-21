@@ -1,10 +1,18 @@
 import { range } from './util';
 
-export interface Color {
+export interface RGB {
+  type: 'rgb';
   r: number;
   g: number;
   b: number;
 }
+
+export interface ColorIndex {
+  type: 'index';
+  index: number;
+}
+
+export type Color = RGB | ColorIndex;
 
 export interface Image {
   width: 9;
@@ -13,7 +21,11 @@ export interface Image {
 }
 
 export const rgb = (r: number, g: number, b: number): Color => {
-  return { r, g, b };
+  return { type: 'rgb', r, g, b };
+};
+
+export const index = (colorIndex: number): Color => {
+  return { type: 'index', index: colorIndex };
 };
 
 export const newImage = (): Image => {
@@ -49,4 +61,10 @@ const outOfRange = (image: Image, x: number, y: number): boolean => {
 
 export const toNote = (x: number, y: number): number => {
   return 0x0b + x + 10 * (8 - y);
+};
+
+export const toPoint = (note: number): { x: number; y: number } => {
+  const x = (note % 10) - 1;
+  const y = 9 - (note - (note % 10)) / 10;
+  return { x, y };
 };

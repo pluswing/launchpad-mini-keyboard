@@ -1,12 +1,33 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Api, IpcKeys, LaunchpadListener } from './ipc';
+import { Api, IpcKeys, LaunchpadListener, Setting } from './ipc';
 
 const api: Api = {
-  changeBgColor: async (colorIndex: number): Promise<void> => {
-    return await ipcRenderer.invoke(IpcKeys.CHANGE_BG_COLOR, colorIndex);
+  changeShortcut: async (
+    x: number,
+    y: number,
+    shortcut: string[]
+  ): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_SHORTCUT, x, y, shortcut);
   },
-  listenForSetting: async (): Promise<void> => {
-    return await ipcRenderer.invoke(IpcKeys.LISTEN_FOR_SETTING);
+  changeTapColor: async (
+    x: number,
+    y: number,
+    colorIndex: number
+  ): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_TAP_COLOR, x, y, colorIndex);
+  },
+  changeBgColor: async (
+    x: number,
+    y: number,
+    colorIndex: number
+  ): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_BG_COLOR, x, y, colorIndex);
+  },
+  ready: async (): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.READY);
+  },
+  loadSetting: async (): Promise<Setting> => {
+    return await ipcRenderer.invoke(IpcKeys.LOAD_SETTING);
   },
   onUpdateMessage: (listener: LaunchpadListener) => {
     ipcRenderer.removeAllListeners(IpcKeys.CONNECTED);
