@@ -2,15 +2,15 @@ import { build } from 'electron-builder';
 
 build({
   config: {
-    productName: 'Electron',
-    copyright: '© 2020 sprout2000 and other contributors.',
+    productName: 'Launch Deck',
+    copyright: '© 2021 pluswing.',
     files: ['dist/**/*'],
     directories: {
       output: 'release',
     },
     win: {
       target: 'nsis',
-      publisherName: 'sprout2000',
+      publisherName: 'pluswing',
       fileAssociations: [
         {
           ext: ['bmp', 'gif', 'jpeg', 'jpg', 'png', 'ico', 'svg', 'webp'],
@@ -36,9 +36,9 @@ build({
         target: 'default',
       },
       extendInfo: {
-        CFBundleName: 'Electron',
-        CFBundleDisplayName: 'Electron',
-        CFBundleExecutable: 'Electron',
+        CFBundleName: 'Launch Deck',
+        CFBundleDisplayName: 'Launch Deck',
+        CFBundleExecutable: 'Launch Deck',
         CFBundlePackageType: 'APPL',
         CFBundleDocumentTypes: [
           {

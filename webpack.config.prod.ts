@@ -1,6 +1,4 @@
 import path from 'path';
-import fs from 'fs';
-import fse from 'fs-extra';
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -8,34 +6,6 @@ import TailwindCss from 'tailwindcss';
 import Autoprefixer from 'autoprefixer';
 
 const isDev = process.env.NODE_ENV === 'development';
-
-// pre process
-fs.writeFileSync(
-  path.join(__dirname, 'node_modules', '@nut-tree', 'libnut', 'index.js'),
-  `
-const libnut= require("@nut-tree/libnut-${process.platform}");
-module.exports = libnut;
-`.trim()
-);
-const nativePath = path.join(
-  __dirname,
-  'dist',
-  'native_modules',
-  'build',
-  'Release'
-);
-fs.mkdirSync(nativePath, { recursive: true });
-fse.copySync(
-  path.join(
-    __dirname,
-    'node_modules',
-    '@nut-tree',
-    `libnut-${process.platform}`,
-    'build',
-    'Release'
-  ),
-  nativePath
-);
 
 const base: Configuration = {
   mode: isDev ? 'development' : 'production',

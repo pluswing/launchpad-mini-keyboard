@@ -26,9 +26,7 @@ import {
   saveTapColor,
 } from './preferenecs';
 import { toPoint } from './draw';
-import { Key, keyboard } from '@nut-tree/nut-js';
-import keycode from 'keycode';
-import { s2k } from './keys';
+import { keyboard } from './keyboard';
 
 const root = __dirname;
 
@@ -171,16 +169,7 @@ const setupShortcut = () => {
         const p = toPoint(note);
         const s = ss[p.y][p.x];
         if (s && s.length) {
-          const keys = [Key.LeftSuper]; // s.map((v) => s2k(v));
-          console.log(s, keys);
-          (async () => {
-            console.log('press', keys);
-            await keyboard.pressKey(...keys);
-            console.log('type A');
-            await keyboard.type('A');
-            console.log('release', keys);
-            await keyboard.releaseKey(...keys);
-          })();
+          keyboard(s);
         }
       }
     },

@@ -1,14 +1,14 @@
 {
-  "name": "electron-react-ts",
-  "description": "An Electron boilerplate with hot reloading for React and TypeScript.",
-  "version": "1.1.1",
+  "name": "launch_deck",
+  "description": "",
+  "version": "0.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sprout2000/electron-react-ts"
+    "url": "https://github.com/pluswing/launchpad-mini-keyboard"
   },
   "engines": {
-    "node": ">=12.13.1"
+    "node": ">=16.13.0"
   },
   "main": "dist/main.js",
   "scripts": {
@@ -31,13 +31,12 @@
     "copy:assets": "node scripts/copy_assets.js"
   },
   "dependencies": {
-    "@nut-tree/nut-js": "^1.7.0",
     "electron-store": "^8.0.1",
     "keycode": "^2.2.1",
     "midi": "^2.0.0",
-    "node-gyp": "^8.4.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "sendkeys-macos": "^1.3.0"
   },
   "devDependencies": {
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
@@ -49,9 +48,8 @@
     "autoprefixer": "^10.4.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.5.1",
-    "electron": "^16.0.2",
+    "electron": "^16.0.5",
     "electron-builder": "^22.14.5",
-    "electron-rebuild": "^3.2.5",
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ifdef-loader": "^2.3.2",
