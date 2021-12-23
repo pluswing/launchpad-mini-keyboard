@@ -1,4 +1,4 @@
-import sendKeys from 'sendkeys-macos';
+import { execSync, spawnSync } from 'child_process';
 
 const modifierKeyMap: { [key: string]: string } = {
   '⌃': 'control',
@@ -40,7 +40,6 @@ export const keyboard = (keys: string[]): void => {
   const lk = keys.map((k) => k.toLowerCase());
   const ms = lk.map((k) => modifierKeyMap[k]).filter((k) => k);
   const ks = lk.filter((k) => !Object.keys(modifierKeyMap).includes(k));
-  console.log(ms, ks);
   if (!ks) {
     return;
   }
@@ -49,7 +48,12 @@ export const keyboard = (keys: string[]): void => {
     console.error(`"${k}" is not defined.`);
     return;
   }
-  const command = `<c:${k}:${ms.join(',')}>`;
-  console.log(command);
-  sendKeys(null, command);
+  const command = `
+tell application "System Events" 
+  keystroke "${k}" ${
+    ms.length ? `using {${ms.map((k) => `${k} down`).join(',')}}` : ''
+  }
+end tell
+`;
+  execSync(`osascript -e '${command}'`);
 };
