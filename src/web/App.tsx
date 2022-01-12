@@ -303,6 +303,24 @@ export const App = (): JSX.Element => {
     [setTapColor, setTapColors, current, tapColors]
   );
 
+  enum ColorType {
+    NONE,
+    TAP_COLOR,
+    BG_COLOR,
+  }
+  const [selectingColorType, setSelectingColorType] = useState(ColorType.NONE);
+  // selecting Color
+  const onFocusTapColor = () => {
+    setSelectingColorType(ColorType.TAP_COLOR);
+    // api.
+  };
+  const onFocusBgColor = () => {
+    setSelectingColorType(ColorType.BG_COLOR);
+  };
+  const onBlurColorSelect = () => {
+    setSelectingColorType(ColorType.NONE);
+  };
+
   const colors = onDown ? tapColors : bgColors;
 
   return (
@@ -352,12 +370,26 @@ export const App = (): JSX.Element => {
             placeholder="shortcut key"
             className="p-2 rounded m-2"
           />
-          <Select
-            prefix="tap color"
-            value={tapColor}
-            onChange={changeTapColor}
-          />
-          <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
+          {showDialog ? (
+            <>
+              <Select
+                prefix="tap color"
+                value={tapColor}
+                onFocus={onFocusTapColor}
+                onBlur={onBlurColorSelect}
+                onChange={changeTapColor}
+              />
+              <Select
+                prefix="bg color"
+                value={bgColor}
+                onFocus={onFocusBgColor}
+                onBlur={onBlurColorSelect}
+                onChange={changeBgColor}
+              />
+            </>
+          ) : (
+            ''
+          )}
         </>
       </Dialog>
     </div>
