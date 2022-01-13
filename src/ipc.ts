@@ -13,6 +13,9 @@ export enum IpcKeys {
   CHANGE_BG_COLOR = 'CHANGE_BG_COLOR',
   CHANGE_SHORTCUT = 'CHANGE_SHORTCUT',
   CHANGE_TAP_COLOR = 'CHANGE_TAP_COLOR',
+  ENTER_SELECTING_COLOR = 'ENTER_SELECTING_COLOR',
+  LEAVE_SELECTING_COLOR = 'LEAVE_SELECTING_COLOR',
+  CHANGE_SELECTING_COLOR_PAGE = 'CHANGE_SELECTING_COLOR_PAGE',
 }
 
 export interface LaunchpadListener {
@@ -34,4 +37,7 @@ export type Api = {
   changeShortcut: (x: number, y: number, shortcut: string[]) => Promise<void>;
   changeBgColor: (x: number, y: number, colorIndex: number) => Promise<void>;
   changeTapColor: (x: number, y: number, colorIndex: number) => Promise<void>;
+  enterSelectingColor: () => Promise<void>;
+  leaveSelectingColor: () => Promise<void>;
+  changeSelectingColorPage: (page: number) => Promise<void>;
 };

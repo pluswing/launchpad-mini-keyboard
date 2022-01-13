@@ -15,6 +15,7 @@ import {
   eventLaunchpad,
   initLaunchpad,
   liveMode,
+  selectingColor,
   setLaunchpadListener,
 } from './launchpad';
 import {
@@ -135,6 +136,16 @@ const bindIpc = (window: BrowserWindow) => {
       applyLaunchpad();
     }
   );
+
+  ipcMain.handle(IpcKeys.ENTER_SELECTING_COLOR, () => {
+    selectingColor(0);
+  });
+  ipcMain.handle(IpcKeys.LEAVE_SELECTING_COLOR, () => {
+    applyLaunchpad();
+  });
+  ipcMain.handle(IpcKeys.CHANGE_SELECTING_COLOR_PAGE, (_, page: number) => {
+    selectingColor(page);
+  });
 };
 
 const setupTray = () => {

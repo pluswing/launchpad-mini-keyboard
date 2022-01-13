@@ -44,6 +44,15 @@ const api: Api = {
       listener.onNote(event, note);
     });
   },
+  enterSelectingColor: async () => {
+    return await ipcRenderer.invoke(IpcKeys.ENTER_SELECTING_COLOR);
+  },
+  leaveSelectingColor: async () => {
+    return await ipcRenderer.invoke(IpcKeys.LEAVE_SELECTING_COLOR);
+  },
+  changeSelectingColorPage: async (page: number) => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_SELECTING_COLOR_PAGE, page);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);

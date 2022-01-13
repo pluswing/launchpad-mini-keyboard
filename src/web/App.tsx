@@ -191,6 +191,8 @@ export const App = (): JSX.Element => {
   const [connected, setConnected] = useState(false);
   const [onDown, setOnDown] = useState(false);
 
+  const [selectionColorPage, setSelectionColorPage] = useState(0);
+
   api.onUpdateMessage({
     connected: async () => {
       setConnected(true);
@@ -200,6 +202,34 @@ export const App = (): JSX.Element => {
     },
     onNote: (event, note) => {
       const p = toPoint(note);
+
+      if (selectingColorType != ColorType.NONE) {
+        // 色選択モード
+        if (p.x == 2 && p.y == 0) {
+          // left key
+          api.changeSelectingColorPage(0);
+          setSelectionColorPage(0);
+        }
+        if (p.x == 3 && p.y == 0) {
+          // right key
+          api.changeSelectingColorPage(1);
+          setSelectionColorPage(1);
+        }
+        if (p.y == 0 || p.x == 8) {
+          // 無視する
+          return;
+        }
+        // const index = selectionColorPage *
+        if (selectingColorType == ColorType.BG_COLOR) {
+          changeBgColor(0 /* color index */);
+          return;
+        }
+        if (selectingColorType == ColorType.TAP_COLOR) {
+          changeTapColor(0 /* color index */);
+          return;
+        }
+      }
+
       if (event == 'up') {
         setOnDown(false);
         showButtonSetting(p.x, p.y);
@@ -312,13 +342,15 @@ export const App = (): JSX.Element => {
   // selecting Color
   const onFocusTapColor = () => {
     setSelectingColorType(ColorType.TAP_COLOR);
-    // api.
+    api.enterSelectingColor();
   };
   const onFocusBgColor = () => {
     setSelectingColorType(ColorType.BG_COLOR);
+    api.enterSelectingColor();
   };
   const onBlurColorSelect = () => {
     setSelectingColorType(ColorType.NONE);
+    api.leaveSelectingColor();
   };
 
   const colors = onDown ? tapColors : bgColors;

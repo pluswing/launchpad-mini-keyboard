@@ -163,3 +163,19 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
     applyLaunchpadByIndexes(b);
   }
 };
+
+export const selectingColor = (page: number) => {
+  const image = newImage();
+  range(64).forEach((i) => {
+    const x = 0;
+    const y = 0;
+    setPixel(image, x, y, index(i * page));
+  });
+  drawLaunchpad(output, image);
+};
+
+/*
+(x=0, y=1)
+0, 1, 2, 3, 4, 5, 6, 7, 8
+9, 10 ...
+*/
