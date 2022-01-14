@@ -68,3 +68,26 @@ export const toPoint = (note: number): { x: number; y: number } => {
   const y = 9 - (note - (note % 10)) / 10;
   return { x, y };
 };
+
+const isBlack = (c: Color): boolean => {
+  if (c.type == 'index') {
+    return c.index == 0;
+  }
+  return c.r == 0 && c.g == 0 && c.b == 0;
+};
+
+export const stackImage = (image1: Image, image2: Image): Image => {
+  const img = newImage();
+  range(img.width).forEach((x) => {
+    range(img.height).forEach((y) => {
+      const a = getPixel(image1, x, y);
+      const b = getPixel(image2, x, y);
+      if (isBlack(b)) {
+        setPixel(img, x, y, a);
+      } else {
+        setPixel(img, x, y, b);
+      }
+    });
+  });
+  return img;
+};

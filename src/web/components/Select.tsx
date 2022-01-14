@@ -20,7 +20,7 @@ export const Select = ({
 
   const toggle = useCallback(() => {
     setOpen(!open);
-    open ? onFocus() : onBlur();
+    !open ? onFocus() : onBlur();
   }, [setOpen, open, onFocus, onBlur]);
 
   const colors = COLOR_PALETTE.map(

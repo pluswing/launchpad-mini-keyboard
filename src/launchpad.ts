@@ -5,6 +5,7 @@ import {
   index,
   newImage,
   setPixel,
+  stackImage,
   toNote,
   toPoint,
 } from './draw';
@@ -167,11 +168,18 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
 export const selectingColor = (page: number) => {
   const image = newImage();
   range(64).forEach((i) => {
-    const x = 0;
-    const y = 0;
-    setPixel(image, x, y, index(i * page));
+    const x = i % 8;
+    const y = Math.floor(i / 8) + 1;
+    setPixel(image, x, y, index(i + 64 * page));
   });
-  drawLaunchpad(output, image);
+
+  // TODO animation
+
+  const control = newImage();
+  setPixel(control, 2, 0, index(page == 0 ? 1 : 3));
+  setPixel(control, 3, 0, index(page == 1 ? 1 : 3));
+
+  drawLaunchpad(output, stackImage(image, control));
 };
 
 /*

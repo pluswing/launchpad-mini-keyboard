@@ -219,13 +219,15 @@ export const App = (): JSX.Element => {
           // 無視する
           return;
         }
-        // const index = selectionColorPage *
+        const index = p.x + (p.y - 1) * 8 + 64 * selectionColorPage;
         if (selectingColorType == ColorType.BG_COLOR) {
-          changeBgColor(0 /* color index */);
+          changeBgColor(index);
+          reloadDialog();
           return;
         }
         if (selectingColorType == ColorType.TAP_COLOR) {
-          changeTapColor(0 /* color index */);
+          changeTapColor(index);
+          reloadDialog();
           return;
         }
       }
@@ -239,6 +241,11 @@ export const App = (): JSX.Element => {
       }
     },
   });
+
+  const reloadDialog = () => {
+    setShowDialog(false);
+    setShowDialog(true);
+  };
 
   // on mounted
   useEffect(() => {
@@ -342,10 +349,12 @@ export const App = (): JSX.Element => {
   // selecting Color
   const onFocusTapColor = () => {
     setSelectingColorType(ColorType.TAP_COLOR);
+    setSelectionColorPage(0);
     api.enterSelectingColor();
   };
   const onFocusBgColor = () => {
     setSelectingColorType(ColorType.BG_COLOR);
+    setSelectionColorPage(0);
     api.enterSelectingColor();
   };
   const onBlurColorSelect = () => {
