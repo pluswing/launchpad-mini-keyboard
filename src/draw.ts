@@ -91,3 +91,22 @@ export const stackImage = (image1: Image, image2: Image): Image => {
   });
   return img;
 };
+
+export const copyImage = (
+  destImage: Image,
+  srcImage: Image,
+  dx: number,
+  dy: number,
+  sx: number,
+  sy: number,
+  sw: number,
+  sh: number
+): Image => {
+  range(sw).forEach((w) => {
+    range(sh).forEach((h) => {
+      const p = getPixel(srcImage, sx + w, sy + h);
+      setPixel(destImage, dx + w, dy + h, p);
+    });
+  });
+  return destImage;
+};

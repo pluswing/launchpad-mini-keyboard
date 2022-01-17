@@ -1,5 +1,6 @@
 import { Input, Output } from 'midi';
 import {
+  copyImage,
   getPixel,
   Image,
   index,
@@ -165,21 +166,51 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
   }
 };
 
+let animation: NodeJS.Timer | null = null;
+const startAnimation = (fn: () => void) => {
+  stopAnimation();
+  animation = setInterval(fn, 32);
+};
+const stopAnimation = () => {
+  if (animation) {
+    clearInterval(animation);
+  }
+  animation = null;
+};
+
 export const selectingColor = (page: number) => {
-  const image = newImage();
+  const page1 = newImage();
+  const page2 = newImage();
   range(64).forEach((i) => {
     const x = i % 8;
     const y = Math.floor(i / 8) + 1;
-    setPixel(image, x, y, index(i + 64 * page));
+    setPixel(page1, x, y, index(i));
+    setPixel(page2, x, y, index(i + 64));
   });
-
-  // TODO animation
 
   const control = newImage();
   setPixel(control, 2, 0, index(page == 0 ? 1 : 3));
   setPixel(control, 3, 0, index(page == 1 ? 1 : 3));
 
-  drawLaunchpad(output, stackImage(image, control));
+  let offset = 0;
+  startAnimation(() => {
+    const image = newImage();
+    offset += 1;
+    if (page == 0) {
+      copyImage(image, page1, offset - 8, 0, 0, 0, 9, 9);
+      copyImage(image, page2, offset, 0, 0, 0, 9, 9);
+    } else {
+      copyImage(image, page1, 0 - offset, 0, 0, 0, 9, 9);
+      copyImage(image, page2, 8 - offset, 0, 0, 0, 9, 9);
+    }
+    if (offset >= 8) {
+      range(9).forEach((y) => {
+        setPixel(image, 8, y, index(0));
+      });
+      stopAnimation();
+    }
+    drawLaunchpad(output, stackImage(image, control));
+  });
 };
 
 /*
