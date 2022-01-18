@@ -4,7 +4,6 @@ import { toPoint } from '../draw';
 import { range } from '../util';
 import { BlackButton } from './components/BlackButton';
 import { Button as WhiteButton } from './components/Button';
-import { Dialog } from './components/Dialog';
 import { Select } from './components/Select';
 
 const api = window.api;
@@ -222,12 +221,12 @@ export const App = (): JSX.Element => {
         const index = p.x + (p.y - 1) * 8 + 64 * selectionColorPage;
         if (selectingColorType == ColorType.BG_COLOR) {
           changeBgColor(index);
-          reloadDialog();
+          reloadSidebar();
           return;
         }
         if (selectingColorType == ColorType.TAP_COLOR) {
           changeTapColor(index);
-          reloadDialog();
+          reloadSidebar();
           return;
         }
       }
@@ -236,15 +235,15 @@ export const App = (): JSX.Element => {
         setOnDown(false);
         showButtonSetting(p.x, p.y);
       } else if (event == 'down') {
-        setShowDialog(false);
         setOnDown(true);
       }
     },
   });
 
-  const reloadDialog = () => {
-    setShowDialog(false);
-    setShowDialog(true);
+  const reloadSidebar = () => {
+    const c = current;
+    setCurrent({ x: -1, y: -1 });
+    showButtonSetting(c.x, c.y);
   };
 
   // on mounted
@@ -263,10 +262,9 @@ export const App = (): JSX.Element => {
   const [tapColors, setTapColors] = useState(colorGrid());
 
   // dialog
-  const [showDialog, setShowDialog] = useState(false);
   const [current, setCurrent] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
+    x: -1,
+    y: -1,
   });
 
   const showButtonSetting = (x: number, y: number) => {
@@ -274,7 +272,6 @@ export const App = (): JSX.Element => {
     setShortcut(shortcuts[y][x]);
     setBgColor(bgColors[y][x]);
     setTapColor(tapColors[y][x]);
-    setShowDialog(true);
   };
 
   const [shortcut, setShortcut] = useState<string[]>([]);
@@ -364,7 +361,7 @@ export const App = (): JSX.Element => {
 
   const colors = onDown ? tapColors : bgColors;
 
-  return (
+  const main = (
     <div className="bg-gray-800 p-5">
       <div
         className="grid grid-cols-9 gap-1"
@@ -401,38 +398,42 @@ export const App = (): JSX.Element => {
           });
         })}
       </div>
+    </div>
+  );
 
-      <Dialog show={showDialog} onClose={() => setShowDialog(false)}>
-        <>
-          <input
-            type="text"
-            value={shortcut.join('')}
-            onKeyDown={onKeyDown}
-            placeholder="shortcut key"
-            className="p-2 rounded m-2"
-          />
-          {showDialog ? (
-            <>
-              <Select
-                prefix="tap color"
-                value={tapColor}
-                onFocus={onFocusTapColor}
-                onBlur={onBlurColorSelect}
-                onChange={changeTapColor}
-              />
-              <Select
-                prefix="bg color"
-                value={bgColor}
-                onFocus={onFocusBgColor}
-                onBlur={onBlurColorSelect}
-                onChange={changeBgColor}
-              />
-            </>
-          ) : (
-            ''
-          )}
-        </>
-      </Dialog>
+  const side =
+    current.x >= 0 ? (
+      <div className="bg-gray-800 h-full">
+        <input
+          type="text"
+          value={shortcut.join('')}
+          onKeyDown={onKeyDown}
+          placeholder="shortcut key"
+          className="p-2 rounded m-2"
+        />
+        <Select
+          prefix="tap color"
+          value={tapColor}
+          onFocus={onFocusTapColor}
+          onBlur={onBlurColorSelect}
+          onChange={changeTapColor}
+        />
+        <Select
+          prefix="bg color"
+          value={bgColor}
+          onFocus={onFocusBgColor}
+          onBlur={onBlurColorSelect}
+          onChange={changeBgColor}
+        />
+      </div>
+    ) : (
+      <div className="bg-gray-800 h-full"></div>
+    );
+
+  return (
+    <div className="flex flex-wrap">
+      <p style={{ width: 690 }}>{main}</p>
+      <p style={{ width: 300 }}>{side}</p>
     </div>
   );
 };

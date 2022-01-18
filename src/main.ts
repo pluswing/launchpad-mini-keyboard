@@ -61,7 +61,7 @@ const showPreferences = () => {
   }
 
   settingWindow = new BrowserWindow({
-    width: 690,
+    width: 690 + 300,
     height: 718,
     resizable: false,
     webPreferences: {
