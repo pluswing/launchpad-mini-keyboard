@@ -7,6 +7,19 @@ const store = new Store();
 const SHORTCUTS = 'shortcuts';
 const BG_COLORS = 'bgColors';
 const TAP_COLORS = 'tapColors';
+const APP_VERSION = 'appVersion';
+
+export const migrateData = (currentVersion: string): void => {
+  const version = store.get(APP_VERSION);
+  if (version === currentVersion) {
+    return;
+  }
+  // TODO
+  if (version == '0.1.0' && currentVersion == '0.2.0') {
+    // ....
+  }
+  store.set(APP_VERSION, currentVersion);
+};
 
 export const saveShortcut = (
   x: number,

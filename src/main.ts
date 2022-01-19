@@ -197,6 +197,8 @@ app.whenReady().then(async () => {
     }
   }
 
+  migrateData(app.getVersion());
+
   setupTray();
   backgroundProcess = initLaunchpad();
   setupShortcut();

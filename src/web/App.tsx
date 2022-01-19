@@ -241,9 +241,8 @@ export const App = (): JSX.Element => {
   });
 
   const reloadSidebar = () => {
-    const c = current;
-    setCurrent({ x: -1, y: -1 });
-    showButtonSetting(c.x, c.y);
+    setTab(Tab.GLOBAL);
+    setTab(Tab.BUTTON);
   };
 
   // on mounted
@@ -261,10 +260,15 @@ export const App = (): JSX.Element => {
   const [bgColors, setBgColors] = useState(colorGrid());
   const [tapColors, setTapColors] = useState(colorGrid());
 
-  // dialog
+  // sidebar
+  enum Tab {
+    GLOBAL,
+    BUTTON,
+  }
+  const [tab, setTab] = useState(Tab.GLOBAL);
   const [current, setCurrent] = useState<{ x: number; y: number }>({
-    x: -1,
-    y: -1,
+    x: 0,
+    y: 0,
   });
 
   const showButtonSetting = (x: number, y: number) => {
@@ -272,6 +276,7 @@ export const App = (): JSX.Element => {
     setShortcut(shortcuts[y][x]);
     setBgColor(bgColors[y][x]);
     setTapColor(tapColors[y][x]);
+    setTab(Tab.BUTTON);
   };
 
   const [shortcut, setShortcut] = useState<string[]>([]);
@@ -402,8 +407,8 @@ export const App = (): JSX.Element => {
   );
 
   const side =
-    current.x >= 0 ? (
-      <div className="bg-gray-800 h-full">
+    tab == Tab.BUTTON ? (
+      <div className="bg-gray-600 h-full py-5 pr-1">
         <input
           type="text"
           value={shortcut.join('')}
