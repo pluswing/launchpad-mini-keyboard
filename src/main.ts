@@ -22,6 +22,7 @@ import {
   getBgColors,
   getShortcuts,
   getTapColors,
+  migrateData,
   saveBgColor,
   saveShortcut,
   saveTapColor,
@@ -196,8 +197,6 @@ app.whenReady().then(async () => {
       });
     }
   }
-
-  migrateData(app.getVersion());
 
   setupTray();
   backgroundProcess = initLaunchpad();

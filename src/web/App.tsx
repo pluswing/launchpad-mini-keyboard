@@ -183,8 +183,38 @@ const BUTTONS: Button[][] = [
   [WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, STOP_SOLO_MUTE],
 ];
 
+// action
+type Keys = string[];
+interface Shortcut {
+  type: 'shortcut';
+  shortcuts: Keys[]; // [["d", "ctrl"], ["a", "shift"]]
+}
+interface AppLaunch {
+  type: 'applaunch';
+  appName: string; // "premiere pro.app"
+}
+
+enum Edge {
+  TOP_LEFT,
+  TOP_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_RIGHT,
+}
+interface Mouse {
+  type: 'mouse';
+  edge: Edge;
+}
+
+type Action = Shortcut | AppLaunch | Mouse;
+
+const defaultAction = (): Action => {
+  return { type: 'shortcut', shortcuts: [] };
+};
+
 const colorGrid = (): number[][] => range(9).map(() => range(9).map(() => 0));
-const listGrid = (): string[][][] => range(9).map(() => range(9).map(() => []));
+
+const actionGrid = (): Action[][] =>
+  range(9).map(() => range(9).map(() => defaultAction()));
 
 export const App = (): JSX.Element => {
   const [connected, setConnected] = useState(false);
@@ -249,14 +279,14 @@ export const App = (): JSX.Element => {
   useEffect(() => {
     api.ready();
     api.loadSetting().then((data) => {
-      setShortcuts(data.shortcuts);
+      setActions(data.shortcuts);
       setBgColors(data.bgColors);
       setTapColors(data.tapColors);
     });
   }, []);
 
   // data
-  const [shortcuts, setShortcuts] = useState(listGrid());
+  const [actions, setActions] = useState(actionGrid());
   const [bgColors, setBgColors] = useState(colorGrid());
   const [tapColors, setTapColors] = useState(colorGrid());
 
@@ -273,13 +303,13 @@ export const App = (): JSX.Element => {
 
   const showButtonSetting = (x: number, y: number) => {
     setCurrent({ x, y });
-    setShortcut(shortcuts[y][x]);
+    setAction(actions[y][x]);
     setBgColor(bgColors[y][x]);
     setTapColor(tapColors[y][x]);
     setTab(Tab.BUTTON);
   };
 
-  const [shortcut, setShortcut] = useState<string[]>([]);
+  const [action, setAction] = useState<Action>(defaultAction());
   const [bgColor, setBgColor] = useState(0);
   const [tapColor, setTapColor] = useState(0);
 
@@ -313,13 +343,14 @@ export const App = (): JSX.Element => {
         keycode(e).toUpperCase(),
       ].filter((v) => v);
 
-      setShortcut(s);
-
-      shortcuts[current.y][current.x] = s;
-      setShortcuts([...shortcuts]);
+      actions[current.y][current.x] = {
+        type: 'shortcut',
+        shortcuts: [s],
+      };
+      setActions([...actions]);
       api.changeShortcut(current.x, current.y, s);
     },
-    [setShortcut, setShortcuts, shortcuts, current]
+    [setActions, actions, current]
   );
 
   const changeBgColor = useCallback(
@@ -406,34 +437,79 @@ export const App = (): JSX.Element => {
     </div>
   );
 
-  const side =
-    tab == Tab.BUTTON ? (
-      <div className="bg-gray-600 h-full py-5 pr-1">
+  const highlightTab = (b: boolean) =>
+    b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
+
+  const tabHeader = (
+    <div className="flex flex-wrap text-center">
+      <div
+        onClick={() => setTab(Tab.GLOBAL)}
+        className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.GLOBAL)}`}
+      >
+        GLOBAL
+      </div>
+      <div
+        onClick={() => setTab(Tab.BUTTON)}
+        className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.BUTTON)}`}
+      >
+        BUTTON
+      </div>
+    </div>
+  );
+
+  const actionEditor = (action: Action) => {
+    if (action.type == 'shortcut') {
+      return (
         <input
           type="text"
-          value={shortcut.join('')}
+          value={action.shortcuts.join('')}
           onKeyDown={onKeyDown}
           placeholder="shortcut key"
           className="p-2 rounded m-2"
         />
-        <Select
-          prefix="tap color"
-          value={tapColor}
-          onFocus={onFocusTapColor}
-          onBlur={onBlurColorSelect}
-          onChange={changeTapColor}
-        />
-        <Select
-          prefix="bg color"
-          value={bgColor}
-          onFocus={onFocusBgColor}
-          onBlur={onBlurColorSelect}
-          onChange={changeBgColor}
-        />
-      </div>
-    ) : (
-      <div className="bg-gray-800 h-full"></div>
-    );
+      );
+    }
+    if (action.type == 'mouse') {
+      return '';
+    }
+    if (action.type == 'applaunch') {
+      return '';
+    }
+  };
+
+  const tabButton = (
+    <>
+      {actionEditor(action)}
+      <Select
+        prefix="tap color"
+        value={tapColor}
+        onFocus={onFocusTapColor}
+        onBlur={onBlurColorSelect}
+        onChange={changeTapColor}
+      />
+      <Select
+        prefix="bg color"
+        value={bgColor}
+        onFocus={onFocusBgColor}
+        onBlur={onBlurColorSelect}
+        onChange={changeBgColor}
+      />
+    </>
+  );
+
+  const tabGlobal = <div>GLOBAL SETTING</div>;
+
+  const tabContents = {
+    [Tab.GLOBAL]: tabGlobal,
+    [Tab.BUTTON]: tabButton,
+  };
+
+  const side = (
+    <div className="bg-gray-600 h-full">
+      {tabHeader}
+      {tabContents[tab]}
+    </div>
+  );
 
   return (
     <div className="flex flex-wrap">
