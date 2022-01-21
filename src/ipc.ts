@@ -1,3 +1,5 @@
+import { Action } from './actions';
+
 declare global {
   interface Window {
     api: Api;
@@ -25,7 +27,8 @@ export interface LaunchpadListener {
 }
 
 export interface Setting {
-  shortcuts: string[][][];
+  // shortcuts: string[][][];
+  actions: Action[][];
   bgColors: number[][];
   tapColors: number[][];
 }

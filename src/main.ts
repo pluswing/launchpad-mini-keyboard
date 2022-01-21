@@ -19,12 +19,10 @@ import {
   setLaunchpadListener,
 } from './launchpad';
 import {
+  getActions,
   getBgColors,
-  getShortcuts,
   getTapColors,
-  migrateData,
   saveBgColor,
-  saveShortcut,
   saveTapColor,
 } from './preferenecs';
 import { toPoint } from './draw';
@@ -109,7 +107,8 @@ const bindIpc = (window: BrowserWindow) => {
 
   ipcMain.handle(IpcKeys.LOAD_SETTING, () => {
     return {
-      shortcuts: getShortcuts(),
+      // shortcuts: getShortcuts(),
+      actions: getActions(),
       tapColors: getTapColors(),
       bgColors: getBgColors(),
     } as Setting;
@@ -118,7 +117,8 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.handle(
     IpcKeys.CHANGE_SHORTCUT,
     (_, x: number, y: number, shortcut: string[]) => {
-      saveShortcut(x, y, shortcut);
+      // FIXME
+      // saveShortcut(x, y, shortcut);
     }
   );
 
@@ -177,11 +177,14 @@ const setupShortcut = () => {
     onNote: (event, note) => {
       eventLaunchpad(event, note);
       if (event == 'down') {
-        const ss = getShortcuts();
+        const actions = getActions();
         const p = toPoint(note);
-        const s = ss[p.y][p.x];
-        if (s && s.length) {
-          keyboard(s);
+        const act = actions[p.y][p.x];
+        if (act.type == 'shortcut') {
+          act.shortcuts.forEach((s) => {
+            keyboard(s);
+            // MEMO delay ...
+          });
         }
       }
     },

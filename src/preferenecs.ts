@@ -1,27 +1,35 @@
 import Store from 'electron-store';
+import { Action, defaultAction, Shortcut } from './actions';
 import { range } from './util';
 
 const store = new Store({
   migrations: {
-    '0.0.1': () => 1,
-    // TODO
-    // "0.0.2": () => { ... }
+    '0.1.0': () => 1,
+    '0.2.0': (store) => {
+      const shortcuts = store.get('shortcuts') as string[][][];
+      const actions = shortcuts.map((row) => {
+        return row.map((item) => {
+          // item = ["d", "ctrl"]
+          return {
+            type: 'shortcut',
+            shortcuts: [item],
+          } as Shortcut;
+        });
+      });
+      store.set('actions', actions);
+    },
   },
 });
 // store.clear();
 
-const SHORTCUTS = 'shortcuts';
+const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
 const TAP_COLORS = 'tapColors';
 
-export const saveShortcut = (
-  x: number,
-  y: number,
-  shortcut: string[]
-): void => {
-  const v = getShortcuts();
-  v[y][x] = shortcut;
-  store.set(SHORTCUTS, v);
+export const saveAction = (x: number, y: number, action: Action): void => {
+  const v = getActions();
+  v[y][x] = action;
+  store.set(ACTIONS, v);
 };
 
 export const saveBgColor = (x: number, y: number, colorIndex: number): void => {
@@ -40,8 +48,8 @@ export const saveTapColor = (
   store.set(TAP_COLORS, v);
 };
 
-export const getShortcuts = (): string[][][] => {
-  return store.get(SHORTCUTS, emptyGrid([] as string[])) as string[][][];
+export const getActions = (): Action[][] => {
+  return store.get(ACTIONS, emptyGrid(defaultAction())) as Action[][];
 };
 
 export const getBgColors = (): number[][] => {

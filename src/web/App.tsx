@@ -1,6 +1,7 @@
 import keycode from 'keycode';
 import { useCallback, useEffect, useState } from 'react';
 import { toPoint } from '../draw';
+import { Action, defaultAction, Shortcut } from '../actions';
 import { range } from '../util';
 import { BlackButton } from './components/BlackButton';
 import { Button as WhiteButton } from './components/Button';
@@ -183,34 +184,6 @@ const BUTTONS: Button[][] = [
   [WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, STOP_SOLO_MUTE],
 ];
 
-// action
-type Keys = string[];
-interface Shortcut {
-  type: 'shortcut';
-  shortcuts: Keys[]; // [["d", "ctrl"], ["a", "shift"]]
-}
-interface AppLaunch {
-  type: 'applaunch';
-  appName: string; // "premiere pro.app"
-}
-
-enum Edge {
-  TOP_LEFT,
-  TOP_RIGHT,
-  BOTTOM_LEFT,
-  BOTTOM_RIGHT,
-}
-interface Mouse {
-  type: 'mouse';
-  edge: Edge;
-}
-
-type Action = Shortcut | AppLaunch | Mouse;
-
-const defaultAction = (): Action => {
-  return { type: 'shortcut', shortcuts: [] };
-};
-
 const colorGrid = (): number[][] => range(9).map(() => range(9).map(() => 0));
 
 const actionGrid = (): Action[][] =>
@@ -279,7 +252,7 @@ export const App = (): JSX.Element => {
   useEffect(() => {
     api.ready();
     api.loadSetting().then((data) => {
-      setActions(data.shortcuts);
+      setActions(data.actions);
       setBgColors(data.bgColors);
       setTapColors(data.tapColors);
     });
@@ -343,10 +316,12 @@ export const App = (): JSX.Element => {
         keycode(e).toUpperCase(),
       ].filter((v) => v);
 
-      actions[current.y][current.x] = {
+      const act: Shortcut = {
         type: 'shortcut',
         shortcuts: [s],
       };
+      actions[current.y][current.x] = act;
+      setAction(act);
       setActions([...actions]);
       api.changeShortcut(current.x, current.y, s);
     },
