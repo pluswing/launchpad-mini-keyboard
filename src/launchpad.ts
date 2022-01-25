@@ -11,7 +11,7 @@ import {
   toPoint,
 } from './draw';
 import { LaunchpadListener } from './ipc';
-import { getBgColors, getTapColors } from './preferenecs';
+import { getBgColors, getTapColors } from './store';
 import { range } from './util';
 
 const HEADER = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d];

@@ -323,7 +323,7 @@ export const App = (): JSX.Element => {
       actions[current.y][current.x] = act;
       setAction(act);
       setActions([...actions]);
-      api.changeShortcut(current.x, current.y, s);
+      api.changeAction(current.x, current.y, act);
     },
     [setActions, actions, current]
   );
@@ -434,6 +434,7 @@ export const App = (): JSX.Element => {
 
   const actionEditor = (action: Action) => {
     if (action.type == 'shortcut') {
+      // FIXME action.shortcutsは２重配列
       return (
         <input
           type="text"

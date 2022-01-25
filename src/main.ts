@@ -22,11 +22,13 @@ import {
   getActions,
   getBgColors,
   getTapColors,
+  saveAction,
   saveBgColor,
   saveTapColor,
-} from './preferenecs';
+} from './store';
 import { toPoint } from './draw';
 import { keyboard } from './keyboard';
+import { Action } from './actions';
 
 const root = __dirname;
 
@@ -86,7 +88,7 @@ const showPreferences = () => {
 const bindIpc = (window: BrowserWindow) => {
   ipcMain.removeHandler(IpcKeys.READY);
   ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
-  ipcMain.removeHandler(IpcKeys.CHANGE_SHORTCUT);
+  ipcMain.removeHandler(IpcKeys.CHANGE_ACTION);
   ipcMain.removeHandler(IpcKeys.CHANGE_BG_COLOR);
   ipcMain.removeHandler(IpcKeys.CHANGE_TAP_COLOR);
 
@@ -115,10 +117,9 @@ const bindIpc = (window: BrowserWindow) => {
   });
 
   ipcMain.handle(
-    IpcKeys.CHANGE_SHORTCUT,
-    (_, x: number, y: number, shortcut: string[]) => {
-      // FIXME
-      // saveShortcut(x, y, shortcut);
+    IpcKeys.CHANGE_ACTION,
+    (_, x: number, y: number, action: Action) => {
+      saveAction(x, y, action);
     }
   );
 

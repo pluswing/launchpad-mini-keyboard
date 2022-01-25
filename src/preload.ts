@@ -1,13 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { Action } from './actions';
 import { Api, IpcKeys, LaunchpadListener, Setting } from './ipc';
 
 const api: Api = {
-  changeShortcut: async (
-    x: number,
-    y: number,
-    shortcut: string[]
-  ): Promise<void> => {
-    return await ipcRenderer.invoke(IpcKeys.CHANGE_SHORTCUT, x, y, shortcut);
+  changeAction: async (x: number, y: number, action: Action): Promise<void> => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_ACTION, x, y, action);
   },
   changeTapColor: async (
     x: number,
