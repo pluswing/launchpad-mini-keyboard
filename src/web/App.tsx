@@ -1,7 +1,14 @@
 import keycode from 'keycode';
 import { useCallback, useEffect, useState } from 'react';
 import { toPoint } from '../draw';
-import { Action, defaultAction, Shortcut } from '../actions';
+import {
+  Action,
+  AppLaunch,
+  defaultAction,
+  Edge,
+  Mouse,
+  Shortcut,
+} from '../actions';
 import { range } from '../util';
 import { BlackButton } from './components/BlackButton';
 import { Button as WhiteButton } from './components/Button';
@@ -336,6 +343,7 @@ export const App = (): JSX.Element => {
     act.shortcuts = act.shortcuts.filter((s, i) => i !== index);
     setAction({ ...act });
     setActions([...actions]);
+    api.changeAction(current.x, current.y, act);
   };
 
   const changeBgColor = useCallback(
@@ -446,16 +454,15 @@ export const App = (): JSX.Element => {
     return (
       <>
         {action.shortcuts.map((s, i) => (
-          <>
+          <div key={i} className="flex flex-wrap">
             <input
-              key={i}
               type="text"
               value={s.join('')}
               onKeyDown={(e) => onKeyDown(e, i)}
               placeholder="shortcut key"
-              className="p-2 rounded m-2"
+              className="p-2 rounded m-2 flex-grow"
             />
-            <button onClick={() => removeShortcut(i)}>
+            <button className="m-2" onClick={() => removeShortcut(i)}>
               <svg
                 className="h-8 w-8 text-white"
                 width="24"
@@ -472,24 +479,25 @@ export const App = (): JSX.Element => {
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <br />
-          </>
+          </div>
         ))}
-        <button onClick={addShortcut}>
-          <svg
-            className="h-8 w-8 text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="16" />
-            <line x1="8" y1="12" x2="16" y2="12" />
-          </svg>
-        </button>
+        <div className="flex flex-wrap justify-end">
+          <button className="m-2" onClick={addShortcut}>
+            <svg
+              className="h-8 w-8 text-white"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="16" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+          </button>
+        </div>
       </>
     );
   };
@@ -499,20 +507,46 @@ export const App = (): JSX.Element => {
       return shortcutEditor(action);
     }
     if (action.type == 'mouse') {
-      return '';
+      return 'MOUSE';
     }
     if (action.type == 'applaunch') {
-      return '';
+      return 'APPLAUNCH';
     }
+  };
+
+  const setActionType = (e) => {
+    const type = e.target.value;
+    const act = actions[current.y][current.x];
+    if (act.type === type) {
+      return;
+    }
+
+    let newAct = defaultAction();
+    if (type == 'mouse') {
+      newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
+    }
+    if (type == 'applaunch') {
+      newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+    }
+    setAction({ ...newAct });
+    actions[current.y][current.x] = newAct;
+    setActions([...actions]);
+    api.changeAction(current.x, current.y, newAct);
   };
 
   const tabButton = (
     <>
-      <select>
-        <option>キーボードショートカット</option>
-        <option>マウス操作</option>
-        <option>アプリケーション起動</option>
-      </select>
+      <div className="flex flex-wrap m-2">
+        <select
+          className="w-full p-3"
+          value={action.type}
+          onChange={setActionType}
+        >
+          <option value="shortcut">キーボードショートカット</option>
+          <option value="mouse">マウス操作</option>
+          <option value="applaunch">アプリケーション起動</option>
+        </select>
+      </div>
       {actionEditor(action)}
       <Select
         prefix="tap color"

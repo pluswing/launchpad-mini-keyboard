@@ -91,6 +91,9 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.removeHandler(IpcKeys.CHANGE_ACTION);
   ipcMain.removeHandler(IpcKeys.CHANGE_BG_COLOR);
   ipcMain.removeHandler(IpcKeys.CHANGE_TAP_COLOR);
+  ipcMain.removeHandler(IpcKeys.ENTER_SELECTING_COLOR);
+  ipcMain.removeHandler(IpcKeys.LEAVE_SELECTING_COLOR);
+  ipcMain.removeHandler(IpcKeys.CHANGE_SELECTING_COLOR_PAGE);
 
   ipcMain.handle(IpcKeys.READY, () => {
     setLaunchpadListener({

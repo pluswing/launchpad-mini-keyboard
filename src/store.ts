@@ -23,7 +23,7 @@ const store = new Store({
     },
   },
 });
-store.clear();
+// store.clear();
 
 const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
@@ -64,5 +64,12 @@ export const getTapColors = (): number[][] => {
 };
 
 const emptyGrid = <T>(value: T): T[][] => {
-  return range(9).map(() => range(9).map(() => value));
+  return range(9).map(() =>
+    range(9).map(() => {
+      if (typeof value == 'object') {
+        return JSON.parse(JSON.stringify(value));
+      }
+      return value;
+    })
+  );
 };
