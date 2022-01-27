@@ -26,5 +26,5 @@ export interface Mouse {
 export type Action = Shortcut | AppLaunch | Mouse;
 
 export const defaultAction = (): Action => {
-  return { type: 'shortcut', shortcuts: [] };
+  return { type: 'shortcut', shortcuts: [[]] };
 };

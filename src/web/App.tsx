@@ -442,57 +442,61 @@ export const App = (): JSX.Element => {
     </div>
   );
 
+  const shortcutEditor = (action: Shortcut) => {
+    return (
+      <>
+        {action.shortcuts.map((s, i) => (
+          <>
+            <input
+              key={i}
+              type="text"
+              value={s.join('')}
+              onKeyDown={(e) => onKeyDown(e, i)}
+              placeholder="shortcut key"
+              className="p-2 rounded m-2"
+            />
+            <button onClick={() => removeShortcut(i)}>
+              <svg
+                className="h-8 w-8 text-white"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <br />
+          </>
+        ))}
+        <button onClick={addShortcut}>
+          <svg
+            className="h-8 w-8 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+        </button>
+      </>
+    );
+  };
+
   const actionEditor = (action: Action) => {
     if (action.type == 'shortcut') {
-      return (
-        <>
-          {action.shortcuts.map((s, i) => (
-            <>
-              <input
-                key={i}
-                type="text"
-                value={s.join('')}
-                onKeyDown={(e) => onKeyDown(e, i)}
-                placeholder="shortcut key"
-                className="p-2 rounded m-2"
-              />
-              <button onClick={() => removeShortcut(i)}>
-                <svg
-                  className="h-8 w-8 text-white"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" />
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-              <br />
-            </>
-          ))}
-          <button onClick={addShortcut}>
-            <svg
-              className="h-8 w-8 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="16" />
-              <line x1="8" y1="12" x2="16" y2="12" />
-            </svg>
-          </button>
-        </>
-      );
+      return shortcutEditor(action);
     }
     if (action.type == 'mouse') {
       return '';
@@ -504,6 +508,11 @@ export const App = (): JSX.Element => {
 
   const tabButton = (
     <>
+      <select>
+        <option>キーボードショートカット</option>
+        <option>マウス操作</option>
+        <option>アプリケーション起動</option>
+      </select>
       {actionEditor(action)}
       <Select
         prefix="tap color"

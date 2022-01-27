@@ -7,6 +7,9 @@ const store = new Store({
     '0.1.0': () => 1,
     '0.2.0': (store) => {
       const shortcuts = store.get('shortcuts') as string[][][];
+      if (!shortcuts) {
+        return;
+      }
       const actions = shortcuts.map((row) => {
         return row.map((item) => {
           // item = ["d", "ctrl"]
@@ -20,7 +23,7 @@ const store = new Store({
     },
   },
 });
-// store.clear();
+store.clear();
 
 const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
