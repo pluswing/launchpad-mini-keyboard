@@ -27,7 +27,7 @@ import {
   saveTapColor,
 } from './store';
 import { toPoint } from './draw';
-import { keyboard } from './keyboard';
+import { keyboard, mouseToEdge } from './keyboard';
 import { Action } from './actions';
 
 const root = __dirname;
@@ -191,7 +191,7 @@ const setupShortcut = () => {
           });
         }
         if (act.type == 'mouse') {
-          mouse(act.edge);
+          mouseToEdge(act.edge);
         }
       }
     },
