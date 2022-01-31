@@ -293,6 +293,26 @@ export const App = (): JSX.Element => {
   const [bgColor, setBgColor] = useState(0);
   const [tapColor, setTapColor] = useState(0);
 
+  const setActionType = (e: any) => {
+    const type = e.target.value;
+    const act = actions[current.y][current.x];
+    if (act.type === type) {
+      return;
+    }
+
+    let newAct = defaultAction();
+    if (type == 'mouse') {
+      newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
+    }
+    if (type == 'applaunch') {
+      newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+    }
+    setAction({ ...newAct });
+    actions[current.y][current.x] = newAct;
+    setActions([...actions]);
+    api.changeAction(current.x, current.y, newAct);
+  };
+
   const onKeyDown = (e: any, i: number) => {
     e.preventDefault();
     const onSpecialKey = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
@@ -344,6 +364,23 @@ export const App = (): JSX.Element => {
     setAction({ ...act });
     setActions([...actions]);
     api.changeAction(current.x, current.y, act);
+  };
+
+  const setMouseEdge = (e: any) => {
+    const edge = e.target.value;
+    updateActions((act: Action) => {
+      (act as Mouse).edge = edge;
+      return act;
+    });
+  };
+
+  const updateActions = (update: (action: Action) => Action) => {
+    const act = actions[current.y][current.x];
+    const newAct = update(act);
+    actions[current.y][current.x] = newAct;
+    setAction({ ...newAct });
+    setActions([...actions]);
+    api.changeAction(current.x, current.y, newAct);
   };
 
   const changeBgColor = useCallback(
@@ -502,36 +539,37 @@ export const App = (): JSX.Element => {
     );
   };
 
+  const mouseEditor = (action: Mouse) => {
+    return (
+      <div className="flex flex-wrap m-2">
+        <select
+          className="w-full p-3"
+          value={action.edge}
+          onChange={setMouseEdge}
+        >
+          <option value={Edge.TOP_LEFT}>左上</option>
+          <option value={Edge.TOP_RIGHT}>右上</option>
+          <option value={Edge.BOTTOM_LEFT}>左下</option>
+          <option value={Edge.BOTTOM_RIGHT}>右下</option>
+        </select>
+      </div>
+    );
+  };
+
+  const appLaunchEditor = (action: AppLaunch) => {
+    return <div></div>;
+  };
+
   const actionEditor = (action: Action) => {
     if (action.type == 'shortcut') {
       return shortcutEditor(action);
     }
     if (action.type == 'mouse') {
-      return 'MOUSE';
+      return mouseEditor(action);
     }
     if (action.type == 'applaunch') {
-      return 'APPLAUNCH';
+      return appLaunchEditor(action);
     }
-  };
-
-  const setActionType = (e) => {
-    const type = e.target.value;
-    const act = actions[current.y][current.x];
-    if (act.type === type) {
-      return;
-    }
-
-    let newAct = defaultAction();
-    if (type == 'mouse') {
-      newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
-    }
-    if (type == 'applaunch') {
-      newAct = { type: 'applaunch', appName: '' } as AppLaunch;
-    }
-    setAction({ ...newAct });
-    actions[current.y][current.x] = newAct;
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, newAct);
   };
 
   const tabButton = (

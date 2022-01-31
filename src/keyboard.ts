@@ -1,4 +1,5 @@
 import { execSync, spawnSync } from 'child_process';
+import { Edge } from './actions';
 
 const modifierKeyMap: { [key: string]: string } = {
   '⌃': 'control',
@@ -55,5 +56,14 @@ tell application "System Events"
   }
 end tell
 `;
+  execSync(`osascript -e '${command}'`);
+};
+
+export const mouseToEdge = (edge: Edge) => {
+  // FIXME 画面サイズ取得
+  const command = `
+tell application "System Events"
+  force click at {0, 0}
+end tell`;
   execSync(`osascript -e '${command}'`);
 };

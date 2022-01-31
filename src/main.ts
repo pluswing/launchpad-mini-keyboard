@@ -190,6 +190,9 @@ const setupShortcut = () => {
             // MEMO delay ...
           });
         }
+        if (act.type == 'mouse') {
+          mouse(act.edge);
+        }
       }
     },
   });
