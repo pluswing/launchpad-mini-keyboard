@@ -556,8 +556,19 @@ export const App = (): JSX.Element => {
     );
   };
 
+  const fileSelect = () => {
+    api.fileSelect();
+  };
+
   const appLaunchEditor = (action: AppLaunch) => {
-    return <div></div>;
+    return (
+      <div className="flex flex-wrap m-2">
+        <div className="flex-grow text-gray-100 py-3">[ファイル名]</div>
+        <button onClick={fileSelect} className="bg-gray-100 p-3">
+          ファイル選択
+        </button>
+      </div>
+    );
   };
 
   const actionEditor = (action: Action) => {

@@ -60,6 +60,10 @@ end tell
 };
 
 export const mouseToEdge = (edge: Edge) => {
+  // 一旦保留。
+  // RobotJSを使うのも手かもしれない。
+  // 画面サイズも取れないかな。。
+
   // FIXME 画面サイズ取得
   const command = `
 tell application "System Events"

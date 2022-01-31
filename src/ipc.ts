@@ -18,6 +18,7 @@ export enum IpcKeys {
   ENTER_SELECTING_COLOR = 'ENTER_SELECTING_COLOR',
   LEAVE_SELECTING_COLOR = 'LEAVE_SELECTING_COLOR',
   CHANGE_SELECTING_COLOR_PAGE = 'CHANGE_SELECTING_COLOR_PAGE',
+  FILE_SELECT = 'FILE_SELECT',
 }
 
 export interface LaunchpadListener {
@@ -43,4 +44,5 @@ export type Api = {
   enterSelectingColor: () => Promise<void>;
   leaveSelectingColor: () => Promise<void>;
   changeSelectingColorPage: (page: number) => Promise<void>;
+  fileSelect: () => Promise<string>;
 };
