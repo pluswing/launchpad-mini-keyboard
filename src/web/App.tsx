@@ -368,13 +368,13 @@ export const App = (): JSX.Element => {
 
   const setMouseEdge = (e: any) => {
     const edge = e.target.value;
-    updateActions((act: Action) => {
+    updateAction((act: Action) => {
       (act as Mouse).edge = edge;
       return act;
     });
   };
 
-  const updateActions = (update: (action: Action) => Action) => {
+  const updateAction = (update: (action: Action) => Action) => {
     const act = actions[current.y][current.x];
     const newAct = update(act);
     actions[current.y][current.x] = newAct;
@@ -556,16 +556,22 @@ export const App = (): JSX.Element => {
     );
   };
 
-  const fileSelect = () => {
-    api.fileSelect();
+  const selectAppLaunchFile = async () => {
+    const res = await api.selectFile();
+    updateAction((act) => {
+      (act as AppLaunch).appName = res;
+      return act;
+    });
   };
 
   const appLaunchEditor = (action: AppLaunch) => {
     return (
       <div className="flex flex-wrap m-2">
-        <div className="flex-grow text-gray-100 py-3">[ファイル名]</div>
-        <button onClick={fileSelect} className="bg-gray-100 p-3">
-          ファイル選択
+        <div className="flex-grow text-gray-100 py-3">
+          {action.appName || '[選択してください]'}
+        </div>
+        <button onClick={selectAppLaunchFile} className="bg-gray-100 p-3">
+          選択
         </button>
       </div>
     );

@@ -1,4 +1,4 @@
-import { contextBridge, dialog, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 import { Action } from './actions';
 import { Api, IpcKeys, LaunchpadListener, Setting } from './ipc';
 
@@ -50,9 +50,8 @@ const api: Api = {
   changeSelectingColorPage: async (page: number) => {
     return await ipcRenderer.invoke(IpcKeys.CHANGE_SELECTING_COLOR_PAGE, page);
   },
-  fileSelect: async () => {
-    const res = await dialog.showOpenDialog({});
-    return res.filePaths[0];
+  selectFile: async () => {
+    return await ipcRenderer.invoke(IpcKeys.SELECT_FILE);
   },
 };
 

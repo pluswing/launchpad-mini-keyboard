@@ -7,6 +7,7 @@ import {
   Tray,
   Menu,
   MenuItem,
+  dialog,
 } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import { IpcKeys, Setting } from './ipc';
@@ -29,6 +30,7 @@ import {
 import { toPoint } from './draw';
 import { keyboard, mouseToEdge } from './keyboard';
 import { Action } from './actions';
+import { launchApp } from './system_actions';
 
 const root = __dirname;
 
@@ -87,14 +89,6 @@ const showPreferences = () => {
 
 const bindIpc = (window: BrowserWindow) => {
   ipcMain.removeHandler(IpcKeys.READY);
-  ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
-  ipcMain.removeHandler(IpcKeys.CHANGE_ACTION);
-  ipcMain.removeHandler(IpcKeys.CHANGE_BG_COLOR);
-  ipcMain.removeHandler(IpcKeys.CHANGE_TAP_COLOR);
-  ipcMain.removeHandler(IpcKeys.ENTER_SELECTING_COLOR);
-  ipcMain.removeHandler(IpcKeys.LEAVE_SELECTING_COLOR);
-  ipcMain.removeHandler(IpcKeys.CHANGE_SELECTING_COLOR_PAGE);
-
   ipcMain.handle(IpcKeys.READY, () => {
     setLaunchpadListener({
       connected: () => {
@@ -110,6 +104,7 @@ const bindIpc = (window: BrowserWindow) => {
     });
   });
 
+  ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
   ipcMain.handle(IpcKeys.LOAD_SETTING, () => {
     return {
       // shortcuts: getShortcuts(),
@@ -119,6 +114,7 @@ const bindIpc = (window: BrowserWindow) => {
     } as Setting;
   });
 
+  ipcMain.removeHandler(IpcKeys.CHANGE_ACTION);
   ipcMain.handle(
     IpcKeys.CHANGE_ACTION,
     (_, x: number, y: number, action: Action) => {
@@ -126,6 +122,7 @@ const bindIpc = (window: BrowserWindow) => {
     }
   );
 
+  ipcMain.removeHandler(IpcKeys.CHANGE_BG_COLOR);
   ipcMain.handle(
     IpcKeys.CHANGE_BG_COLOR,
     (_, x: number, y: number, colorIndex: number) => {
@@ -134,6 +131,7 @@ const bindIpc = (window: BrowserWindow) => {
     }
   );
 
+  ipcMain.removeHandler(IpcKeys.CHANGE_TAP_COLOR);
   ipcMain.handle(
     IpcKeys.CHANGE_TAP_COLOR,
     (_, x: number, y: number, colorIndex: number) => {
@@ -142,14 +140,30 @@ const bindIpc = (window: BrowserWindow) => {
     }
   );
 
+  ipcMain.removeHandler(IpcKeys.ENTER_SELECTING_COLOR);
   ipcMain.handle(IpcKeys.ENTER_SELECTING_COLOR, () => {
     selectingColor(0);
   });
+
+  ipcMain.removeHandler(IpcKeys.LEAVE_SELECTING_COLOR);
   ipcMain.handle(IpcKeys.LEAVE_SELECTING_COLOR, () => {
     applyLaunchpad();
   });
+
+  ipcMain.removeHandler(IpcKeys.CHANGE_SELECTING_COLOR_PAGE);
   ipcMain.handle(IpcKeys.CHANGE_SELECTING_COLOR_PAGE, (_, page: number) => {
     selectingColor(page);
+  });
+
+  ipcMain.removeHandler(IpcKeys.SELECT_FILE);
+  ipcMain.handle(IpcKeys.SELECT_FILE, async () => {
+    // FIXME windows
+    const res = await dialog.showOpenDialog({
+      title: 'select .app file',
+      filters: [{ name: 'Application', extensions: ['app'] }],
+      properties: ['openFile'],
+    });
+    return res.filePaths[0];
   });
 };
 
@@ -192,6 +206,9 @@ const setupShortcut = () => {
         }
         if (act.type == 'mouse') {
           mouseToEdge(act.edge);
+        }
+        if (act.type == 'applaunch') {
+          launchApp(act.appName);
         }
       }
     },
