@@ -28,9 +28,9 @@ import {
   saveTapColor,
 } from './store';
 import { toPoint } from './draw';
-import { keyboard, mouseToEdge } from './keyboard';
+import { keyboard } from './keyboard';
 import { Action } from './actions';
-import { launchApp } from './system_actions';
+import { launchApp, mouseToEdge } from './system_actions';
 
 const root = __dirname;
 

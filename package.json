@@ -31,6 +31,7 @@
     "copy:assets": "node scripts/copy_assets.js"
   },
   "dependencies": {
+    "@nut-tree/nut-js": "^2.0.1",
     "electron-store": "^8.0.1",
     "keycode": "^2.2.1",
     "midi": "^2.0.0",
