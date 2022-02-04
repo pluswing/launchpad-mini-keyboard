@@ -81,11 +81,17 @@ export const drawLaunchpad = (output: Output, image: Image) => {
   output.sendMessage([...HEADER, 0x03, ...messages.flat(), ...DELIMITER]);
 };
 
+const currentIndex = 0;
+
 const onNote = (mode: 'up' | 'down', note: int): void => {
   // 処理を書く
   // indexで指定の色を出す。
   // RGBでindexに紐づいた色を出す。（間違えてる）
   // 他のボタンが押された時に、↑の色を調整する
+  const image = newImage();
+  setPixel(image, 0, 1, index(currentIndex));
+
+  drawLaunchpad(output, image);
 };
 
 const main = async () => {

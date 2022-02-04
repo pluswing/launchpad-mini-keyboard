@@ -28,9 +28,9 @@ import {
   saveTapColor,
 } from './store';
 import { toPoint } from './draw';
-import { keyboard } from './keyboard';
+import { extractKeys } from './keyboard';
 import { Action } from './actions';
-import { launchApp, mouseToEdge } from './system_actions';
+import { launchApp, mouseToEdge, typeKeyboard } from './system_actions';
 
 const root = __dirname;
 
@@ -200,7 +200,10 @@ const setupShortcut = () => {
         const act = actions[p.y][p.x];
         if (act.type == 'shortcut') {
           act.shortcuts.forEach((s) => {
-            keyboard(s);
+            const sc = extractKeys(s);
+            if (sc) {
+              typeKeyboard(sc);
+            }
             // MEMO delay ...
           });
         }

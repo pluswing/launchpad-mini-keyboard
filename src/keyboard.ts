@@ -1,6 +1,3 @@
-import { execSync, spawnSync } from 'child_process';
-import { Edge } from './actions';
-
 const modifierKeyMap: { [key: string]: string } = {
   '⌃': 'control',
   '⌥': 'option',
@@ -37,24 +34,25 @@ const keyMap: { [key: string]: string } = {
   pgdown: 'pgdown',
 };
 
-export const keyboard = (keys: string[]): void => {
+export interface ShortcutKey {
+  key: string;
+  specialKeys: string[];
+}
+
+export const extractKeys = (keys: string[]): ShortcutKey | null => {
   const lk = keys.map((k) => k.toLowerCase());
   const ms = lk.map((k) => modifierKeyMap[k]).filter((k) => k);
   const ks = lk.filter((k) => !Object.keys(modifierKeyMap).includes(k));
   if (!ks) {
-    return;
+    return null;
   }
   const k = ks[0];
   if (k.length > 1 && !keyMap[k]) {
     console.error(`"${k}" is not defined.`);
-    return;
+    return null;
   }
-  const command = `
-tell application "System Events" 
-  keystroke "${k}" ${
-    ms.length ? `using {${ms.map((k) => `${k} down`).join(',')}}` : ''
-  }
-end tell
-`;
-  execSync(`osascript -e '${command}'`);
+  return {
+    key: k,
+    specialKeys: ms,
+  };
 };

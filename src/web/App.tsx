@@ -367,7 +367,7 @@ export const App = (): JSX.Element => {
   };
 
   const setMouseEdge = (e: any) => {
-    const edge = e.target.value;
+    const edge = parseInt(e.target.value, 10);
     updateAction((act: Action) => {
       (act as Mouse).edge = edge;
       return act;
