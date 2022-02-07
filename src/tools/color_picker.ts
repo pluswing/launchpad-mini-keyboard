@@ -1,10 +1,12 @@
 import { Input, Output } from 'midi';
+import { COLOR_PALETTE } from '../constants';
 import {
   copyImage,
   getPixel,
   Image,
   index,
   newImage,
+  rgb,
   setPixel,
   stackImage,
   toNote,
@@ -81,15 +83,53 @@ export const drawLaunchpad = (output: Output, image: Image) => {
   output.sendMessage([...HEADER, 0x03, ...messages.flat(), ...DELIMITER]);
 };
 
-const currentIndex = 0;
+let currentIndex = 5;
 
-const onNote = (mode: 'up' | 'down', note: int): void => {
+const onNote = (mode: 'up' | 'down', note: number): void => {
+  if (mode == 'down') return;
   // 処理を書く
   // indexで指定の色を出す。
   // RGBでindexに紐づいた色を出す。（間違えてる）
   // 他のボタンが押された時に、↑の色を調整する
+
+  if (note == 61) {
+    currentIndex--;
+    if (currentIndex < 0) {
+      currentIndex = 0;
+    }
+    console.log('CHANGE INDEX:', currentIndex);
+  }
+  if (note == 62) {
+    currentIndex++;
+    if (currentIndex > 127) {
+      currentIndex = 127;
+    }
+    console.log('CHANGE INDEX:', currentIndex);
+  }
+
+  const [_r, _g, _b] = COLOR_PALETTE[currentIndex];
+  const r = _r >> 1;
+  const g = _g >> 1;
+  const b = _b >> 1;
+
   const image = newImage();
   setPixel(image, 0, 1, index(currentIndex));
+  setPixel(image, 1, 1, rgb(r, g, b));
+
+  const c = (v: number) => {
+    if (v < 0) return 0;
+    if (v > 127) return 127;
+    return v;
+  };
+
+  [-10, -5, -1, 1, 5, 10].forEach((v, i) => {
+    setPixel(image, 5, i + 1, rgb(c(r + v), g, b));
+    setPixel(image, 6, i + 1, rgb(r, c(g + v), b));
+    setPixel(image, 7, i + 1, rgb(r, g, c(b + v)));
+  });
+
+  setPixel(image, 0, 3, index(2));
+  setPixel(image, 1, 3, index(2));
 
   drawLaunchpad(output, image);
 };
