@@ -48,6 +48,9 @@ const init = () => {
     if (note == 0) return;
     onNote(velocity == 0 ? 'up' : 'down', note);
   });
+  // init
+  onNote('up', 0);
+  console.log('INIT');
 };
 
 export const programmerMode = () => {
@@ -84,6 +87,7 @@ export const drawLaunchpad = (output: Output, image: Image) => {
 };
 
 let currentIndex = 5;
+let currentRGB = { r: 0, g: 0, b: 0 };
 
 const onNote = (mode: 'up' | 'down', note: number): void => {
   if (mode == 'down') return;
@@ -93,28 +97,23 @@ const onNote = (mode: 'up' | 'down', note: number): void => {
   // 他のボタンが押された時に、↑の色を調整する
 
   if (note == 61) {
-    currentIndex--;
-    if (currentIndex < 0) {
-      currentIndex = 0;
-    }
+    currentIndex = Math.max(0, currentIndex - 1);
     console.log('CHANGE INDEX:', currentIndex);
   }
   if (note == 62) {
-    currentIndex++;
-    if (currentIndex > 127) {
-      currentIndex = 127;
-    }
+    currentIndex = Math.min(127, currentIndex + 1);
     console.log('CHANGE INDEX:', currentIndex);
   }
 
-  const [_r, _g, _b] = COLOR_PALETTE[currentIndex];
-  const r = _r >> 1;
-  const g = _g >> 1;
-  const b = _b >> 1;
+  if ([61, 62].includes(note)) {
+    const [_r, _g, _b] = COLOR_PALETTE[currentIndex];
+    const r = _r >> 1;
+    const g = _g >> 1;
+    const b = _b >> 1;
+    currentRGB = { r, g, b };
+  }
 
-  const image = newImage();
-  setPixel(image, 0, 1, index(currentIndex));
-  setPixel(image, 1, 1, rgb(r, g, b));
+  const diffs = [-25, -10, -5, -1, 1, 5, 10, 25];
 
   const c = (v: number) => {
     if (v < 0) return 0;
@@ -122,16 +121,63 @@ const onNote = (mode: 'up' | 'down', note: number): void => {
     return v;
   };
 
-  [-10, -5, -1, 1, 5, 10].forEach((v, i) => {
-    setPixel(image, 5, i + 1, rgb(c(r + v), g, b));
-    setPixel(image, 6, i + 1, rgb(r, c(g + v), b));
-    setPixel(image, 7, i + 1, rgb(r, g, c(b + v)));
+  if (note % 10 == 6) {
+    // R
+    const v = 8 - Math.floor((note - (note % 10)) / 10);
+    if (v >= 0) {
+      currentRGB.r = c(currentRGB.r + diffs[v]);
+    }
+  }
+  if (note % 10 == 7) {
+    // G
+    const v = 8 - Math.floor((note - (note % 10)) / 10);
+    if (v >= 0) {
+      currentRGB.g = c(currentRGB.g + diffs[v]);
+    }
+  }
+  if (note % 10 == 8) {
+    // B
+    const v = 8 - Math.floor((note - (note % 10)) / 10);
+    if (v >= 0) {
+      currentRGB.b = c(currentRGB.b + diffs[v]);
+    }
+  }
+
+  const image = newImage();
+  setPixel(image, 0, 1, index(currentIndex));
+  setPixel(image, 1, 1, rgb(currentRGB.r, currentRGB.g, currentRGB.b));
+
+  diffs.forEach((v, i) => {
+    setPixel(
+      image,
+      5,
+      i + 1,
+      rgb(c(currentRGB.r + v), currentRGB.g, currentRGB.b)
+    );
+    setPixel(
+      image,
+      6,
+      i + 1,
+      rgb(currentRGB.r, c(currentRGB.g + v), currentRGB.b)
+    );
+    setPixel(
+      image,
+      7,
+      i + 1,
+      rgb(currentRGB.r, currentRGB.g, c(currentRGB.b + v))
+    );
   });
 
   setPixel(image, 0, 3, index(2));
   setPixel(image, 1, 3, index(2));
 
+  setPixel(image, 0, 8, index(1));
+
   drawLaunchpad(output, image);
+
+  if (note == 11) {
+    console.log(currentRGB);
+  }
 };
 
 const main = async () => {
