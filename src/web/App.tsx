@@ -567,11 +567,23 @@ export const App = (): JSX.Element => {
   const appLaunchEditor = (action: AppLaunch) => {
     return (
       <div className="flex flex-wrap m-2">
-        <div className="flex-grow text-gray-100 py-3">
+        <div className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll">
           {action.appName || '[選択してください]'}
         </div>
-        <button onClick={selectAppLaunchFile} className="bg-gray-100 p-3">
-          選択
+        <button onClick={selectAppLaunchFile} className="p-3">
+          <svg
+            className="h-8 w-8 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
         </button>
       </div>
     );
@@ -620,7 +632,17 @@ export const App = (): JSX.Element => {
     </>
   );
 
-  const tabGlobal = <div>GLOBAL SETTING</div>;
+  const tabGlobal = (
+    <div className="flex flex-wrap m-2">
+      <select className="w-full p-3">
+        <option value="none">なし</option>
+        <option value="rainbow">虹色</option>
+        <option value="static">静的</option>
+        <option value="breath">呼吸</option>
+        <option value="waterdrop">水滴</option>
+      </select>
+    </div>
+  );
 
   const tabContents = {
     [Tab.GLOBAL]: tabGlobal,

@@ -9,7 +9,14 @@
 - 回転（実機）
 - 背景アニメーション
 - ボタン アニメーション
-  - 波紋効果
+  - ストリーマー（虹色）
+    - 速さ
+    - 向き
+    - 輝度
+  - 波紋効果(水滴)
+  - 静的
+  - 呼吸
+  - なし
 - github actions 自動ビルド
 
   - https://simple-minds-think-alike.moritamorie.com/entry/action-electron-builder

@@ -190,10 +190,13 @@ const setupShortcut = () => {
   setLaunchpadListener({
     connected: () => {
       applyLaunchpad();
+      // アニメーションがあれば、処理を入れる。
+      // setInterval()
     },
     disconnected: () => 1,
     onNote: (event, note) => {
       eventLaunchpad(event, note);
+      // 水滴効果の場合は、ここで追加処理
       if (event == 'down') {
         const actions = getActions();
         const p = toPoint(note);
