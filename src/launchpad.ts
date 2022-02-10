@@ -167,9 +167,9 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
 };
 
 let animation: NodeJS.Timer | null = null;
-const startAnimation = (fn: () => void) => {
+const startAnimation = (fn: () => void, fps = 30) => {
   stopAnimation();
-  animation = setInterval(fn, 32);
+  animation = setInterval(fn, 1000 / fps);
 };
 const stopAnimation = () => {
   if (animation) {
@@ -213,8 +213,44 @@ export const selectingColor = (page: number) => {
   });
 };
 
-/*
-(x=0, y=1)
-0, 1, 2, 3, 4, 5, 6, 7, 8
-9, 10 ...
-*/
+export const startBackgroundAnimation = () => {
+  let step = 0;
+  startAnimation(() => {
+    const image = createRainbowImage(step, 1);
+    const control = createBgButtonColorImage();
+    drawLaunchpad(output, stackImage(image, control));
+    step = (step + 1) % 127;
+  }, 10);
+};
+
+const createBgButtonColorImage = (): Image => {
+  const image = newImage();
+  getBgColors().forEach((line, y) =>
+    line.forEach((c, x) => setPixel(image, x, y, index(c)))
+  );
+  return image;
+};
+
+const createRainbowImage = (step: number, r: number): Image => {
+  const image = newImage();
+  range(8).forEach((x) => {
+    range(9).forEach((y) => {
+      if (y == 0) return;
+      // r = 0 => 左に動く
+      // r = 1 => 右に動く
+      // r = 2 => 上に動く
+      // r = 3 => 下に動く
+      let c = index(x + step);
+      if (r == 1) {
+        const i = x - step < 0 ? x - step + 127 : x - step;
+        c = index(i);
+      }
+      setPixel(image, x, y, c);
+    });
+  });
+  return image;
+};
+
+export const stopBackgroundAnimation = () => {
+  stopAnimation();
+};

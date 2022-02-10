@@ -18,6 +18,8 @@ import {
   liveMode,
   selectingColor,
   setLaunchpadListener,
+  startBackgroundAnimation,
+  stopBackgroundAnimation,
 } from './launchpad';
 import {
   getActions,
@@ -189,11 +191,14 @@ const setupTray = () => {
 const setupShortcut = () => {
   setLaunchpadListener({
     connected: () => {
-      applyLaunchpad();
-      // アニメーションがあれば、処理を入れる。
-      // setInterval()
+      // applyLaunchpad();
+      startBackgroundAnimation();
     },
-    disconnected: () => 1,
+    disconnected: () => {
+      // TODO Listener交換時にも呼び出されるようにする。
+      //  -> 別関数にする？
+      stopBackgroundAnimation();
+    },
     onNote: (event, note) => {
       eventLaunchpad(event, note);
       // 水滴効果の場合は、ここで追加処理
