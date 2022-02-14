@@ -87,7 +87,7 @@ export const drawLaunchpad = (output: Output, image: Image) => {
 };
 
 let currentIndex = 5;
-let currentRGB = { r: 0, g: 0, b: 0 };
+let currentHSV = { h: 0, s: 0, v: 0 };
 
 const onNote = (mode: 'up' | 'down', note: number): void => {
   if (mode == 'down') return;
@@ -106,66 +106,68 @@ const onNote = (mode: 'up' | 'down', note: number): void => {
   }
 
   if ([61, 62].includes(note)) {
-    const [_r, _g, _b] = COLOR_PALETTE[currentIndex];
-    const r = _r >> 1;
-    const g = _g >> 1;
-    const b = _b >> 1;
-    currentRGB = { r, g, b };
+    currentHSV = { h: 0, s: 1, v: 1 };
   }
 
-  const diffs = [-32, -16, -8, -1, 1, 8, 16, 32];
-
-  const c = (v: number) => {
-    if (v < 0) return 0;
-    if (v > 127) return 127;
-    return v;
-  };
+  const hDiffs = [40, 30, 20, 10, -10, -20, -30, -40];
+  const vDiffs = [0.4, 0.3, 0.2, 0.1, -0.1, -0.2, -0.3, -0.4];
 
   if (note % 10 == 6) {
-    // R
+    // H
     const v = 8 - Math.floor((note - (note % 10)) / 10);
     if (v >= 0) {
-      currentRGB.r = c(currentRGB.r + diffs[v]);
+      currentHSV.h = (currentHSV.h + hDiffs[v]) % 360;
+      if (currentHSV.h < 0) {
+        currentHSV.h = 360 - currentHSV.h;
+      }
+      console.log('CHANGE COLOR:', currentHSV);
     }
   }
   if (note % 10 == 7) {
-    // G
+    // S
     const v = 8 - Math.floor((note - (note % 10)) / 10);
     if (v >= 0) {
-      currentRGB.g = c(currentRGB.g + diffs[v]);
+      currentHSV.s = currentHSV.s + vDiffs[v];
+      if (currentHSV.s > 1) currentHSV.s = 1.0;
+      if (currentHSV.s < 0) currentHSV.s = 0;
+      console.log('CHANGE COLOR:', currentHSV);
     }
   }
   if (note % 10 == 8) {
-    // B
+    // V
     const v = 8 - Math.floor((note - (note % 10)) / 10);
     if (v >= 0) {
-      currentRGB.b = c(currentRGB.b + diffs[v]);
+      currentHSV.v = currentHSV.v + vDiffs[v];
+      if (currentHSV.v > 1) currentHSV.v = 1.0;
+      if (currentHSV.v < 0) currentHSV.v = 0;
+      console.log('CHANGE COLOR:', currentHSV);
     }
   }
 
   const image = newImage();
   setPixel(image, 0, 1, index(currentIndex));
-  setPixel(image, 1, 1, rgb(currentRGB.r, currentRGB.g, currentRGB.b));
+  const color = hsv2rgb(currentHSV.h, currentHSV.s, currentHSV.v);
+  setPixel(image, 1, 1, rgb(color[0], color[1], color[2]));
 
-  diffs.forEach((v, i) => {
-    setPixel(
-      image,
-      5,
-      i + 1,
-      rgb(c(currentRGB.r + v), currentRGB.g, currentRGB.b)
-    );
-    setPixel(
-      image,
-      6,
-      i + 1,
-      rgb(currentRGB.r, c(currentRGB.g + v), currentRGB.b)
-    );
-    setPixel(
-      image,
-      7,
-      i + 1,
-      rgb(currentRGB.r, currentRGB.g, c(currentRGB.b + v))
-    );
+  hDiffs.forEach((v, i) => {
+    let h = (currentHSV.h + v) % 360;
+    if (h < 0) h = 360 - h;
+    const color = hsv2rgb(h, currentHSV.s, currentHSV.v);
+    setPixel(image, 5, i + 1, rgb(color[0], color[1], color[2]));
+  });
+
+  vDiffs.forEach((v, i) => {
+    let s = currentHSV.s + v;
+    if (s > 1) s = 1.0;
+    if (s < 0) s = 0;
+    const color = hsv2rgb(currentHSV.h, s, currentHSV.v);
+    setPixel(image, 6, i + 1, rgb(color[0], color[1], color[2]));
+
+    let _v = currentHSV.v + v;
+    if (_v > 1) _v = 1.0;
+    if (_v < 0) _v = 0;
+    const color2 = hsv2rgb(currentHSV.h, currentHSV.s, _v);
+    setPixel(image, 7, i + 1, rgb(color2[0], color2[1], color2[2]));
   });
 
   setPixel(image, 0, 3, index(2));
@@ -176,9 +178,50 @@ const onNote = (mode: 'up' | 'down', note: number): void => {
   drawLaunchpad(output, image);
 
   if (note == 11) {
-    console.log(currentRGB);
+    console.log(
+      currentIndex,
+      currentHSV,
+      hsv2rgb(currentHSV.h, currentHSV.s, currentHSV.v)
+    );
   }
 };
+
+function set(r: number, g: number, b: number) {
+  return [Math.round(r * 127), Math.round(g * 127), Math.round(b * 127)];
+}
+
+function clamp(v: number, l: number, u: number) {
+  return Math.max(l, Math.min(v, u));
+}
+
+function hsv2rgb(h: number, s: number, v: number) {
+  const out = [0, 0, 0];
+  h = h % 360;
+  s = clamp(s, 0, 1);
+  v = clamp(v, 0, 1);
+  if (!s) {
+    out[0] = out[1] = out[2] = Math.ceil(v * 127);
+    return out;
+  }
+  const b = (1 - s) * v;
+  const vb = v - b;
+  const hm = h % 60;
+  switch ((h / 60) | 0) {
+    case 0:
+      return set(v, (vb * h) / 60 + b, b);
+    case 1:
+      return set((vb * (60 - hm)) / 60 + b, v, b);
+    case 2:
+      return set(b, v, (vb * hm) / 60 + b);
+    case 3:
+      return set(b, (vb * (60 - hm)) / 60 + b, v);
+    case 4:
+      return set((vb * hm) / 60 + b, b, v);
+    case 5:
+      return set(v, b, (vb * (60 - hm)) / 60 + b);
+  }
+  return out;
+}
 
 const main = async () => {
   initLaunchpad();
