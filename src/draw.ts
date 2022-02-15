@@ -28,6 +28,48 @@ export const index = (colorIndex: number): Color => {
   return { type: 'index', index: colorIndex };
 };
 
+export const hsv = (h: number, s: number, v: number): Color => {
+  const [r, g, b] = hsv2rgb(h, s, v);
+  return { type: 'rgb', r, g, b };
+};
+
+function set(r: number, g: number, b: number) {
+  return [Math.round(r * 127), Math.round(g * 127), Math.round(b * 127)];
+}
+
+function clamp(v: number, l: number, u: number) {
+  return Math.max(l, Math.min(v, u));
+}
+
+function hsv2rgb(h: number, s: number, v: number) {
+  const out = [0, 0, 0];
+  h = h % 360;
+  s = clamp(s, 0, 1);
+  v = clamp(v, 0, 1);
+  if (!s) {
+    out[0] = out[1] = out[2] = Math.ceil(v * 127);
+    return out;
+  }
+  const b = (1 - s) * v;
+  const vb = v - b;
+  const hm = h % 60;
+  switch ((h / 60) | 0) {
+    case 0:
+      return set(v, (vb * h) / 60 + b, b);
+    case 1:
+      return set((vb * (60 - hm)) / 60 + b, v, b);
+    case 2:
+      return set(b, v, (vb * hm) / 60 + b);
+    case 3:
+      return set(b, (vb * (60 - hm)) / 60 + b, v);
+    case 4:
+      return set((vb * hm) / 60 + b, b, v);
+    case 5:
+      return set(v, b, (vb * (60 - hm)) / 60 + b);
+  }
+  return out;
+}
+
 export const newImage = (): Image => {
   const width = 9;
   const height = 9;

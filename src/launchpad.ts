@@ -2,6 +2,7 @@ import { Input, Output } from 'midi';
 import {
   copyImage,
   getPixel,
+  hsv,
   Image,
   index,
   newImage,
@@ -216,7 +217,7 @@ export const selectingColor = (page: number) => {
 export const startBackgroundAnimation = () => {
   let step = 0;
   startAnimation(() => {
-    const image = createRainbowImage(step, 1);
+    const image = createRainbowImage(step, 30, 1, 1, Direction.LEFT);
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
     step = (step + 1) % 127;
@@ -231,21 +232,53 @@ const createBgButtonColorImage = (): Image => {
   return image;
 };
 
-const createRainbowImage = (step: number, r: number): Image => {
+enum Direction {
+  LEFT,
+  UP,
+  RIGHT,
+  DOWN,
+}
+
+/**
+ *
+ * @param step アニメーションステップ
+ * @param interval 色相の変化度 (0 - 360まで。)
+ * @param saturation 彩度 (0:くすんだ色, 1:あざやか)
+ * @param value 明るさ (0:暗い, 1:明るい)
+ * @param r
+ * @returns
+ */
+const createRainbowImage = (
+  step: number,
+  interval: number,
+  saturation: number,
+  value: number,
+  r: Direction
+): Image => {
   const image = newImage();
+
+  const colors = range(8).map((i) => {
+    const h = ((i + step) * interval) % 360;
+    return hsv(h, saturation, value);
+  });
+
   range(8).forEach((x) => {
     range(9).forEach((y) => {
       if (y == 0) return;
-      // r = 0 => 左に動く
-      // r = 1 => 右に動く
-      // r = 2 => 上に動く
-      // r = 3 => 下に動く
-      let c = index(x + step);
-      if (r == 1) {
-        const i = x - step < 0 ? x - step + 127 : x - step;
-        c = index(i);
+      switch (r) {
+        case 0: // 左に動く
+          setPixel(image, x, y, colors[x]);
+          break;
+        case 1: // 上に動く
+          setPixel(image, x, y, colors[y - 1]);
+          break;
+        case 2: // 右に動く
+          setPixel(image, x, y, colors[7 - x]);
+          break;
+        case 3: // 下に動く
+          setPixel(image, x, y, colors[8 - y]);
+          break;
       }
-      setPixel(image, x, y, c);
     });
   });
   return image;
