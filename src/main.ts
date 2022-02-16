@@ -191,8 +191,8 @@ const setupTray = () => {
 const setupShortcut = () => {
   setLaunchpadListener({
     connected: () => {
-      // applyLaunchpad();
-      startBackgroundAnimation();
+      applyLaunchpad();
+      // startBackgroundAnimation();
     },
     disconnected: () => {
       // TODO Listener交換時にも呼び出されるようにする。
@@ -201,13 +201,13 @@ const setupShortcut = () => {
     },
     onNote: (event, note) => {
       eventLaunchpad(event, note);
-      // 水滴効果の場合は、ここで追加処理
       if (event == 'down') {
         const actions = getActions();
         const p = toPoint(note);
         const act = actions[p.y][p.x];
         if (act.type == 'shortcut') {
           act.shortcuts.forEach((s) => {
+            if (!s.length) return;
             const sc = extractKeys(s);
             if (sc) {
               typeKeyboard(sc);

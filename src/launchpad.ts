@@ -6,12 +6,15 @@ import {
   Image,
   index,
   newImage,
+  Point,
+  rgb,
   setPixel,
   stackImage,
   toNote,
   toPoint,
 } from './draw';
 import { LaunchpadListener } from './ipc';
+import { circle } from './shape';
 import { getBgColors, getTapColors } from './store';
 import { range } from './util';
 
@@ -159,11 +162,12 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
   if (event == 'up') {
     applyLaunchpad();
   } else {
-    const t = getTapColors();
-    const c = t[p.y][p.x];
-    const b = getBgColors();
-    b[p.y][p.x] = c;
-    applyLaunchpadByIndexes(b);
+    // const t = getTapColors();
+    // const c = t[p.y][p.x];
+    // const b = getBgColors();
+    // b[p.y][p.x] = c;
+    // applyLaunchpadByIndexes(b);
+    waterdrop(p);
   }
 };
 
@@ -286,4 +290,22 @@ const createRainbowImage = (
 
 export const stopBackgroundAnimation = () => {
   stopAnimation();
+};
+
+const waterdrop = (p: Point) => {
+  stopAnimation(); // 仮置き
+  let step = 0;
+  startAnimation(() => {
+    // 円を描画する
+    const image = circle({
+      center: p,
+      r: step / 3,
+      color: rgb(0, 127, 0),
+    });
+    drawLaunchpad(output, image);
+    step += 1;
+    if (step >= 10) {
+      stopAnimation();
+    }
+  }, 10);
 };

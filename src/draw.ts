@@ -105,7 +105,12 @@ export const toNote = (x: number, y: number): number => {
   return 0x0b + x + 10 * (8 - y);
 };
 
-export const toPoint = (note: number): { x: number; y: number } => {
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export const toPoint = (note: number): Point => {
   const x = (note % 10) - 1;
   const y = 9 - (note - (note % 10)) / 10;
   return { x, y };
