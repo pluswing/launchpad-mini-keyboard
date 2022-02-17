@@ -14,7 +14,7 @@ import {
   toPoint,
 } from './draw';
 import { LaunchpadListener } from './ipc';
-import { circle } from './shape';
+import { circle, filledCircle } from './shape';
 import { getBgColors, getTapColors } from './store';
 import { range } from './util';
 
@@ -293,19 +293,25 @@ export const stopBackgroundAnimation = () => {
 };
 
 const waterdrop = (p: Point) => {
-  stopAnimation(); // 仮置き
+  stopAnimation(); // FIXME 仮置き。複数アニメの合成
   let step = 0;
   startAnimation(() => {
-    // 円を描画する
-    const image = circle({
-      center: p,
-      r: step / 3,
-      color: rgb(0, 127, 0),
-    });
-    drawLaunchpad(output, image);
     step += 1;
     if (step >= 10) {
-      stopAnimation();
+      if (step >= 13) {
+        stopAnimation();
+        applyLaunchpad();
+      }
+      return;
     }
-  }, 10);
+
+    // 円を描画する
+    const image = filledCircle({
+      center: p,
+      r: step / 3.5,
+      color: rgb(0, 127, 0),
+    });
+    const control = createBgButtonColorImage();
+    drawLaunchpad(output, stackImage(image, control));
+  }, 30);
 };
