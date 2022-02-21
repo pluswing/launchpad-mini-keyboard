@@ -1,6 +1,7 @@
 import { Input, Output } from 'midi';
 import {
   copyImage,
+  fillImage,
   getPixel,
   hsv,
   Image,
@@ -162,12 +163,7 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
   if (event == 'up') {
     applyLaunchpad();
   } else {
-    // const t = getTapColors();
-    // const c = t[p.y][p.x];
-    // const b = getBgColors();
-    // b[p.y][p.x] = c;
-    // applyLaunchpadByIndexes(b);
-    waterdrop(p);
+    ANIMATION_DEFINITION['rainbow'].onNote(p);
   }
 };
 
@@ -219,13 +215,7 @@ export const selectingColor = (page: number) => {
 };
 
 export const startBackgroundAnimation = () => {
-  let step = 0;
-  startAnimation(() => {
-    const image = createRainbowImage(step, 30, 1, 1, Direction.LEFT);
-    const control = createBgButtonColorImage();
-    drawLaunchpad(output, stackImage(image, control));
-    step = (step + 1) % 127;
-  }, 10);
+  ANIMATION_DEFINITION['rainbow'].background();
 };
 
 const createBgButtonColorImage = (): Image => {
@@ -236,13 +226,16 @@ const createBgButtonColorImage = (): Image => {
   return image;
 };
 
-enum Direction {
-  LEFT,
-  UP,
-  RIGHT,
-  DOWN,
-}
-
+const rainbowBackground = () => {
+  stopAnimation();
+  let step = 0;
+  startAnimation(() => {
+    const image = createRainbowImage(step, 30, 1, 1, Direction.LEFT);
+    const control = createBgButtonColorImage();
+    drawLaunchpad(output, stackImage(image, control));
+    step = (step + 1) % 127;
+  }, 10);
+};
 /**
  *
  * @param step アニメーションステップ
@@ -292,6 +285,14 @@ export const stopBackgroundAnimation = () => {
   stopAnimation();
 };
 
+const defaultOnNote = (p: Point) => {
+  const t = getTapColors();
+  const c = t[p.y][p.x];
+  const b = getBgColors();
+  b[p.y][p.x] = c;
+  applyLaunchpadByIndexes(b);
+};
+
 const waterdrop = (p: Point) => {
   stopAnimation(); // FIXME 仮置き。複数アニメの合成
   let step = 0;
@@ -314,4 +315,61 @@ const waterdrop = (p: Point) => {
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
   }, 30);
+};
+
+// 静的
+const staticBackground = () => {
+  const image = fillImage(rgb(0, 0, 64));
+  const control = createBgButtonColorImage();
+  drawLaunchpad(output, stackImage(image, control));
+};
+
+// 呼吸
+const breathBackground = () => {
+  stopAnimation();
+
+  let step = 0;
+  startAnimation(() => {
+    step = (step + 5) % 360;
+    const r = (step * Math.PI) / 180;
+    const c = hsv(0, 1, Math.sin(r) / 2 + 0.5);
+    const image = fillImage(c);
+    const control = createBgButtonColorImage();
+    drawLaunchpad(output, stackImage(image, control));
+  });
+};
+
+enum Direction {
+  LEFT,
+  UP,
+  RIGHT,
+  DOWN,
+}
+
+interface AnimDef {
+  background: () => void;
+  onNote: (p: Point) => void;
+}
+
+const ANIMATION_DEFINITION: { [key: string]: AnimDef } = {
+  none: {
+    background: () => 1,
+    onNote: defaultOnNote,
+  },
+  rainbow: {
+    background: rainbowBackground,
+    onNote: defaultOnNote,
+  },
+  staticColor: {
+    background: staticBackground,
+    onNote: defaultOnNote,
+  },
+  breath: {
+    background: breathBackground,
+    onNote: defaultOnNote,
+  },
+  waterdrop: {
+    background: () => 1,
+    onNote: waterdrop,
+  },
 };

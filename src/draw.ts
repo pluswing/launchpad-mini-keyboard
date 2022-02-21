@@ -157,3 +157,13 @@ export const copyImage = (
   });
   return destImage;
 };
+
+export const fillImage = (color: Color): Image => {
+  const image = newImage();
+  range(image.width).forEach((x) => {
+    range(image.height).forEach((y) => {
+      setPixel(image, x, y, color);
+    });
+  });
+  return image;
+};

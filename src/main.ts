@@ -192,7 +192,7 @@ const setupShortcut = () => {
   setLaunchpadListener({
     connected: () => {
       applyLaunchpad();
-      // startBackgroundAnimation();
+      startBackgroundAnimation();
     },
     disconnected: () => {
       // TODO Listener交換時にも呼び出されるようにする。

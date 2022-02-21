@@ -14,10 +14,6 @@ const unique = (list: number[]): number[] => {
 export const filledCircle = (c: Circle) => {
   const points = circleBPints(c);
   const image = newImage();
-  points.forEach((p) => {
-    setPixel(image, p.x, p.y, c.color);
-  });
-
   const xList = unique(points.map((p) => p.x));
   xList.forEach((x) => {
     const ys = points.filter((p) => p.x == x).map((p) => p.y);
@@ -25,9 +21,11 @@ export const filledCircle = (c: Circle) => {
     if (count <= 1) return;
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    for (let y = minY; y <= maxY; y++) {
-      setPixel(image, x, y, c.color);
-    }
+    range(maxY - minY + 1)
+      .map((y) => y + minY)
+      .forEach((y) => {
+        setPixel(image, x, y, c.color);
+      });
   });
   return image;
 };
