@@ -1,4 +1,5 @@
 import { Input, Output } from 'midi';
+import { Direction } from './backgrounds';
 import {
   copyImage,
   fillImage,
@@ -338,13 +339,6 @@ const breathBackground = () => {
     drawLaunchpad(output, stackImage(image, control));
   });
 };
-
-enum Direction {
-  LEFT,
-  UP,
-  RIGHT,
-  DOWN,
-}
 
 interface AnimDef {
   background: () => void;

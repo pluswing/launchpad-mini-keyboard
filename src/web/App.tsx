@@ -13,6 +13,11 @@ import { range } from '../util';
 import { BlackButton } from './components/BlackButton';
 import { Button as WhiteButton } from './components/Button';
 import { Select } from './components/Select';
+import {
+  BackgroundAnimation,
+  NoneAnimation,
+  RainbowAnimation,
+} from '../backgrounds';
 
 const api = window.api;
 
@@ -632,16 +637,57 @@ export const App = (): JSX.Element => {
     </>
   );
 
+  const bgAnim: BackgroundAnimation = {
+    type: 'rainbow',
+    interval: 0,
+    saturation: 0,
+    value: 0,
+    fps: 0,
+    direction: 0,
+  };
+
+  const backgroundEditor = (bgAnim: BackgroundAnimation) => {
+    if (bgAnim.type == 'none') {
+      return noneEditor(bgAnim);
+    }
+    if (bgAnim.type == 'rainbow') {
+      return rainbowEditor(bgAnim);
+    }
+    if (action.type == 'applaunch') {
+      return appLaunchEditor(action);
+    }
+    return;
+  };
+
+  const noneEditor = (_: NoneAnimation) => {
+    return <div className="flex flex-wrap m-2"></div>;
+  };
+
+  const rainbowEditor = (anim: RainbowAnimation) => {
+    return (
+      <div className="flex flex-wrap m-2">
+        <input type="text" placeholder="interval" />
+        <input type="text" placeholder="saturation" />
+        <input type="text" placeholder="value" />
+        <input type="text" placeholder="fps" />
+        <input type="text" placeholder="direction" />
+      </div>
+    );
+  };
+
   const tabGlobal = (
-    <div className="flex flex-wrap m-2">
-      <select className="w-full p-3">
-        <option value="none">なし</option>
-        <option value="rainbow">虹色</option>
-        <option value="static">静的</option>
-        <option value="breath">呼吸</option>
-        <option value="waterdrop">水滴</option>
-      </select>
-    </div>
+    <>
+      <div className="flex flex-wrap m-2">
+        <select className="w-full p-3">
+          <option value="none">なし</option>
+          <option value="rainbow">虹色</option>
+          <option value="staticColor">静的</option>
+          <option value="breath">呼吸</option>
+          <option value="waterdrop">水滴</option>
+        </select>
+      </div>
+      {backgroundEditor(bgAnim)}
+    </>
   );
 
   const tabContents = {
