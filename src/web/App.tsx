@@ -15,6 +15,8 @@ import { Button as WhiteButton } from './components/Button';
 import { Select } from './components/Select';
 import {
   BackgroundAnimation,
+  defaultAnimationData,
+  noneAnimation,
   NoneAnimation,
   RainbowAnimation,
 } from '../backgrounds';
@@ -267,6 +269,7 @@ export const App = (): JSX.Element => {
       setActions(data.actions);
       setBgColors(data.bgColors);
       setTapColors(data.tapColors);
+      setBgAnimation(data.bgAnimation);
     });
   }, []);
 
@@ -274,6 +277,7 @@ export const App = (): JSX.Element => {
   const [actions, setActions] = useState(actionGrid());
   const [bgColors, setBgColors] = useState(colorGrid());
   const [tapColors, setTapColors] = useState(colorGrid());
+  const [bgAnimation, setBgAnimation] = useState(noneAnimation());
 
   // sidebar
   enum Tab {
@@ -637,24 +641,12 @@ export const App = (): JSX.Element => {
     </>
   );
 
-  const bgAnim: BackgroundAnimation = {
-    type: 'rainbow',
-    interval: 0,
-    saturation: 0,
-    value: 0,
-    fps: 0,
-    direction: 0,
-  };
-
   const backgroundEditor = (bgAnim: BackgroundAnimation) => {
     if (bgAnim.type == 'none') {
       return noneEditor(bgAnim);
     }
     if (bgAnim.type == 'rainbow') {
       return rainbowEditor(bgAnim);
-    }
-    if (action.type == 'applaunch') {
-      return appLaunchEditor(action);
     }
     return;
   };
@@ -675,18 +667,29 @@ export const App = (): JSX.Element => {
     );
   };
 
+  const changeBgAnimationType = (e: any) => {
+    const type = e.target.value;
+    const newBgAnim = defaultAnimationData(type);
+    setBgAnimation(newBgAnim);
+    api.changeBgAnimation(newBgAnim);
+  };
+
   const tabGlobal = (
     <>
       <div className="flex flex-wrap m-2">
-        <select className="w-full p-3">
+        <select
+          className="w-full p-3"
+          value={bgAnimation.type}
+          onChange={changeBgAnimationType}
+        >
           <option value="none">なし</option>
           <option value="rainbow">虹色</option>
-          <option value="staticColor">静的</option>
+          <option value="static_color">静的</option>
           <option value="breath">呼吸</option>
           <option value="waterdrop">水滴</option>
         </select>
       </div>
-      {backgroundEditor(bgAnim)}
+      {backgroundEditor(bgAnimation)}
     </>
   );
 

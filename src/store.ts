@@ -1,5 +1,6 @@
 import Store from 'electron-store';
 import { Action, defaultAction, Shortcut } from './actions';
+import { BackgroundAnimation, noneAnimation } from './backgrounds';
 import { range } from './util';
 
 const store = new Store({
@@ -28,6 +29,7 @@ const store = new Store({
 const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
 const TAP_COLORS = 'tapColors';
+const BG_ANIMATION = 'bgAnimation';
 
 export const saveAction = (x: number, y: number, action: Action): void => {
   const v = getActions();
@@ -35,10 +37,18 @@ export const saveAction = (x: number, y: number, action: Action): void => {
   store.set(ACTIONS, v);
 };
 
+export const getActions = (): Action[][] => {
+  return store.get(ACTIONS, emptyGrid(defaultAction())) as Action[][];
+};
+
 export const saveBgColor = (x: number, y: number, colorIndex: number): void => {
   const v = getBgColors();
   v[y][x] = colorIndex;
   store.set(BG_COLORS, v);
+};
+
+export const getBgColors = (): number[][] => {
+  return store.get(BG_COLORS, emptyGrid(0)) as number[][];
 };
 
 export const saveTapColor = (
@@ -51,16 +61,16 @@ export const saveTapColor = (
   store.set(TAP_COLORS, v);
 };
 
-export const getActions = (): Action[][] => {
-  return store.get(ACTIONS, emptyGrid(defaultAction())) as Action[][];
-};
-
-export const getBgColors = (): number[][] => {
-  return store.get(BG_COLORS, emptyGrid(0)) as number[][];
-};
-
 export const getTapColors = (): number[][] => {
   return store.get(TAP_COLORS, emptyGrid(0)) as number[][];
+};
+
+export const saveBgAnimation = (anim: BackgroundAnimation): void => {
+  store.set(BG_ANIMATION, anim);
+};
+
+export const getBgAnimation = (): BackgroundAnimation => {
+  return store.get(BG_ANIMATION, noneAnimation()) as BackgroundAnimation;
 };
 
 const emptyGrid = <T>(value: T): T[][] => {

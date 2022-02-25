@@ -32,3 +32,23 @@ export interface WaterdropAnimation {
 }
 
 export type BackgroundAnimation = NoneAnimation | RainbowAnimation;
+
+export const noneAnimation = (): BackgroundAnimation => ({ type: 'none' });
+
+export const defaultAnimationData = (type: string): BackgroundAnimation => {
+  if (type == 'none') {
+    return noneAnimation();
+  }
+  if (type == 'rainbow') {
+    return {
+      type: 'rainbow',
+      interval: 20,
+      saturation: 1,
+      value: 1,
+      fps: 10,
+      direction: Direction.LEFT,
+    };
+  }
+  // FIXME
+  return noneAnimation();
+};

@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { Action } from './actions';
+import { BackgroundAnimation } from './backgrounds';
 import { Api, IpcKeys, LaunchpadListener, Setting } from './ipc';
 
 const api: Api = {
@@ -52,6 +53,9 @@ const api: Api = {
   },
   selectFile: async () => {
     return await ipcRenderer.invoke(IpcKeys.SELECT_FILE);
+  },
+  changeBgAnimation: async (anim: BackgroundAnimation) => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_BG_ANIMATION, anim);
   },
 };
 

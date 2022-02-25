@@ -1,4 +1,5 @@
 import { Action } from './actions';
+import { BackgroundAnimation } from './backgrounds';
 
 declare global {
   interface Window {
@@ -19,6 +20,7 @@ export enum IpcKeys {
   LEAVE_SELECTING_COLOR = 'LEAVE_SELECTING_COLOR',
   CHANGE_SELECTING_COLOR_PAGE = 'CHANGE_SELECTING_COLOR_PAGE',
   SELECT_FILE = 'SELECT_FILE',
+  CHANGE_BG_ANIMATION = 'CHANGE_BG_ANIMATION',
 }
 
 export interface LaunchpadListener {
@@ -32,6 +34,7 @@ export interface Setting {
   actions: Action[][];
   bgColors: number[][];
   tapColors: number[][];
+  bgAnimation: BackgroundAnimation;
 }
 
 export type Api = {
@@ -45,4 +48,5 @@ export type Api = {
   leaveSelectingColor: () => Promise<void>;
   changeSelectingColorPage: (page: number) => Promise<void>;
   selectFile: () => Promise<string>;
+  changeBgAnimation: (anim: BackgroundAnimation) => Promise<void>;
 };

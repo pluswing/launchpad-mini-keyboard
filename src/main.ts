@@ -23,9 +23,11 @@ import {
 } from './launchpad';
 import {
   getActions,
+  getBgAnimation,
   getBgColors,
   getTapColors,
   saveAction,
+  saveBgAnimation,
   saveBgColor,
   saveTapColor,
 } from './store';
@@ -108,12 +110,14 @@ const bindIpc = (window: BrowserWindow) => {
 
   ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
   ipcMain.handle(IpcKeys.LOAD_SETTING, () => {
-    return {
+    const s: Setting = {
       // shortcuts: getShortcuts(),
       actions: getActions(),
       tapColors: getTapColors(),
       bgColors: getBgColors(),
-    } as Setting;
+      bgAnimation: getBgAnimation(),
+    };
+    return s;
   });
 
   ipcMain.removeHandler(IpcKeys.CHANGE_ACTION);
@@ -166,6 +170,12 @@ const bindIpc = (window: BrowserWindow) => {
       properties: ['openFile'],
     });
     return res.filePaths[0];
+  });
+
+  ipcMain.removeHandler(IpcKeys.CHANGE_BG_ANIMATION);
+  ipcMain.handle(IpcKeys.CHANGE_BG_ANIMATION, async (_, anim) => {
+    saveBgAnimation(anim);
+    // TODO アニメーションを即時反映させたい
   });
 };
 
