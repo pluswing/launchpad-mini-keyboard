@@ -1,5 +1,5 @@
 import { Input, Output } from 'midi';
-import { Direction } from './backgrounds';
+import { Direction, RainbowAnimation } from './backgrounds';
 import {
   copyImage,
   fillImage,
@@ -17,7 +17,7 @@ import {
 } from './draw';
 import { LaunchpadListener } from './ipc';
 import { circle, filledCircle } from './shape';
-import { getBgColors, getTapColors } from './store';
+import { getBgAnimation, getBgColors, getTapColors } from './store';
 import { range } from './util';
 
 const HEADER = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d];
@@ -230,12 +230,19 @@ const createBgButtonColorImage = (): Image => {
 const rainbowBackground = () => {
   stopAnimation();
   let step = 0;
+  const anim = getBgAnimation() as RainbowAnimation;
   startAnimation(() => {
-    const image = createRainbowImage(step, 30, 1, 1, Direction.LEFT);
+    const image = createRainbowImage(
+      step,
+      anim.interval,
+      anim.saturation,
+      anim.value,
+      anim.direction
+    );
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
     step = (step + 1) % 127;
-  }, 10);
+  }, anim.fps);
 };
 /**
  *

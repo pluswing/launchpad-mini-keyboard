@@ -16,6 +16,7 @@ import { Select } from './components/Select';
 import {
   BackgroundAnimation,
   defaultAnimationData,
+  Direction,
   noneAnimation,
   NoneAnimation,
   RainbowAnimation,
@@ -655,14 +656,76 @@ export const App = (): JSX.Element => {
     return <div className="flex flex-wrap m-2"></div>;
   };
 
+  const changeRainbowParam = (anim: RainbowAnimation, key: string, div = 1) => {
+    return (e: any) => {
+      const newValue = parseInt(e.target.value, 10) / div;
+      const newAnim = { ...anim, [key]: newValue };
+      setBgAnimation(newAnim);
+      api.changeBgAnimation(newAnim);
+    };
+  };
+
   const rainbowEditor = (anim: RainbowAnimation) => {
     return (
       <div className="flex flex-wrap m-2">
-        <input type="text" placeholder="interval" />
-        <input type="text" placeholder="saturation" />
-        <input type="text" placeholder="value" />
-        <input type="text" placeholder="fps" />
-        <input type="text" placeholder="direction" />
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24">INTERVAL</label>
+          <input
+            className="flex-grow"
+            type="range"
+            value={anim.interval}
+            min="0"
+            max="360"
+            step="1"
+            onInput={changeRainbowParam(anim, 'interval')}
+          />
+        </div>
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24">SATURAION</label>
+          <input
+            className="flex-grow"
+            type="range"
+            value={anim.saturation * 100}
+            min="0"
+            max="100"
+            step="1"
+            onInput={changeRainbowParam(anim, 'saturation', 100)}
+          />
+        </div>
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24">VALUE</label>
+          <input
+            className="flex-grow"
+            type="range"
+            value={anim.value * 100}
+            min="0"
+            max="100"
+            step="1"
+            onInput={changeRainbowParam(anim, 'value', 100)}
+          />
+        </div>
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24">FPS</label>
+          <input
+            className="flex-grow"
+            type="range"
+            value={anim.fps}
+            min="1"
+            max="60"
+            step="1"
+            onInput={changeRainbowParam(anim, 'fps')}
+          />
+        </div>
+        <select
+          className="w-full p-3"
+          value={anim.direction}
+          onChange={changeRainbowParam(anim, 'direction')}
+        >
+          <option value={Direction.LEFT}>右から左</option>
+          <option value={Direction.RIGHT}>左から右</option>
+          <option value={Direction.UP}>下から上</option>
+          <option value={Direction.DOWN}>上から下</option>
+        </select>
       </div>
     );
   };
