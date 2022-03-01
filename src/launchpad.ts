@@ -216,7 +216,8 @@ export const selectingColor = (page: number) => {
 };
 
 export const startBackgroundAnimation = () => {
-  ANIMATION_DEFINITION['rainbow'].background();
+  const amin = getBgAnimation();
+  ANIMATION_DEFINITION[amin.type].background();
 };
 
 const createBgButtonColorImage = (): Image => {

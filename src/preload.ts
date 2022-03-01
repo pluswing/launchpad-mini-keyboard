@@ -57,6 +57,9 @@ const api: Api = {
   changeBgAnimation: async (anim: BackgroundAnimation) => {
     return await ipcRenderer.invoke(IpcKeys.CHANGE_BG_ANIMATION, anim);
   },
+  changePage: async (page: 'global' | 'button') => {
+    return await ipcRenderer.invoke(IpcKeys.CHANGE_PAGE, page);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);

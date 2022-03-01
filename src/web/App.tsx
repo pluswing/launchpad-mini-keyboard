@@ -480,16 +480,21 @@ export const App = (): JSX.Element => {
   const highlightTab = (b: boolean) =>
     b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
 
+  const setTabPage = (tab: Tab) => {
+    setTab(tab);
+    api.changePage(tab == Tab.GLOBAL ? 'global' : 'button');
+  };
+
   const tabHeader = (
     <div className="flex flex-wrap text-center">
       <div
-        onClick={() => setTab(Tab.GLOBAL)}
+        onClick={() => setTabPage(Tab.GLOBAL)}
         className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.GLOBAL)}`}
       >
         GLOBAL
       </div>
       <div
-        onClick={() => setTab(Tab.BUTTON)}
+        onClick={() => setTabPage(Tab.BUTTON)}
         className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.BUTTON)}`}
       >
         BUTTON

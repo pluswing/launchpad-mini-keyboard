@@ -175,7 +175,17 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.removeHandler(IpcKeys.CHANGE_BG_ANIMATION);
   ipcMain.handle(IpcKeys.CHANGE_BG_ANIMATION, async (_, anim) => {
     saveBgAnimation(anim);
-    // TODO アニメーションを即時反映させたい
+    startBackgroundAnimation();
+  });
+
+  ipcMain.removeHandler(IpcKeys.CHANGE_PAGE);
+  ipcMain.handle(IpcKeys.CHANGE_PAGE, async (_, page) => {
+    if (page == 'global') {
+      startBackgroundAnimation();
+    } else if (page == 'button') {
+      stopBackgroundAnimation();
+      applyLaunchpad();
+    }
   });
 };
 
@@ -205,8 +215,6 @@ const setupShortcut = () => {
       startBackgroundAnimation();
     },
     disconnected: () => {
-      // TODO Listener交換時にも呼び出されるようにする。
-      //  -> 別関数にする？
       stopBackgroundAnimation();
     },
     onNote: (event, note) => {

@@ -21,6 +21,7 @@ export enum IpcKeys {
   CHANGE_SELECTING_COLOR_PAGE = 'CHANGE_SELECTING_COLOR_PAGE',
   SELECT_FILE = 'SELECT_FILE',
   CHANGE_BG_ANIMATION = 'CHANGE_BG_ANIMATION',
+  CHANGE_PAGE = 'CHANGE_PAGE',
 }
 
 export interface LaunchpadListener {
@@ -49,4 +50,5 @@ export type Api = {
   changeSelectingColorPage: (page: number) => Promise<void>;
   selectFile: () => Promise<string>;
   changeBgAnimation: (anim: BackgroundAnimation) => Promise<void>;
+  changePage: (page: 'global' | 'button') => Promise<void>;
 };
