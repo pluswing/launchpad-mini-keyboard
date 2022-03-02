@@ -328,6 +328,7 @@ const waterdrop = (p: Point) => {
 
 // 静的
 const staticBackground = () => {
+  stopBackgroundAnimation();
   const image = fillImage(rgb(0, 0, 64));
   const control = createBgButtonColorImage();
   drawLaunchpad(output, stackImage(image, control));
@@ -348,6 +349,12 @@ const breathBackground = () => {
   });
 };
 
+const clearBackgroundAnimation = () => {
+  stopBackgroundAnimation();
+  applyLaunchpad();
+  console.log('clearBackgroundAnimation');
+};
+
 interface AnimDef {
   background: () => void;
   onNote: (p: Point) => void;
@@ -355,14 +362,14 @@ interface AnimDef {
 
 const ANIMATION_DEFINITION: { [key: string]: AnimDef } = {
   none: {
-    background: () => 1,
+    background: clearBackgroundAnimation,
     onNote: defaultOnNote,
   },
   rainbow: {
     background: rainbowBackground,
     onNote: defaultOnNote,
   },
-  staticColor: {
+  static_color: {
     background: staticBackground,
     onNote: defaultOnNote,
   },
@@ -371,7 +378,7 @@ const ANIMATION_DEFINITION: { [key: string]: AnimDef } = {
     onNote: defaultOnNote,
   },
   waterdrop: {
-    background: () => 1,
+    background: clearBackgroundAnimation,
     onNote: waterdrop,
   },
 };

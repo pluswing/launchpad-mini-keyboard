@@ -679,8 +679,8 @@ export const App = (): JSX.Element => {
             className="flex-grow"
             type="range"
             value={anim.interval}
-            min="0"
-            max="360"
+            min="1"
+            max="359"
             step="1"
             onInput={changeRainbowParam(anim, 'interval')}
           />
@@ -691,7 +691,7 @@ export const App = (): JSX.Element => {
             className="flex-grow"
             type="range"
             value={anim.saturation * 100}
-            min="0"
+            min="1"
             max="100"
             step="1"
             onInput={changeRainbowParam(anim, 'saturation', 100)}
@@ -703,7 +703,7 @@ export const App = (): JSX.Element => {
             className="flex-grow"
             type="range"
             value={anim.value * 100}
-            min="0"
+            min="1"
             max="100"
             step="1"
             onInput={changeRainbowParam(anim, 'value', 100)}

@@ -20,18 +20,29 @@ export interface RainbowAnimation {
 
 export interface StaticColorAnimation {
   type: 'static_color';
-  // ...
+  //
+  // color
 }
 export interface BreathAnimation {
   type: 'breath';
-  // ...
+  //
+  // speed
+  // hue
+  // saturation
+  // min_value
+  // max_value
 }
 export interface WaterdropAnimation {
   type: 'waterdrop';
   // ...
 }
 
-export type BackgroundAnimation = NoneAnimation | RainbowAnimation;
+export type BackgroundAnimation =
+  | NoneAnimation
+  | RainbowAnimation
+  | StaticColorAnimation
+  | BreathAnimation
+  | WaterdropAnimation;
 
 export const noneAnimation = (): BackgroundAnimation => ({ type: 'none' });
 
@@ -47,6 +58,21 @@ export const defaultAnimationData = (type: string): BackgroundAnimation => {
       value: 1,
       fps: 10,
       direction: Direction.LEFT,
+    };
+  }
+  if (type == 'static_color') {
+    return {
+      type: 'static_color',
+    };
+  }
+  if (type == 'breath') {
+    return {
+      type: 'breath',
+    };
+  }
+  if (type == 'waterdrop') {
+    return {
+      type: 'waterdrop',
     };
   }
   // FIXME
