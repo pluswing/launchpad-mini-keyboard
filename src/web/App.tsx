@@ -20,6 +20,7 @@ import {
   noneAnimation,
   NoneAnimation,
   RainbowAnimation,
+  StaticColorAnimation,
 } from '../backgrounds';
 
 const api = window.api;
@@ -654,14 +655,75 @@ export const App = (): JSX.Element => {
     if (bgAnim.type == 'rainbow') {
       return rainbowEditor(bgAnim);
     }
+    if (bgAnim.type == 'static_color') {
+      return staticColorEditor(bgAnim);
+    }
+    if (bgAnim.type == 'breath') {
+      return breathEditor(bgAnim);
+    }
+    if (bgAnim.type == 'waterdrop') {
+      return waterdropEditor(bgAnim);
+    }
     return;
+  };
+
+  type Field = [string, number, number, number, (e: any) => void];
+
+  const slider = (
+    name: string,
+    value: number,
+    min: number,
+    max: number,
+    onChange: (e: any) => void
+  ) => {
+    return (
+      <div className="flex flex-wrap w-full pt-3 pb-3">
+        <label className="pr-3 text-gray-200 w-24">{name}</label>
+        <input
+          className="flex-grow"
+          type="range"
+          value={value}
+          min={min}
+          max={max}
+          step="1"
+          onInput={onChange}
+        />
+      </div>
+    );
+  };
+
+  const staticColorEditor = (anim: StaticColorAnimation) => {
+    const fields: Field[] = [
+      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
+      [
+        'SATURATION',
+        anim.saturation * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'saturation', 100),
+      ],
+      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
+    ];
+    return (
+      <div className="flex flex-wrap m-2">
+        {fields.map((f) => slider(...f))}
+      </div>
+    );
+  };
+
+  const breathEditor = (anim: StaticColorAnimation) => {
+    return <div></div>;
+  };
+
+  const waterdropEditor = (anim: StaticColorAnimation) => {
+    return <div></div>;
   };
 
   const noneEditor = (_: NoneAnimation) => {
     return <div className="flex flex-wrap m-2"></div>;
   };
 
-  const changeRainbowParam = (anim: RainbowAnimation, key: string, div = 1) => {
+  const changeAnimParam = (anim: BackgroundAnimation, key: string, div = 1) => {
     return (e: any) => {
       const newValue = parseInt(e.target.value, 10) / div;
       const newAnim = { ...anim, [key]: newValue };
@@ -682,11 +744,11 @@ export const App = (): JSX.Element => {
             min="1"
             max="359"
             step="1"
-            onInput={changeRainbowParam(anim, 'interval')}
+            onInput={changeAnimParam(anim, 'interval')}
           />
         </div>
         <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24">SATURAION</label>
+          <label className="pr-3 text-gray-200 w-24">SATURATION</label>
           <input
             className="flex-grow"
             type="range"
@@ -694,7 +756,7 @@ export const App = (): JSX.Element => {
             min="1"
             max="100"
             step="1"
-            onInput={changeRainbowParam(anim, 'saturation', 100)}
+            onInput={changeAnimParam(anim, 'saturation', 100)}
           />
         </div>
         <div className="flex flex-wrap w-full pt-3 pb-3">
@@ -706,7 +768,7 @@ export const App = (): JSX.Element => {
             min="1"
             max="100"
             step="1"
-            onInput={changeRainbowParam(anim, 'value', 100)}
+            onInput={changeAnimParam(anim, 'value', 100)}
           />
         </div>
         <div className="flex flex-wrap w-full pt-3 pb-3">
@@ -718,13 +780,13 @@ export const App = (): JSX.Element => {
             min="1"
             max="60"
             step="1"
-            onInput={changeRainbowParam(anim, 'fps')}
+            onInput={changeAnimParam(anim, 'fps')}
           />
         </div>
         <select
           className="w-full p-3"
           value={anim.direction}
-          onChange={changeRainbowParam(anim, 'direction')}
+          onChange={changeAnimParam(anim, 'direction')}
         >
           <option value={Direction.LEFT}>右から左</option>
           <option value={Direction.RIGHT}>左から右</option>
