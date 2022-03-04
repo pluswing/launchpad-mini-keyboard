@@ -1,5 +1,11 @@
+import { randomInt } from 'crypto';
 import { Input, Output } from 'midi';
-import { Direction, RainbowAnimation } from './backgrounds';
+import {
+  BreathAnimation,
+  Direction,
+  RainbowAnimation,
+  StaticColorAnimation,
+} from './backgrounds';
 import {
   copyImage,
   fillImage,
@@ -231,8 +237,8 @@ const createBgButtonColorImage = (): Image => {
 const rainbowBackground = () => {
   stopAnimation();
   let step = 0;
-  const anim = getBgAnimation() as RainbowAnimation;
   startAnimation(() => {
+    const anim = getBgAnimation() as RainbowAnimation;
     const image = createRainbowImage(
       step,
       anim.interval,
@@ -243,7 +249,7 @@ const rainbowBackground = () => {
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
     step = (step + 1) % 127;
-  }, anim.fps);
+  });
 };
 /**
  *
@@ -329,7 +335,8 @@ const waterdrop = (p: Point) => {
 // 静的
 const staticBackground = () => {
   stopBackgroundAnimation();
-  const image = fillImage(rgb(0, 0, 64));
+  const anim = getBgAnimation() as StaticColorAnimation;
+  const image = fillImage(hsv(anim.hue, anim.saturation, anim.value));
   const control = createBgButtonColorImage();
   drawLaunchpad(output, stackImage(image, control));
 };
@@ -338,11 +345,22 @@ const staticBackground = () => {
 const breathBackground = () => {
   stopAnimation();
 
+  let lastStep = 0;
   let step = 0;
+  let hue = 0;
   startAnimation(() => {
-    step = (step + 5) % 360;
+    const anim = getBgAnimation() as BreathAnimation;
+    step = (step + anim.speed) % 360;
+    if (step < lastStep) {
+      hue = anim.random ? randomInt(359) : anim.hue;
+    }
+    lastStep = step;
     const r = (step * Math.PI) / 180;
-    const c = hsv(0, 1, Math.sin(r) / 2 + 0.5);
+    // TODO anim.min_value, amin.max_value
+    const o = Math.sin(r) / 2 + 0.5;
+    const v1 = Math.max(o, anim.min_value);
+    const v2 = Math.min(v1, anim.max_value);
+    const c = hsv(hue, anim.saturation, v2);
     const image = fillImage(c);
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));

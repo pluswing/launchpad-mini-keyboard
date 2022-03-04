@@ -14,7 +14,6 @@ export interface RainbowAnimation {
   interval: number;
   saturation: number;
   value: number;
-  fps: number; // TODO あとで消す
   direction: Direction;
 }
 
@@ -76,7 +75,6 @@ export const defaultAnimationData = (type: string): BackgroundAnimation => {
       interval: 20,
       saturation: 1,
       value: 1,
-      fps: 10,
       direction: Direction.LEFT,
     };
   }

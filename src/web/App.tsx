@@ -15,12 +15,14 @@ import { Button as WhiteButton } from './components/Button';
 import { Select } from './components/Select';
 import {
   BackgroundAnimation,
+  BreathAnimation,
   defaultAnimationData,
   Direction,
   noneAnimation,
   NoneAnimation,
   RainbowAnimation,
   StaticColorAnimation,
+  WaterdropAnimation,
 } from '../backgrounds';
 
 const api = window.api;
@@ -711,12 +713,92 @@ export const App = (): JSX.Element => {
     );
   };
 
-  const breathEditor = (anim: StaticColorAnimation) => {
-    return <div></div>;
+  const breathEditor = (anim: BreathAnimation) => {
+    const fields: Field[] = [
+      ['SPEED', anim.speed, 1, 10, changeAnimParam(anim, 'speed')],
+      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
+      [
+        'SATURATION',
+        anim.saturation * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'saturation', 100),
+      ],
+      [
+        'MIN_VALUE',
+        anim.min_value * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'min_value', 100),
+      ],
+      [
+        'MAX_VALUE',
+        anim.max_value * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'max_value', 100),
+      ], // TODO min < maxに必ずなるように制御
+    ];
+    return (
+      <div className="flex flex-wrap m-2">
+        {fields.map((f) => slider(...f))}
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
+            RANDOM
+          </label>
+          <input
+            className="m-2"
+            id="breath_random"
+            type="checkbox"
+            checked={anim.random}
+            onChange={(e) => {
+              const v = e.target.checked;
+              const newAnim = { ...anim, random: v };
+              setBgAnimation(newAnim);
+              api.changeBgAnimation(newAnim);
+            }}
+          />
+        </div>
+      </div>
+    );
   };
 
-  const waterdropEditor = (anim: StaticColorAnimation) => {
-    return <div></div>;
+  const waterdropEditor = (anim: WaterdropAnimation) => {
+    const fields: Field[] = [
+      ['TIME', anim.time, 1, 20, changeAnimParam(anim, 'time')],
+      ['SIZE', anim.size, 1, 4, changeAnimParam(anim, 'size')],
+      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
+      [
+        'SATURATION',
+        anim.saturation * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'saturation', 100),
+      ],
+      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
+    ];
+    return (
+      <div className="flex flex-wrap m-2">
+        {fields.map((f) => slider(...f))}
+        <div className="flex flex-wrap w-full pt-3 pb-3">
+          <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
+            RANDOM
+          </label>
+          <input
+            className="m-2"
+            id="breath_random"
+            type="checkbox"
+            checked={anim.random}
+            onChange={(e) => {
+              const v = e.target.checked;
+              const newAnim = { ...anim, random: v };
+              setBgAnimation(newAnim);
+              api.changeBgAnimation(newAnim);
+            }}
+          />
+        </div>
+      </div>
+    );
   };
 
   const noneEditor = (_: NoneAnimation) => {
@@ -733,56 +815,21 @@ export const App = (): JSX.Element => {
   };
 
   const rainbowEditor = (anim: RainbowAnimation) => {
+    const fields: Field[] = [
+      ['INTERVAL', anim.interval, 1, 60, changeAnimParam(anim, 'interval')],
+      [
+        'SATURATION',
+        anim.saturation * 100,
+        1,
+        100,
+        changeAnimParam(anim, 'saturation', 100),
+      ],
+      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
+    ];
+
     return (
       <div className="flex flex-wrap m-2">
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24">INTERVAL</label>
-          <input
-            className="flex-grow"
-            type="range"
-            value={anim.interval}
-            min="1"
-            max="359"
-            step="1"
-            onInput={changeAnimParam(anim, 'interval')}
-          />
-        </div>
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24">SATURATION</label>
-          <input
-            className="flex-grow"
-            type="range"
-            value={anim.saturation * 100}
-            min="1"
-            max="100"
-            step="1"
-            onInput={changeAnimParam(anim, 'saturation', 100)}
-          />
-        </div>
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24">VALUE</label>
-          <input
-            className="flex-grow"
-            type="range"
-            value={anim.value * 100}
-            min="1"
-            max="100"
-            step="1"
-            onInput={changeAnimParam(anim, 'value', 100)}
-          />
-        </div>
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24">FPS</label>
-          <input
-            className="flex-grow"
-            type="range"
-            value={anim.fps}
-            min="1"
-            max="60"
-            step="1"
-            onInput={changeAnimParam(anim, 'fps')}
-          />
-        </div>
+        {fields.map((f) => slider(...f))}
         <select
           className="w-full p-3"
           value={anim.direction}
