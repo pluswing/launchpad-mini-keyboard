@@ -5,6 +5,7 @@ import {
   Direction,
   RainbowAnimation,
   StaticColorAnimation,
+  WaterdropAnimation,
 } from './backgrounds';
 import {
   copyImage,
@@ -170,7 +171,8 @@ export const eventLaunchpad = (event: 'up' | 'down', note: number) => {
   if (event == 'up') {
     applyLaunchpad();
   } else {
-    ANIMATION_DEFINITION['rainbow'].onNote(p);
+    const anim = getBgAnimation();
+    ANIMATION_DEFINITION[anim.type].onNote(p);
   }
 };
 
@@ -310,11 +312,20 @@ const defaultOnNote = (p: Point) => {
 
 const waterdrop = (p: Point) => {
   stopAnimation(); // FIXME 仮置き。複数アニメの合成
+  const STEP_SCALE = 10;
+  const anim = getBgAnimation() as WaterdropAnimation;
+
+  let hue = 0;
+  hue = anim.hue;
+  if (anim.random) {
+    hue = randomInt(359);
+  }
+
   let step = 0;
   startAnimation(() => {
     step += 1;
-    if (step >= 10) {
-      if (step >= 13) {
+    if (step >= STEP_SCALE) {
+      if (step >= STEP_SCALE + anim.time) {
         stopAnimation();
         applyLaunchpad();
       }
@@ -324,8 +335,8 @@ const waterdrop = (p: Point) => {
     // 円を描画する
     const image = filledCircle({
       center: p,
-      r: step / 3.5,
-      color: rgb(0, 127, 0),
+      r: anim.size * (step / STEP_SCALE),
+      color: hsv(hue, anim.saturation, anim.value),
     });
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
@@ -356,11 +367,10 @@ const breathBackground = () => {
     }
     lastStep = step;
     const r = (step * Math.PI) / 180;
-    // TODO anim.min_value, amin.max_value
-    const o = Math.sin(r) / 2 + 0.5;
-    const v1 = Math.max(o, anim.min_value);
-    const v2 = Math.min(v1, anim.max_value);
-    const c = hsv(hue, anim.saturation, v2);
+    const value =
+      (-Math.cos(r) / 2 + 0.5) * (anim.max_value - anim.min_value) +
+      anim.min_value;
+    const c = hsv(hue, anim.saturation, value);
     const image = fillImage(c);
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
