@@ -1,10 +1,21 @@
 import { mouse, Point, straightTo } from '@nut-tree/nut-js';
-import { execSync } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { screen } from 'electron';
-import { Edge } from './actions';
-import { ShortcutKey } from './keyboard';
+import { Edge, Keys } from './actions';
+import { extractKeys, ShortcutKey } from './keyboard';
 
-export const typeKeyboard = (s: ShortcutKey): void => {
+export const typeKeystroke = async (keys: Keys[]): Promise<void> => {
+  for (const s of keys) {
+    if (!s.length) return;
+    const sc = extractKeys(s);
+    if (sc) {
+      await typeKeyboard(sc);
+    }
+    // MEMO delay ...
+  }
+};
+
+const typeKeyboard = async (s: ShortcutKey): Promise<void> => {
   const command = `
 tell application "System Events"
   keystroke "${s.key}" ${
@@ -14,7 +25,15 @@ tell application "System Events"
   }
 end tell
 `;
-  execSync(`osascript -e '${command}'`);
+  return new Promise((resolve, reject) => {
+    const p = exec(`osascript -e '${command}'`);
+    p.on('close', () => {
+      resolve();
+    });
+    p.on('error', (err) => {
+      reject(err);
+    });
+  });
 };
 
 export const mouseToEdge = (edge: Edge) => {

@@ -254,7 +254,9 @@ export const App = (): JSX.Element => {
 
       if (event == 'up') {
         setOnDown(false);
-        showButtonSetting(p.x, p.y);
+        if (tab == Tab.BUTTON) {
+          showButtonSetting(p.x, p.y);
+        }
       } else if (event == 'down') {
         setOnDown(true);
       }
@@ -262,8 +264,10 @@ export const App = (): JSX.Element => {
   });
 
   const reloadSidebar = () => {
-    setTab(Tab.GLOBAL);
-    setTab(Tab.BUTTON);
+    // ボタンのBG, FGを変えた時に発動される。
+    // 汎用性なし。利用の際は注意。
+    setTabPage(Tab.GLOBAL);
+    setTabPage(Tab.BUTTON);
   };
 
   // on mounted
@@ -299,7 +303,7 @@ export const App = (): JSX.Element => {
     setAction(actions[y][x]);
     setBgColor(bgColors[y][x]);
     setTapColor(tapColors[y][x]);
-    setTab(Tab.BUTTON);
+    setTabPage(Tab.BUTTON);
   };
 
   const [action, setAction] = useState<Action>(defaultAction());

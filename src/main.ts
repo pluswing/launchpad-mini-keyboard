@@ -31,10 +31,9 @@ import {
   saveBgColor,
   saveTapColor,
 } from './store';
-import { toPoint } from './draw';
-import { extractKeys } from './keyboard';
+import { Point, toPoint } from './draw';
 import { Action } from './actions';
-import { launchApp, mouseToEdge, typeKeyboard } from './system_actions';
+import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 
 const root = __dirname;
 
@@ -92,6 +91,7 @@ const showPreferences = () => {
 };
 
 const bindIpc = (window: BrowserWindow) => {
+  let currentPage = 'global';
   ipcMain.removeHandler(IpcKeys.READY);
   ipcMain.handle(IpcKeys.READY, () => {
     setLaunchpadListener({
@@ -104,6 +104,9 @@ const bindIpc = (window: BrowserWindow) => {
       },
       onNote: (event, note) => {
         window.webContents.send(IpcKeys.ON_NOTE, event, note);
+        if (currentPage == 'global') {
+          eventLaunchpad(event, note);
+        }
       },
     });
   });
@@ -186,6 +189,7 @@ const bindIpc = (window: BrowserWindow) => {
       stopBackgroundAnimation();
       applyLaunchpad();
     }
+    currentPage = page;
   });
 };
 
@@ -220,28 +224,24 @@ const setupShortcut = () => {
     onNote: (event, note) => {
       eventLaunchpad(event, note);
       if (event == 'down') {
-        const actions = getActions();
-        const p = toPoint(note);
-        const act = actions[p.y][p.x];
-        if (act.type == 'shortcut') {
-          act.shortcuts.forEach((s) => {
-            if (!s.length) return;
-            const sc = extractKeys(s);
-            if (sc) {
-              typeKeyboard(sc);
-            }
-            // MEMO delay ...
-          });
-        }
-        if (act.type == 'mouse') {
-          mouseToEdge(act.edge);
-        }
-        if (act.type == 'applaunch') {
-          launchApp(act.appName);
-        }
+        runShortcut(toPoint(note));
       }
     },
   });
+};
+
+const runShortcut = (p: Point) => {
+  const actions = getActions();
+  const act = actions[p.y][p.x];
+  if (act.type == 'shortcut') {
+    typeKeystroke(act.shortcuts);
+  }
+  if (act.type == 'mouse') {
+    mouseToEdge(act.edge);
+  }
+  if (act.type == 'applaunch') {
+    launchApp(act.appName);
+  }
 };
 
 app.whenReady().then(async () => {
