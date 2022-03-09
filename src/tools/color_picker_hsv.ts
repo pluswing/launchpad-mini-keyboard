@@ -1,14 +1,12 @@
 import { Input, Output } from 'midi';
-import { COLOR_PALETTE } from '../constants';
 import {
-  copyImage,
   getPixel,
+  hsv,
   Image,
   index,
   newImage,
   rgb,
   setPixel,
-  stackImage,
   toNote,
   toPoint,
 } from '../draw';
@@ -87,103 +85,45 @@ export const drawLaunchpad = (output: Output, image: Image) => {
 };
 
 let currentIndex = 5;
-let currentHSV = { h: 0, s: 0, v: 0 };
+let currentR = 0;
 
 const onNote = (mode: 'up' | 'down', note: number): void => {
   if (mode == 'down') return;
-  // 処理を書く
-  // indexで指定の色を出す。
-  // RGBでindexに紐づいた色を出す。（間違えてる）
-  // 他のボタンが押された時に、↑の色を調整する
-
-  if (note == 61) {
-    currentIndex = Math.max(0, currentIndex - 1);
-    console.log('CHANGE INDEX:', currentIndex);
-  }
-  if (note == 62) {
-    currentIndex = Math.min(127, currentIndex + 1);
-    console.log('CHANGE INDEX:', currentIndex);
-  }
-
-  if ([61, 62].includes(note)) {
-    currentHSV = { h: 0, s: 1, v: 1 };
-  }
-
-  const hDiffs = [40, 30, 20, 10, -10, -20, -30, -40];
-  const vDiffs = [0.4, 0.3, 0.2, 0.1, -0.1, -0.2, -0.3, -0.4];
-
-  if (note % 10 == 6) {
-    // H
-    const v = 8 - Math.floor((note - (note % 10)) / 10);
-    if (v >= 0) {
-      currentHSV.h = (currentHSV.h + hDiffs[v]) % 360;
-      if (currentHSV.h < 0) {
-        currentHSV.h = 360 - currentHSV.h;
-      }
-      console.log('CHANGE COLOR:', currentHSV);
-    }
-  }
-  if (note % 10 == 7) {
-    // S
-    const v = 8 - Math.floor((note - (note % 10)) / 10);
-    if (v >= 0) {
-      currentHSV.s = currentHSV.s + vDiffs[v];
-      if (currentHSV.s > 1) currentHSV.s = 1.0;
-      if (currentHSV.s < 0) currentHSV.s = 0;
-      console.log('CHANGE COLOR:', currentHSV);
-    }
-  }
-  if (note % 10 == 8) {
-    // V
-    const v = 8 - Math.floor((note - (note % 10)) / 10);
-    if (v >= 0) {
-      currentHSV.v = currentHSV.v + vDiffs[v];
-      if (currentHSV.v > 1) currentHSV.v = 1.0;
-      if (currentHSV.v < 0) currentHSV.v = 0;
-      console.log('CHANGE COLOR:', currentHSV);
-    }
-  }
-
   const image = newImage();
-  setPixel(image, 0, 1, index(currentIndex));
-  const color = hsv2rgb(currentHSV.h, currentHSV.s, currentHSV.v);
-  setPixel(image, 1, 1, rgb(color[0], color[1], color[2]));
 
-  hDiffs.forEach((v, i) => {
-    let h = (currentHSV.h + v) % 360;
-    if (h < 0) h = 360 - h;
-    const color = hsv2rgb(h, currentHSV.s, currentHSV.v);
-    setPixel(image, 5, i + 1, rgb(color[0], color[1], color[2]));
-  });
+  const p = toPoint(note);
+  if (p.y == 6 && p.x == 0) {
+    currentR--;
+  }
+  if (p.y == 6 && p.x == 1) {
+    currentR++;
+  }
 
-  vDiffs.forEach((v, i) => {
-    let s = currentHSV.s + v;
-    if (s > 1) s = 1.0;
-    if (s < 0) s = 0;
-    const color = hsv2rgb(currentHSV.h, s, currentHSV.v);
-    setPixel(image, 6, i + 1, rgb(color[0], color[1], color[2]));
+  let n = 0;
+  for (let hue = 0; hue < 360; hue += 15) {
+    setPixel(image, Math.floor(n / 8), (n % 8) + 1, hsv(hue, 1, 1));
+    n++;
+  }
 
-    let _v = currentHSV.v + v;
-    if (_v > 1) _v = 1.0;
-    if (_v < 0) _v = 0;
-    const color2 = hsv2rgb(currentHSV.h, currentHSV.s, _v);
-    setPixel(image, 7, i + 1, rgb(color2[0], color2[1], color2[2]));
-  });
+  // const values = [0, 32, 64, 96, 127];
+  // [values[currentR]].map((r) => {
+  //   values.map((g, x) => {
+  //     values.map((b, y) => {
+  //       setPixel(image, x, y + 1, rgb(r, g, b));
+  //     });
+  //   });
+  // });
 
-  setPixel(image, 0, 3, index(2));
-  setPixel(image, 1, 3, index(2));
-
-  setPixel(image, 0, 8, index(1));
+  if (p.y == 1 && p.x == 6) {
+    currentIndex--;
+  }
+  if (p.y == 1 && p.x == 7) {
+    currentIndex++;
+  }
+  console.log([currentR, currentIndex]);
+  setPixel(image, 5, 1, index(currentIndex));
 
   drawLaunchpad(output, image);
-
-  if (note == 11) {
-    console.log(
-      currentIndex,
-      currentHSV,
-      hsv2rgb(currentHSV.h, currentHSV.s, currentHSV.v)
-    );
-  }
 };
 
 function set(r: number, g: number, b: number) {

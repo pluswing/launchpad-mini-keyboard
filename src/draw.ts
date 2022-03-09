@@ -41,7 +41,7 @@ function clamp(v: number, l: number, u: number) {
   return Math.max(l, Math.min(v, u));
 }
 
-function hsv2rgb(h: number, s: number, v: number) {
+export function hsv2rgb(h: number, s: number, v: number) {
   const out = [0, 0, 0];
   h = h % 360;
   s = clamp(s, 0, 1);

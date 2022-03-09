@@ -24,7 +24,7 @@ export const Select = ({
   }, [setOpen, open, onFocus, onBlur]);
 
   const colors = COLOR_PALETTE.map(
-    ([r, g, b]) => `#${((r << 16) + (g << 8) + b).toString(16)}`
+    (c) => `#${c.map((v) => v.toString(16).padStart(2, '0')).join('')}`
   );
 
   const colorList = colors.map((c, i) => {
