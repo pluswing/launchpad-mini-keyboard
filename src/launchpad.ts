@@ -7,7 +7,9 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from './backgrounds';
+import { COLOR_PALETTE } from './constants';
 import {
+  Color,
   copyImage,
   fillImage,
   getPixel,
@@ -23,7 +25,7 @@ import {
   toPoint,
 } from './draw';
 import { LaunchpadListener } from './ipc';
-import { circle, filledCircle } from './shape';
+import { filledCircle } from './shape';
 import { getBgAnimation, getBgColors, getTapColors } from './store';
 import { range } from './util';
 
@@ -158,10 +160,15 @@ export const applyLaunchpad = () => {
   applyLaunchpadByIndexes(getBgColors());
 };
 
+const paletteColor = (index: number): Color => {
+  const [r, g, b] = COLOR_PALETTE[index].lp;
+  return rgb(r, g, b);
+};
+
 const applyLaunchpadByIndexes = (indexes: number[][]) => {
   const image = newImage();
   indexes.forEach((line, y) =>
-    line.forEach((c, x) => setPixel(image, x, y, index(c)))
+    line.forEach((c, x) => setPixel(image, x, y, paletteColor(c)))
   );
   drawLaunchpad(output, image);
 };
@@ -231,7 +238,7 @@ export const startBackgroundAnimation = () => {
 const createBgButtonColorImage = (): Image => {
   const image = newImage();
   getBgColors().forEach((line, y) =>
-    line.forEach((c, x) => setPixel(image, x, y, index(c)))
+    line.forEach((c, x) => setPixel(image, x, y, paletteColor(c)))
   );
   return image;
 };

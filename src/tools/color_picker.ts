@@ -106,7 +106,7 @@ const onNote = (mode: 'up' | 'down', note: number): void => {
   }
 
   if ([61, 62].includes(note)) {
-    const [_r, _g, _b] = COLOR_PALETTE[currentIndex];
+    const [_r, _g, _b] = COLOR_PALETTE[currentIndex].html;
     const r = _r >> 1;
     const g = _g >> 1;
     const b = _b >> 1;
