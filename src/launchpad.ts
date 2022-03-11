@@ -9,6 +9,7 @@ import {
 } from './backgrounds';
 import { COLOR_PALETTE } from './constants';
 import {
+  blendImage,
   Color,
   copyImage,
   fillImage,

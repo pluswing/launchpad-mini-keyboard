@@ -139,6 +139,28 @@ export const stackImage = (image1: Image, image2: Image): Image => {
   return img;
 };
 
+export const blendImage = (image1: Image, image2: Image): Image => {
+  const img = newImage();
+  range(img.width).forEach((x) => {
+    range(img.height).forEach((y) => {
+      const a = getPixel(image1, x, y);
+      const b = getPixel(image2, x, y);
+      if (a.type != 'rgb' || b.type != 'rgb') {
+        setPixel(img, x, y, a);
+        return;
+      }
+
+      // 50% : 50%ブレンド
+      const per = 0.5;
+      const _r = Math.floor(a.r * (1 - per) + b.r * per);
+      const _g = Math.floor(a.g * (1 - per) + b.g * per);
+      const _b = Math.floor(a.b * (1 - per) + b.b * per);
+      setPixel(img, x, y, rgb(_r, _g, _b));
+    });
+  });
+  return img;
+};
+
 export const copyImage = (
   destImage: Image,
   srcImage: Image,
