@@ -330,6 +330,11 @@ export const App = (): JSX.Element => {
     api.changeAction(current.x, current.y, newAct);
   };
 
+  const isMac = () => {
+    var ua = window.navigator.userAgent.toUpperCase();
+    return ua.indexOf('MAC OS') !== -1;
+  };
+
   const onKeyDown = (e: any, i: number) => {
     e.preventDefault();
     const onSpecialKey = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
@@ -352,10 +357,10 @@ export const App = (): JSX.Element => {
     }
 
     const s = [
-      e.ctrlKey ? '⌃' : '',
-      e.altKey ? '⌥' : '',
-      e.shiftKey ? '⇧' : '',
-      e.metaKey ? '⌘' : '',
+      e.ctrlKey ? (isMac() ? '⌃' : 'ctrl') : '',
+      e.altKey ? (isMac() ? '⌥' : 'alt') : '',
+      e.shiftKey ? (isMac() ? '⇧' : 'shift') : '',
+      e.metaKey ? (isMac() ? '⌘' : 'super') : '',
       keycode(e).toUpperCase(),
     ].filter((v) => v);
 
@@ -516,7 +521,7 @@ export const App = (): JSX.Element => {
           <div key={i} className="flex flex-wrap">
             <input
               type="text"
-              value={s.join('')}
+              value={s.join(isMac() ? '' : ' + ')}
               onKeyDown={(e) => onKeyDown(e, i)}
               placeholder="shortcut key"
               className="p-2 rounded m-2 flex-grow"

@@ -78,5 +78,8 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.5.0",
     "wait-on": "^6.0.0"
+  },
+  "volta": {
+    "node": "16.13.0"
   }
 }

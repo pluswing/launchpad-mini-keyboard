@@ -34,6 +34,7 @@ import {
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
+import { isMac } from './util';
 
 const root = __dirname;
 
@@ -66,9 +67,12 @@ const showPreferences = () => {
     return;
   }
 
+  const size = isMac()
+    ? { width: 690 + 300, height: 718 }
+    : { width: 1003, height: 745 };
+
   settingWindow = new BrowserWindow({
-    width: 690 + 300,
-    height: 718,
+    ...size,
     resizable: false,
     webPreferences: {
       nodeIntegration: false,
@@ -85,9 +89,17 @@ const showPreferences = () => {
   settingWindow.on('closed', () => {
     settingWindow = null;
     setupShortcut();
-    app.dock.hide();
+    hideDock();
   });
-  app.dock.show();
+  showDock();
+};
+
+const hideDock = () => {
+  isMac() && app.dock.hide();
+};
+
+const showDock = () => {
+  isMac() && app.dock.show();
 };
 
 const bindIpc = (window: BrowserWindow) => {
@@ -166,10 +178,12 @@ const bindIpc = (window: BrowserWindow) => {
 
   ipcMain.removeHandler(IpcKeys.SELECT_FILE);
   ipcMain.handle(IpcKeys.SELECT_FILE, async () => {
-    // FIXME windows
+    const filters = isMac()
+      ? [{ name: 'Application', extensions: ['app'] }]
+      : [{ name: 'exe', extensions: ['exe'] }];
     const res = await dialog.showOpenDialog({
-      title: 'select .app file',
-      filters: [{ name: 'Application', extensions: ['app'] }],
+      title: 'select application',
+      filters,
       properties: ['openFile'],
     });
     return res.filePaths[0];
@@ -209,7 +223,7 @@ const setupTray = () => {
   menu.append(new MenuItem({ role: 'quit' }));
 
   tray.setContextMenu(menu);
-  app.dock.hide();
+  hideDock();
 };
 
 const setupShortcut = () => {

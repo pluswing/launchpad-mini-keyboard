@@ -42,7 +42,15 @@ export const initLaunchpad = (): NodeJS.Timer => {
   return setInterval(() => {
     // 接続監視処理
     inputIndex = searchMidi(input, 'LPMiniMK3 MIDI');
-    const outputIndex = searchMidi(output, 'LPMiniMK3 MIDI');
+    let outputIndex = searchMidi(output, 'LPMiniMK3 MIDI');
+    HEADER[5] = 0x0d;
+
+    if (inputIndex == -1) {
+      // LaunchPad Xの検索
+      inputIndex = searchMidi(input, 'MIDIIN2 (LPX MIDI)');
+      outputIndex = searchMidi(output, 'LPX MIDI');
+      HEADER[5] = 0x0c;
+    }
 
     if (inputIndex == -1 || outputIndex == -1) {
       if (connected) {
@@ -95,12 +103,16 @@ const init = () => {
   input.closePort();
   input.openPort(inputIndex);
   input.ignoreTypes(false, false, false);
+  const noteState: { [key: number]: string } = {};
   input.on('message', (_, message) => {
     //             channel, note, velocity
     // message = [ 144, 11, 127 ]
     const [, note, velocity] = message;
     if (note == 0) return;
-    launchpadListener.onNote(velocity == 0 ? 'up' : 'down', note);
+    const newState = velocity == 0 ? 'up' : 'down';
+    if (newState === noteState[note]) return;
+    noteState[note] = newState;
+    launchpadListener.onNote(newState, note);
   });
 
   launchpadListener.connected();
