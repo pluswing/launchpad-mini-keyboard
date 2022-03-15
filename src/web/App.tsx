@@ -331,7 +331,7 @@ export const App = (): JSX.Element => {
   };
 
   const isMac = () => {
-    var ua = window.navigator.userAgent.toUpperCase();
+    const ua = window.navigator.userAgent.toUpperCase();
     return ua.indexOf('MAC OS') !== -1;
   };
 

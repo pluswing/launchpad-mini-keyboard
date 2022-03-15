@@ -12,13 +12,12 @@ const unique = (list: number[]): number[] => {
 };
 
 export const filledCircle = (c: Circle) => {
-  const points = circleBPints(c);
+  const points = circleBPoints(c);
   const image = newImage();
   const xList = unique(points.map((p) => p.x));
   xList.forEach((x) => {
     const ys = points.filter((p) => p.x == x).map((p) => p.y);
-    const count = ys.length;
-    if (count <= 1) return;
+    if (!ys.length) return;
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
     range(maxY - minY + 1)
@@ -47,13 +46,13 @@ export const circle = (c: Circle) => {
 
 export const circleB = (c: Circle) => {
   const image = newImage();
-  circleBPints(c).forEach((p) => {
+  circleBPoints(c).forEach((p) => {
     setPixel(image, p.x, p.y, c.color);
   });
   return image;
 };
 
-const circleBPints = (c: Circle): Point[] => {
+const circleBPoints = (c: Circle): Point[] => {
   // ブレゼンハム
   let cx = 0,
     cy = 0,

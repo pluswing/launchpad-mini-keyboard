@@ -4,6 +4,11 @@
   - ON/OFF (UI のみ)
   - radio ボタン (UI のみ)
 - アプリによって切り替え
+- electron-updater
+  - 自動更新をするやつ
+- テスト
+  - unit test
+  - github actions でビルド＆unit test
 - フォルダを開く
 - ページング
 - 回転（実機）

@@ -55,17 +55,16 @@ const typeKeyboardForWindows = async (s: ShortcutKey): Promise<void> => {
 };
 
 export const mouseToEdge = (edge: Edge) => {
-  const size = screen.getPrimaryDisplay().size;
-  const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+  const { size, scaleFactor } = screen.getPrimaryDisplay();
   const target = new Point(
     [Edge.TOP_LEFT, Edge.BOTTOM_LEFT].includes(edge)
       ? 0
-      : size.width * scaleFactor,
+      : size.width * (isMac() ? 1 : scaleFactor),
     [Edge.TOP_LEFT, Edge.TOP_RIGHT].includes(edge)
       ? 0
-      : size.height * scaleFactor
+      : size.height * (isMac() ? 1 : scaleFactor)
   );
-  mouse.config.mouseSpeed = 1000000;
+  mouse.config.mouseSpeed = isMac() ? 10000 : 1000000;
   mouse.move(straightTo(target));
 };
 

@@ -270,7 +270,7 @@ const rainbowBackground = () => {
     );
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
-    step = (step + 1) % 127;
+    step = (step + 1) % 360;
   });
 };
 /**
