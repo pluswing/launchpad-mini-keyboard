@@ -222,36 +222,6 @@ export const App = (): JSX.Element => {
     },
     onNote: (event, note) => {
       const p = toPoint(note);
-
-      if (selectingColorType != ColorType.NONE) {
-        // 色選択モード
-        if (p.x == 2 && p.y == 0) {
-          // left key
-          api.changeSelectingColorPage(0);
-          setSelectionColorPage(0);
-        }
-        if (p.x == 3 && p.y == 0) {
-          // right key
-          api.changeSelectingColorPage(1);
-          setSelectionColorPage(1);
-        }
-        if (p.y == 0 || p.x == 8) {
-          // 無視する
-          return;
-        }
-        const index = p.x + (p.y - 1) * 8 + 64 * selectionColorPage;
-        if (selectingColorType == ColorType.BG_COLOR) {
-          changeBgColor(index);
-          reloadSidebar();
-          return;
-        }
-        if (selectingColorType == ColorType.TAP_COLOR) {
-          changeTapColor(index);
-          reloadSidebar();
-          return;
-        }
-      }
-
       if (event == 'up') {
         setOnDown(false);
         if (tab == Tab.BUTTON) {
@@ -424,28 +394,6 @@ export const App = (): JSX.Element => {
     },
     [setTapColor, setTapColors, current, tapColors]
   );
-
-  enum ColorType {
-    NONE,
-    TAP_COLOR,
-    BG_COLOR,
-  }
-  const [selectingColorType, setSelectingColorType] = useState(ColorType.NONE);
-  // selecting Color
-  const onFocusTapColor = () => {
-    setSelectingColorType(ColorType.TAP_COLOR);
-    setSelectionColorPage(0);
-    api.enterSelectingColor();
-  };
-  const onFocusBgColor = () => {
-    setSelectingColorType(ColorType.BG_COLOR);
-    setSelectionColorPage(0);
-    api.enterSelectingColor();
-  };
-  const onBlurColorSelect = () => {
-    setSelectingColorType(ColorType.NONE);
-    api.leaveSelectingColor();
-  };
 
   const colors = onDown ? tapColors : bgColors;
 
@@ -642,20 +590,8 @@ export const App = (): JSX.Element => {
         </select>
       </div>
       {actionEditor(action)}
-      <Select
-        prefix="tap color"
-        value={tapColor}
-        onFocus={onFocusTapColor}
-        onBlur={onBlurColorSelect}
-        onChange={changeTapColor}
-      />
-      <Select
-        prefix="bg color"
-        value={bgColor}
-        onFocus={onFocusBgColor}
-        onBlur={onBlurColorSelect}
-        onChange={changeBgColor}
-      />
+      <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
+      <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
     </>
   );
 

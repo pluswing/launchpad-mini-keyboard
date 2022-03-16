@@ -5,23 +5,14 @@ interface Props {
   prefix: string;
   value: number;
   onChange: (index: number) => void;
-  onFocus: () => void;
-  onBlur: () => void;
 }
 
-export const Select = ({
-  prefix,
-  value,
-  onChange,
-  onFocus,
-  onBlur,
-}: Props): JSX.Element => {
+export const Select = ({ prefix, value, onChange }: Props): JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
 
   const toggle = useCallback(() => {
     setOpen(!open);
-    !open ? onFocus() : onBlur();
-  }, [setOpen, open, onFocus, onBlur]);
+  }, [setOpen, open]);
 
   const colors = COLOR_PALETTE.map(
     (c) => `#${c.html.map((v) => v.toString(16).padStart(2, '0')).join('')}`

@@ -16,7 +16,6 @@ import {
   eventLaunchpad,
   initLaunchpad,
   liveMode,
-  selectingColor,
   setLaunchpadListener,
   startBackgroundAnimation,
   stopBackgroundAnimation,
@@ -160,21 +159,6 @@ const bindIpc = (window: BrowserWindow) => {
       applyLaunchpad();
     }
   );
-
-  ipcMain.removeHandler(IpcKeys.ENTER_SELECTING_COLOR);
-  ipcMain.handle(IpcKeys.ENTER_SELECTING_COLOR, () => {
-    selectingColor(0);
-  });
-
-  ipcMain.removeHandler(IpcKeys.LEAVE_SELECTING_COLOR);
-  ipcMain.handle(IpcKeys.LEAVE_SELECTING_COLOR, () => {
-    applyLaunchpad();
-  });
-
-  ipcMain.removeHandler(IpcKeys.CHANGE_SELECTING_COLOR_PAGE);
-  ipcMain.handle(IpcKeys.CHANGE_SELECTING_COLOR_PAGE, (_, page: number) => {
-    selectingColor(page);
-  });
 
   ipcMain.removeHandler(IpcKeys.SELECT_FILE);
   ipcMain.handle(IpcKeys.SELECT_FILE, async () => {

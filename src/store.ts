@@ -21,6 +21,16 @@ const store = new Store({
         });
       });
       store.set('actions', actions);
+
+      const bgColors = (store.get('bgColors') as number[][]).map((line) =>
+        line.map((v) => (v >= 28 ? 0 : v))
+      );
+      store.set('bgColors', bgColors);
+
+      const tapColors = (store.get('tapColors') as number[][]).map((line) =>
+        line.map((v) => (v >= 28 ? 0 : v))
+      );
+      store.set('tapColors', tapColors);
     },
   },
 });

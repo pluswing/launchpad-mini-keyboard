@@ -9,14 +9,11 @@ import {
 } from './backgrounds';
 import { COLOR_PALETTE } from './constants';
 import {
-  blendImage,
   Color,
-  copyImage,
   fillImage,
   getPixel,
   hsv,
   Image,
-  index,
   newImage,
   Point,
   rgb,
@@ -206,41 +203,6 @@ const stopAnimation = () => {
     clearInterval(animation);
   }
   animation = null;
-};
-
-export const selectingColor = (page: number) => {
-  const page1 = newImage();
-  const page2 = newImage();
-  range(64).forEach((i) => {
-    const x = i % 8;
-    const y = Math.floor(i / 8) + 1;
-    setPixel(page1, x, y, index(i));
-    setPixel(page2, x, y, index(i + 64));
-  });
-
-  const control = newImage();
-  setPixel(control, 2, 0, index(page == 0 ? 1 : 3));
-  setPixel(control, 3, 0, index(page == 1 ? 1 : 3));
-
-  let offset = 0;
-  startAnimation(() => {
-    const image = newImage();
-    offset += 1;
-    if (page == 0) {
-      copyImage(image, page1, offset - 8, 0, 0, 0, 9, 9);
-      copyImage(image, page2, offset, 0, 0, 0, 9, 9);
-    } else {
-      copyImage(image, page1, 0 - offset, 0, 0, 0, 9, 9);
-      copyImage(image, page2, 8 - offset, 0, 0, 0, 9, 9);
-    }
-    if (offset >= 8) {
-      range(9).forEach((y) => {
-        setPixel(image, 8, y, index(0));
-      });
-      stopAnimation();
-    }
-    drawLaunchpad(output, stackImage(image, control));
-  });
 };
 
 export const startBackgroundAnimation = () => {
