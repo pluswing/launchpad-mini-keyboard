@@ -34,6 +34,7 @@ import { Point, toPoint } from './draw';
 import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
+import { watchForgroundApp } from './foregroundapp';
 
 const root = __dirname;
 
@@ -56,7 +57,7 @@ if (isDev) {
 /// #endif
 
 let tray: Tray | null = null;
-let backgroundProcess: NodeJS.Timer | null = null;
+let backgroundProcesses: NodeJS.Timer[] = [];
 let settingWindow: BrowserWindow | null = null;
 
 const showPreferences = () => {
@@ -253,7 +254,12 @@ app.whenReady().then(async () => {
   }
 
   setupTray();
-  backgroundProcess = initLaunchpad();
+  backgroundProcesses.push(initLaunchpad());
+  backgroundProcesses.push(
+    watchForgroundApp((appname: string) => {
+      console.log(appname);
+    })
+  );
   setupShortcut();
 });
 
@@ -265,10 +271,8 @@ app.once('before-quit', () => {
 
 const disposeApp = () => {
   liveMode();
-  if (backgroundProcess) {
-    clearInterval(backgroundProcess);
-  }
-  backgroundProcess = null;
+  backgroundProcesses.map((p) => clearInterval(p));
+  backgroundProcesses = [];
   tray?.destroy();
   tray = null;
   settingWindow?.close();
