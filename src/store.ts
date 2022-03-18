@@ -40,6 +40,30 @@ const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
 const TAP_COLORS = 'tapColors';
 const BG_ANIMATION = 'bgAnimation';
+const REGISTER_APPLICATIONS = 'registerApplications';
+
+let currentApplication = '';
+export const setCurrentApplication = (apppath: string) => {
+  currentApplication = apppath;
+};
+
+export const getRegisterApplications = (): string[] => {
+  return store.get(REGISTER_APPLICATIONS, []) as string[];
+};
+
+export const addRegisterApplications = (apppath: string) => {
+  const appList = getRegisterApplications();
+  const found = appList.find((a) => a === apppath);
+  if (found) return;
+  appList.push(apppath);
+  store.set(REGISTER_APPLICATIONS, appList);
+};
+
+export const removeRegisterApplications = (apppath: string) => {
+  const appList = getRegisterApplications();
+  const removed = appList.filter((a) => a !== apppath);
+  store.set(REGISTER_APPLICATIONS, removed);
+};
 
 export const saveAction = (x: number, y: number, action: Action): void => {
   const v = getActions();

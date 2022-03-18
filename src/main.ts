@@ -29,12 +29,13 @@ import {
   saveBgAnimation,
   saveBgColor,
   saveTapColor,
+  setCurrentApplication,
 } from './store';
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
-import { watchForgroundApp } from './foregroundapp';
+import { watchForegroundApp } from './foregroundapp';
 
 const root = __dirname;
 
@@ -256,8 +257,9 @@ app.whenReady().then(async () => {
   setupTray();
   backgroundProcesses.push(initLaunchpad());
   backgroundProcesses.push(
-    watchForgroundApp((appname: string) => {
-      console.log(appname);
+    watchForegroundApp((apppath: string) => {
+      setCurrentApplication(apppath);
+      console.log(apppath);
     })
   );
   setupShortcut();
