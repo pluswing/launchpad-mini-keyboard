@@ -49,9 +49,13 @@ const typeKeyboardForWindows = async (s: ShortcutKey): Promise<void> => {
     super: Key.LeftSuper,
   };
   const sk = s.specialKeys.map((k) => keymap[k]);
-  await keyboard.pressKey(...sk);
-  await keyboard.type(s.key);
-  await keyboard.releaseKey(...sk);
+  if (sk.length) {
+    await keyboard.pressKey(...sk);
+    await keyboard.type(s.key);
+    await keyboard.releaseKey(...sk);
+  } else {
+    await keyboard.type(s.key);
+  }
 };
 
 export const mouseToEdge = (edge: Edge) => {

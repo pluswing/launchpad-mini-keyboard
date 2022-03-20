@@ -68,7 +68,7 @@ const showPreferences = () => {
 
   const size = isMac()
     ? { width: 690 + 300, height: 718 }
-    : { width: 1003, height: 745 };
+    : { width: 690 + 300, height: 730 };
 
   settingWindow = new BrowserWindow({
     ...size,
