@@ -796,6 +796,52 @@ export const App = (): JSX.Element => {
     api.changeBgAnimation(newBgAnim);
   };
 
+  const [appList, setAppList] = useState([] as string[]);
+
+  const changeApp = async (e: any) => {
+    const v = e.target.value;
+    // TODO アプリ切り替え
+    // api.changeApp(v);
+  };
+  const addApp = async () => {
+    const path = await api.selectFile();
+    setAppList([...appList, path]);
+  };
+
+  const appSelector = () => {
+    return (
+      <>
+        <div className="w-full border-t-2 border-gray-200"></div>
+        <div className="flex flex-wrap m-2">
+          <select className="w-full p-3" value="" onChange={changeApp}>
+            {appList.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+          <div className="flex flex-wrap justify-end">
+            <button className="m-2" onClick={addApp}>
+              <svg
+                className="h-8 w-8 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   const tabGlobal = (
     <>
       <div className="flex flex-wrap m-2">
@@ -812,6 +858,7 @@ export const App = (): JSX.Element => {
         </select>
       </div>
       {backgroundEditor(bgAnimation)}
+      {appSelector()}
     </>
   );
 
