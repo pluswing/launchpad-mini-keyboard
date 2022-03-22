@@ -211,8 +211,6 @@ export const App = (): JSX.Element => {
   const [connected, setConnected] = useState(false);
   const [onDown, setOnDown] = useState(false);
 
-  const [selectionColorPage, setSelectionColorPage] = useState(0);
-
   api.onUpdateMessage({
     connected: async () => {
       setConnected(true);
@@ -233,13 +231,6 @@ export const App = (): JSX.Element => {
     },
   });
 
-  const reloadSidebar = () => {
-    // ボタンのBG, FGを変えた時に発動される。
-    // 汎用性なし。利用の際は注意。
-    setTabPage(Tab.GLOBAL);
-    setTabPage(Tab.BUTTON);
-  };
-
   // on mounted
   useEffect(() => {
     api.ready();
@@ -248,6 +239,7 @@ export const App = (): JSX.Element => {
       setBgColors(data.bgColors);
       setTapColors(data.tapColors);
       setBgAnimation(data.bgAnimation);
+      setAppList(data.registerApplications);
     });
   }, []);
 
@@ -797,23 +789,37 @@ export const App = (): JSX.Element => {
   };
 
   const [appList, setAppList] = useState([] as string[]);
+  const [currentApp, setCurrentApp] = useState('');
 
   const changeApp = async (e: any) => {
     const v = e.target.value;
-    // TODO アプリ切り替え
-    // api.changeApp(v);
+    setCurrentApp(v);
+    const data = await api.setCurrentApplication(v);
+    // loadSettingをもう一回やる？
+    setActions(data.actions);
+    setBgColors(data.bgColors);
+    setTapColors(data.tapColors);
+    setBgAnimation(data.bgAnimation);
+    setAppList(data.registerApplications);
   };
   const addApp = async () => {
     const path = await api.selectFile();
     setAppList([...appList, path]);
+    api.addApplication(path);
   };
+
+  // api.removeApplication(path);
 
   const appSelector = () => {
     return (
       <>
         <div className="w-full border-t-2 border-gray-200"></div>
         <div className="flex flex-wrap m-2">
-          <select className="w-full p-3" value="" onChange={changeApp}>
+          <select
+            className="w-full p-3"
+            value={currentApp}
+            onChange={changeApp}
+          >
             {appList.map((a) => (
               <option key={a} value={a}>
                 {a}

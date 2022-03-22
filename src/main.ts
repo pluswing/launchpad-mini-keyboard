@@ -21,10 +21,13 @@ import {
   stopBackgroundAnimation,
 } from './launchpad';
 import {
+  addRegisterApplications,
   getActions,
   getBgAnimation,
   getBgColors,
+  getRegisterApplications,
   getTapColors,
+  removeRegisterApplications,
   saveAction,
   saveBgAnimation,
   saveBgColor,
@@ -132,6 +135,7 @@ const bindIpc = (window: BrowserWindow) => {
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
+      registerApplications: getRegisterApplications(),
     };
     return s;
   });
@@ -190,6 +194,29 @@ const bindIpc = (window: BrowserWindow) => {
       applyLaunchpad();
     }
     currentPage = page;
+  });
+
+  ipcMain.removeHandler(IpcKeys.ADD_APPLICATION);
+  ipcMain.handle(IpcKeys.ADD_APPLICATION, async (_, apppath) => {
+    addRegisterApplications(apppath);
+  });
+
+  ipcMain.removeHandler(IpcKeys.REMOVE_APPLICATION);
+  ipcMain.handle(IpcKeys.REMOVE_APPLICATION, async (_, apppath) => {
+    removeRegisterApplications(apppath);
+  });
+
+  ipcMain.removeHandler(IpcKeys.SET_CURRENT_APPLICATION);
+  ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
+    setCurrentApplication(apppath);
+    const s: Setting = {
+      actions: getActions(),
+      tapColors: getTapColors(),
+      bgColors: getBgColors(),
+      bgAnimation: getBgAnimation(),
+      registerApplications: getRegisterApplications(),
+    };
+    return s;
   });
 };
 

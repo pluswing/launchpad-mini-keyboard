@@ -51,6 +51,15 @@ const api: Api = {
   changePage: async (page: 'global' | 'button') => {
     return await ipcRenderer.invoke(IpcKeys.CHANGE_PAGE, page);
   },
+  addApplication: async (apppath: string) => {
+    return await ipcRenderer.invoke(IpcKeys.ADD_APPLICATION, apppath);
+  },
+  removeApplication: async (apppath: string) => {
+    return await ipcRenderer.invoke(IpcKeys.REMOVE_APPLICATION, apppath);
+  },
+  setCurrentApplication: async (apppath: string) => {
+    return await ipcRenderer.invoke(IpcKeys.SET_CURRENT_APPLICATION, apppath);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);
