@@ -96,6 +96,10 @@ const showPreferences = () => {
     hideDock();
   });
   showDock();
+
+  // 設定を開いた時はデフォルトを必ず開く。
+  setCurrentApplication('');
+  startBackgroundAnimation();
 };
 
 const hideDock = () => {
@@ -209,6 +213,7 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.removeHandler(IpcKeys.SET_CURRENT_APPLICATION);
   ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
     setCurrentApplication(apppath);
+    startBackgroundAnimation();
     const s: Setting = {
       actions: getActions(),
       tapColors: getTapColors(),
@@ -285,7 +290,11 @@ app.whenReady().then(async () => {
   backgroundProcesses.push(initLaunchpad());
   backgroundProcesses.push(
     watchForegroundApp((apppath: string) => {
+      if (settingWindow) {
+        return;
+      }
       setCurrentApplication(apppath);
+      startBackgroundAnimation();
       console.log(apppath);
     })
   );

@@ -795,7 +795,7 @@ export const App = (): JSX.Element => {
     const v = e.target.value;
     setCurrentApp(v);
     const data = await api.setCurrentApplication(v);
-    // loadSettingをもう一回やる？
+    // loadSettingをもう一回やる？ => これ採用。
     setActions(data.actions);
     setBgColors(data.bgColors);
     setTapColors(data.tapColors);
