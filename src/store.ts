@@ -54,7 +54,8 @@ const key = (original: string): string => {
 };
 
 export const getRegisterApplications = (): string[] => {
-  return store.get(REGISTER_APPLICATIONS, []) as string[];
+  const list = store.get(REGISTER_APPLICATIONS, []) as string[];
+  return list.filter((a) => a);
 };
 
 export const addRegisterApplications = (apppath: string) => {

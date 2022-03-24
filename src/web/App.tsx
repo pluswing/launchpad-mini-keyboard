@@ -792,9 +792,12 @@ export const App = (): JSX.Element => {
   const [currentApp, setCurrentApp] = useState('');
 
   const changeApp = async (e: any) => {
-    const v = e.target.value;
-    setCurrentApp(v);
-    const data = await api.setCurrentApplication(v);
+    await _changeApp(e.target.value);
+  };
+
+  const _changeApp = async (apppath: string) => {
+    setCurrentApp(apppath);
+    const data = await api.setCurrentApplication(apppath);
     // loadSettingをもう一回やる？ => これ採用。
     setActions(data.actions);
     setBgColors(data.bgColors);
@@ -802,13 +805,20 @@ export const App = (): JSX.Element => {
     setBgAnimation(data.bgAnimation);
     setAppList(data.registerApplications);
   };
+
   const addApp = async () => {
     const path = await api.selectFile();
+    if (!path) return;
     setAppList([...appList, path]);
     api.addApplication(path);
   };
 
-  // api.removeApplication(path);
+  const removeApp = async () => {
+    const list = [...appList.filter((a) => a !== currentApp)];
+    setAppList(list);
+    api.removeApplication(currentApp);
+    _changeApp(''); // FIXME
+  };
 
   const appSelector = () => {
     return (
@@ -820,12 +830,30 @@ export const App = (): JSX.Element => {
             value={currentApp}
             onChange={changeApp}
           >
+            <option value="">DEFAULT</option>
             {appList.map((a) => (
               <option key={a} value={a}>
                 {a}
               </option>
             ))}
           </select>
+          <button className="m-2" onClick={() => removeApp()}>
+            <svg
+              className="h-8 w-8 text-white"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
           <div className="flex flex-wrap justify-end">
             <button className="m-2" onClick={addApp}>
               <svg

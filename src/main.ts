@@ -39,6 +39,7 @@ import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
 import { watchForegroundApp } from './foregroundapp';
+import { fileIconToBuffer, fileIconToFile } from 'file-icon';
 
 const root = __dirname;
 
