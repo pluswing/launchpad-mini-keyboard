@@ -30,13 +30,17 @@ export interface LaunchpadListener {
   onNote: (event: 'down' | 'up', note: number) => void;
 }
 
+export interface App {
+  icon: string;
+  path: string;
+}
 export interface Setting {
   // shortcuts: string[][][];
   actions: Action[][];
   bgColors: number[][];
   tapColors: number[][];
   bgAnimation: BackgroundAnimation;
-  registerApplications: string[];
+  registerApplications: App[];
 }
 
 export type Api = {
@@ -51,5 +55,5 @@ export type Api = {
   changePage: (page: 'global' | 'button') => Promise<void>;
   addApplication: (apppath: string) => Promise<void>;
   removeApplication: (apppath: string) => Promise<void>;
-  setCurrentApplication: (apppath: string) => Promise<Setting>;
+  setCurrentApplication: (apppath: string) => Promise<void>;
 };

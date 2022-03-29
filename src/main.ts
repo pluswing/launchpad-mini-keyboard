@@ -39,7 +39,7 @@ import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
 import { watchForegroundApp } from './foregroundapp';
-import { fileIconToBuffer, fileIconToFile } from 'file-icon';
+import { fileIconToBuffer } from 'file-icon';
 
 const root = __dirname;
 
@@ -133,14 +133,22 @@ const bindIpc = (window: BrowserWindow) => {
   });
 
   ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
-  ipcMain.handle(IpcKeys.LOAD_SETTING, () => {
+  ipcMain.handle(IpcKeys.LOAD_SETTING, async () => {
+    const buffers = await fileIconToBuffer(getRegisterApplications());
+    const apps: Array<{ icon: string; path: string }> =
+      getRegisterApplications().map((p, i) => {
+        return {
+          icon: `data:image/png;base64,${buffers[i].toString('base64')}`,
+          path: p,
+        };
+      });
     const s: Setting = {
       // shortcuts: getShortcuts(),
       actions: getActions(),
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplications(),
+      registerApplications: apps,
     };
     return s;
   });
@@ -215,14 +223,6 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
     setCurrentApplication(apppath);
     startBackgroundAnimation();
-    const s: Setting = {
-      actions: getActions(),
-      tapColors: getTapColors(),
-      bgColors: getBgColors(),
-      bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplications(),
-    };
-    return s;
   });
 };
 

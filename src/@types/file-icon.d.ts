@@ -1,4 +1,4 @@
 declare module 'file-icon' {
-  function fileIconToBuffer();
-  function fileIconToFile();
+  function fileIconToBuffer(input: string[]): Promise<Buffer[]>;
+  // function fileIconToFile();
 }

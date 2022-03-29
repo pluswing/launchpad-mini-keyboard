@@ -24,6 +24,7 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from '../backgrounds';
+import { App as AppData } from '../ipc';
 
 const api = window.api;
 
@@ -234,6 +235,10 @@ export const App = (): JSX.Element => {
   // on mounted
   useEffect(() => {
     api.ready();
+    loadSetting();
+  }, []);
+
+  const loadSetting = () => {
     api.loadSetting().then((data) => {
       setActions(data.actions);
       setBgColors(data.bgColors);
@@ -241,7 +246,7 @@ export const App = (): JSX.Element => {
       setBgAnimation(data.bgAnimation);
       setAppList(data.registerApplications);
     });
-  }, []);
+  };
 
   // data
   const [actions, setActions] = useState(actionGrid());
@@ -788,7 +793,7 @@ export const App = (): JSX.Element => {
     api.changeBgAnimation(newBgAnim);
   };
 
-  const [appList, setAppList] = useState([] as string[]);
+  const [appList, setAppList] = useState([] as AppData[]);
   const [currentApp, setCurrentApp] = useState('');
 
   const changeApp = async (e: any) => {
@@ -797,24 +802,20 @@ export const App = (): JSX.Element => {
 
   const _changeApp = async (apppath: string) => {
     setCurrentApp(apppath);
-    const data = await api.setCurrentApplication(apppath);
-    // loadSettingをもう一回やる？ => これ採用。
-    setActions(data.actions);
-    setBgColors(data.bgColors);
-    setTapColors(data.tapColors);
-    setBgAnimation(data.bgAnimation);
-    setAppList(data.registerApplications);
+    await api.setCurrentApplication(apppath);
+    loadSetting();
   };
 
   const addApp = async () => {
     const path = await api.selectFile();
     if (!path) return;
-    setAppList([...appList, path]);
-    api.addApplication(path);
+    // setAppList([...appList, path]);
+    await api.addApplication(path);
+    await loadSetting();
   };
 
   const removeApp = async () => {
-    const list = [...appList.filter((a) => a !== currentApp)];
+    const list = [...appList.filter((a) => a.path !== currentApp)];
     setAppList(list);
     api.removeApplication(currentApp);
     _changeApp(''); // FIXME
@@ -832,8 +833,8 @@ export const App = (): JSX.Element => {
           >
             <option value="">DEFAULT</option>
             {appList.map((a) => (
-              <option key={a} value={a}>
-                {a}
+              <option key={a.path} value={a.path}>
+                {a.path}
               </option>
             ))}
           </select>
