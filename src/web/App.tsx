@@ -397,11 +397,13 @@ export const App = (): JSX.Element => {
       >
         {BUTTONS.map((line, y) => {
           return line.map((b, x) => {
+            const selected = current.x == x && current.y == y;
             if (b.type == 'black') {
               return (
                 <BlackButton
                   onClick={() => showButtonSetting(x, y)}
                   color={colors[y][x]}
+                  selected={selected}
                 >
                   {b.content}
                 </BlackButton>
@@ -411,6 +413,7 @@ export const App = (): JSX.Element => {
                 <BlackButton
                   onClick={() => showButtonSetting(x, y)}
                   color={colors[y][x]}
+                  selected={selected}
                 >
                   {b.f(connected)}
                 </BlackButton>
@@ -420,6 +423,7 @@ export const App = (): JSX.Element => {
                 <WhiteButton
                   onClick={() => showButtonSetting(x, y)}
                   color={colors[y][x]}
+                  selected={selected}
                 />
               );
             }
@@ -822,21 +826,16 @@ export const App = (): JSX.Element => {
 
   const appSelector = () => {
     return (
-      <>
-        <div className="w-full border-t-2 border-gray-200"></div>
-        <div className="flex flex-wrap m-2">
-          <select
-            className="w-full p-3"
-            value={currentApp}
-            onChange={changeApp}
-          >
-            <option value="">DEFAULT</option>
-            {appList.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+      <div className="flex flex-wrap m-2">
+        <select className="w-full p-3" value={currentApp} onChange={changeApp}>
+          <option value="">DEFAULT</option>
+          {appList.map((a) => (
+            <option key={a} value={a}>
+              {a}
+            </option>
+          ))}
+        </select>
+        <div className="flex flex-wrap w-full justify-end">
           <button className="m-2" onClick={() => removeApp()}>
             <svg
               className="h-8 w-8 text-white"
@@ -872,12 +871,14 @@ export const App = (): JSX.Element => {
             </button>
           </div>
         </div>
-      </>
+      </div>
     );
   };
 
   const tabGlobal = (
     <>
+      {appSelector()}
+      <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
       <div className="flex flex-wrap m-2">
         <select
           className="w-full p-3"
@@ -892,7 +893,6 @@ export const App = (): JSX.Element => {
         </select>
       </div>
       {backgroundEditor(bgAnimation)}
-      {appSelector()}
     </>
   );
 
