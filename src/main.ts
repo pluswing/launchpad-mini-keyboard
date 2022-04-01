@@ -39,7 +39,7 @@ import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
 import { watchForegroundApp } from './foregroundapp';
-import { fileIconToBuffer, fileIconToFile } from 'file-icon';
+import { autoUpdater } from 'electron-updater';
 
 const root = __dirname;
 
@@ -300,6 +300,8 @@ app.whenReady().then(async () => {
     })
   );
   setupShortcut();
+
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => 1);

@@ -33,7 +33,7 @@
   "dependencies": {
     "@nut-tree/nut-js": "^2.0.1",
     "electron-store": "^8.0.1",
-    "file-icon": "^5.1.0",
+    "electron-updater": "^4.6.5",
     "keycode": "^2.2.1",
     "midi": "^2.0.0",
     "react": "^17.0.2",
@@ -82,5 +82,13 @@
   },
   "volta": {
     "node": "16.13.0"
+  },
+  "build": {
+    "publish": {
+      "provider": "github",
+      "owner": "pluswing",
+      "repo": "launchpad-mini-keyboard",
+      "releaseType": "release"
+    }
   }
 }
