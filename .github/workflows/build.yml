@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      matrix: # M1 Macも必要。
+      matrix:
         os: [macos-latest, windows-latest]
       fail-fast: false
 
