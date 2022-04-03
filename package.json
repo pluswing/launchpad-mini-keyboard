@@ -24,6 +24,7 @@
     "build:prod": "cross-env NODE_ENV=\"production\" webpack --config webpack.config.prod.ts --progress",
     "build:pack": "ts-node ./scripts/build.ts",
     "package": "run-s clean build:prod copy:assets build:pack",
+    "preprocess": "run-s clean build:prod copy:assets",
     "lint": "run-s lint:*",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix",
     "lint:prettier": "prettier --write .",
@@ -82,13 +83,5 @@
   },
   "volta": {
     "node": "16.13.0"
-  },
-  "build": {
-    "publish": {
-      "provider": "github",
-      "owner": "pluswing",
-      "repo": "launchpad-mini-keyboard",
-      "releaseType": "release"
-    }
   }
 }
