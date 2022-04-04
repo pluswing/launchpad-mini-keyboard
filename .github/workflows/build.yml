@@ -32,7 +32,7 @@ jobs:
       - name: install windows-build-tools
         shell: powershell
         run: |
-          npm install --globalnpm install --global windows-build-tools
+          npm install --global windows-build-tools
         if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
