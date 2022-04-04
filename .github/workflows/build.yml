@@ -31,6 +31,7 @@ jobs:
 
       - name: setup msvs_version 2022
         run: |
+          python3 -m pip install gyp-next
           npm install -g node-gyp@latest
           npm config set msvs_version 2022
         if: ${{ matrix.os == 'windows-latest' }}
