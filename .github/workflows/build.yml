@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'vtest'
+      - 'build_win'
     tags:
       - 'v*'
 
@@ -26,6 +27,12 @@ jobs:
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
+        if: ${{ matrix.os == 'windows-latest' }}
+
+      - name: install windows-build-tools
+        shell: powershell
+        run: |
+          npm install --globalnpm install --global windows-build-tools
         if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
