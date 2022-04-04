@@ -27,13 +27,8 @@ jobs:
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
-        if: ${{ matrix.os == 'windows-latest' }}
-
-      - name: setup msvs_version 2022
-        run: |
-          python3 -m pip install gyp-next
-          npm install -g node-gyp@latest
-          npm config set msvs_version 2022
+        with:
+          vs-version: '15'
         if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
