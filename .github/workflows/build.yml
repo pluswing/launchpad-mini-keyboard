@@ -26,12 +26,13 @@ jobs:
           node-version: 16.13.0
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1.1
         if: ${{ matrix.os == 'windows-latest' }}
 
-      - name: setup msvs_version 2017
+      - name: setup msvs_version 2022
         run: |
-          npm config set msvs_version 2017
+          npm install -g node-gyp@latest
+          npm config set msvs_version 2022
         if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
