@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-2019]
       fail-fast: false
 
     steps:
@@ -27,8 +27,6 @@ jobs:
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
-        with:
-          vs-version: '[15.0'
         if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
