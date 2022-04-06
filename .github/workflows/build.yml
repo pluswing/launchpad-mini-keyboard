@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'vtest'
+      - 'build_win'
     tags:
       - 'v*'
 
@@ -12,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-2019]
       fail-fast: false
 
     steps:
@@ -23,10 +24,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.13.0
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
-        if: ${{ matrix.os == 'windows-latest' }}
 
       - name: Build/release Electron app
         uses: pluswing/action-electron-builder@master
