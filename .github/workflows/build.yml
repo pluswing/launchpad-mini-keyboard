@@ -1,9 +1,6 @@
 name: 'Build and release electron installer'
 on:
   push:
-    branches:
-      - 'vtest'
-      - 'build_win'
     tags:
       - 'v*'
 
@@ -14,7 +11,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-2019]
-      fail-fast: false
 
     steps:
       - name: Check out Git repository
