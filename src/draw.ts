@@ -33,13 +33,13 @@ export const hsv = (h: number, s: number, v: number): Color => {
   return { type: 'rgb', r, g, b };
 };
 
-function set(r: number, g: number, b: number) {
+const set = (r: number, g: number, b: number) => {
   return [Math.round(r * 127), Math.round(g * 127), Math.round(b * 127)];
-}
+};
 
-function clamp(v: number, l: number, u: number) {
+const clamp = (v: number, l: number, u: number) => {
   return Math.max(l, Math.min(v, u));
-}
+};
 
 export function hsv2rgb(h: number, s: number, v: number) {
   const out = [0, 0, 0];
@@ -80,6 +80,9 @@ export const newImage = (): Image => {
 };
 
 export const getPixel = (image: Image, x: number, y: number): Color => {
+  if (outOfRange(image, x, y)) {
+    return rgb(0, 0, 0);
+  }
   return image.pixels[y][x];
 };
 
