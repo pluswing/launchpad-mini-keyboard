@@ -24,6 +24,7 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from '../backgrounds';
+import { RegisterApplication } from 'ipc';
 
 const api = window.api;
 
@@ -792,7 +793,7 @@ export const App = (): JSX.Element => {
     api.changeBgAnimation(newBgAnim);
   };
 
-  const [appList, setAppList] = useState([] as string[]);
+  const [appList, setAppList] = useState([] as RegisterApplication[]);
   const [currentApp, setCurrentApp] = useState('');
 
   const changeApp = async (e: any) => {
@@ -813,15 +814,16 @@ export const App = (): JSX.Element => {
   const addApp = async () => {
     const path = await api.selectFile();
     if (!path) return;
-    setAppList([...appList, path]);
-    api.addApplication(path);
+    await api.addApplication(path);
+    const data = await api.setCurrentApplication(currentApp);
+    setAppList(data.registerApplications);
   };
 
   const removeApp = async () => {
-    const list = [...appList.filter((a) => a !== currentApp)];
+    const list = [...appList.filter((a) => a.apppath !== currentApp)];
     setAppList(list);
     api.removeApplication(currentApp);
-    _changeApp(''); // FIXME
+    _changeApp('');
   };
 
   const appSelector = () => {
@@ -830,8 +832,8 @@ export const App = (): JSX.Element => {
         <select className="w-full p-3" value={currentApp} onChange={changeApp}>
           <option value="">DEFAULT</option>
           {appList.map((a) => (
-            <option key={a} value={a}>
-              {a}
+            <option key={a.apppath} value={a.apppath}>
+              {a.apppath}
             </option>
           ))}
         </select>

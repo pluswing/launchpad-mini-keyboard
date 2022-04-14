@@ -10,7 +10,7 @@ import {
   dialog,
 } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
-import { IpcKeys, Setting } from './ipc';
+import { IpcKeys, RegisterApplication, Setting } from './ipc';
 import {
   applyLaunchpad,
   eventLaunchpad,
@@ -40,6 +40,11 @@ import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
 import { watchForegroundApp } from './foregroundapp';
 import { autoUpdater } from 'electron-updater';
+
+import { execSync } from 'child_process';
+import plist from 'simple-plist';
+import fs from 'fs';
+import tempy from 'tempy';
 
 const root = __dirname;
 
@@ -140,7 +145,7 @@ const bindIpc = (window: BrowserWindow) => {
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplications(),
+      registerApplications: getRegisterApplicationsWithIcon(),
     };
     return s;
   });
@@ -220,7 +225,7 @@ const bindIpc = (window: BrowserWindow) => {
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplications(),
+      registerApplications: getRegisterApplicationsWithIcon(),
     };
     return s;
   });
@@ -318,4 +323,34 @@ const disposeApp = () => {
   tray = null;
   settingWindow?.close();
   settingWindow = null;
+};
+
+const getRegisterApplicationsWithIcon = (): RegisterApplication[] => {
+  const apppaths = getRegisterApplications();
+  return apppaths.map((apppath) => ({
+    apppath,
+    icon: getAppIcon(apppath),
+  }));
+};
+
+const getAppIcon = (apppath: string): string => {
+  const plistFile = path.join(apppath, 'Contents', 'Info.plist');
+  const parsed = plist.readFileSync(plistFile);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const icon = parsed['CFBundleIconFile'].replace('.icns', '');
+
+  const icnsFile = path.join(apppath, 'Contents', 'Resources', `${icon}.icns`);
+
+  const output = path.join(tempy.directory(), `${icon}.iconset`);
+
+  execSync(`iconutil --convert iconset "${icnsFile}" --output "${output}"`);
+
+  const pngs = fs
+    .readdirSync(output)
+    .map((f) => path.join(output, f))
+    .map((png) => ({ file: png, size: fs.statSync(png).size }))
+    .sort((a, b) => b.size - a.size);
+  const img = fs.readFileSync(pngs[0].file, 'base64');
+  return `data:image/png;base64,${img}`;
 };

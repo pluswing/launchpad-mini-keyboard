@@ -30,13 +30,18 @@ export interface LaunchpadListener {
   onNote: (event: 'down' | 'up', note: number) => void;
 }
 
+export interface RegisterApplication {
+  apppath: string;
+  icon: string; // base64
+}
+
 export interface Setting {
   // shortcuts: string[][][];
   actions: Action[][];
   bgColors: number[][];
   tapColors: number[][];
   bgAnimation: BackgroundAnimation;
-  registerApplications: string[];
+  registerApplications: RegisterApplication[];
 }
 
 export type Api = {
