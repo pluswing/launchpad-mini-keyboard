@@ -25,7 +25,7 @@ import {
 import { LaunchpadListener } from './ipc';
 import { filledCircle } from './shape';
 import { getBgAnimation, getBgColors, getTapColors } from './store';
-import { range } from './util';
+import { isMac, range } from './util';
 
 const HEADER = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d];
 const DELIMITER = [0xf7];
@@ -44,8 +44,13 @@ export const initLaunchpad = (): NodeJS.Timer => {
 
     if (inputIndex == -1) {
       // LaunchPad Xの検索
-      inputIndex = searchMidi(input, 'MIDIIN2 (LPX MIDI)');
-      outputIndex = searchMidi(output, 'LPX MIDI');
+      if (isMac()) {
+        inputIndex = searchMidi(input, 'Launchpad X LPX MIDI');
+        outputIndex = searchMidi(output, 'Launchpad X LPX MIDI');
+      } else {
+        inputIndex = searchMidi(input, 'MIDIIN2 (LPX MIDI)');
+        outputIndex = searchMidi(output, 'LPX MIDI');
+      }
       HEADER[5] = 0x0c;
     }
 

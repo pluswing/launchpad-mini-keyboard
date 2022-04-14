@@ -40,25 +40,56 @@ const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
 const TAP_COLORS = 'tapColors';
 const BG_ANIMATION = 'bgAnimation';
+const REGISTER_APPLICATIONS = 'registerApplications';
+
+let currentApplication = '';
+export const setCurrentApplication = (apppath: string) => {
+  currentApplication = apppath;
+};
+
+const key = (original: string): string => {
+  const registered = getRegisterApplications().includes(currentApplication);
+  if (!registered) return original;
+  return `${currentApplication}#${original}`;
+};
+
+export const getRegisterApplications = (): string[] => {
+  const list = store.get(REGISTER_APPLICATIONS, []) as string[];
+  return list.filter((a) => a);
+};
+
+export const addRegisterApplications = (apppath: string) => {
+  const appList = getRegisterApplications();
+  const found = appList.find((a) => a === apppath);
+  if (found) return;
+  appList.push(apppath);
+  store.set(REGISTER_APPLICATIONS, appList);
+};
+
+export const removeRegisterApplications = (apppath: string) => {
+  const appList = getRegisterApplications();
+  const removed = appList.filter((a) => a !== apppath);
+  store.set(REGISTER_APPLICATIONS, removed);
+};
 
 export const saveAction = (x: number, y: number, action: Action): void => {
   const v = getActions();
   v[y][x] = action;
-  store.set(ACTIONS, v);
+  store.set(key(ACTIONS), v);
 };
 
 export const getActions = (): Action[][] => {
-  return store.get(ACTIONS, emptyGrid(defaultAction())) as Action[][];
+  return store.get(key(ACTIONS), emptyGrid(defaultAction())) as Action[][];
 };
 
 export const saveBgColor = (x: number, y: number, colorIndex: number): void => {
   const v = getBgColors();
   v[y][x] = colorIndex;
-  store.set(BG_COLORS, v);
+  store.set(key(BG_COLORS), v);
 };
 
 export const getBgColors = (): number[][] => {
-  return store.get(BG_COLORS, emptyGrid(0)) as number[][];
+  return store.get(key(BG_COLORS), emptyGrid(0)) as number[][];
 };
 
 export const saveTapColor = (
@@ -68,19 +99,19 @@ export const saveTapColor = (
 ): void => {
   const v = getTapColors();
   v[y][x] = colorIndex;
-  store.set(TAP_COLORS, v);
+  store.set(key(TAP_COLORS), v);
 };
 
 export const getTapColors = (): number[][] => {
-  return store.get(TAP_COLORS, emptyGrid(0)) as number[][];
+  return store.get(key(TAP_COLORS), emptyGrid(0)) as number[][];
 };
 
 export const saveBgAnimation = (anim: BackgroundAnimation): void => {
-  store.set(BG_ANIMATION, anim);
+  store.set(key(BG_ANIMATION), anim);
 };
 
 export const getBgAnimation = (): BackgroundAnimation => {
-  return store.get(BG_ANIMATION, noneAnimation()) as BackgroundAnimation;
+  return store.get(key(BG_ANIMATION), noneAnimation()) as BackgroundAnimation;
 };
 
 const emptyGrid = <T>(value: T): T[][] => {

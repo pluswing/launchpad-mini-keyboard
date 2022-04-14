@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 
-export const watchForgroundApp = (callback: (appname: string) => void) => {
+export const watchForegroundApp = (callback: (apppath: string) => void) => {
   let currentApp = '';
   return setInterval(() => {
     exec('lsappinfo info `lsappinfo front`', (error, stdout, stderr) => {

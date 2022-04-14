@@ -19,6 +19,9 @@ export enum IpcKeys {
   SELECT_FILE = 'SELECT_FILE',
   CHANGE_BG_ANIMATION = 'CHANGE_BG_ANIMATION',
   CHANGE_PAGE = 'CHANGE_PAGE',
+  ADD_APPLICATION = 'ADD_APPLICATION',
+  REMOVE_APPLICATION = 'REMOVE_APPLICATION',
+  SET_CURRENT_APPLICATION = 'SET_CURRENT_APPLICATION',
 }
 
 export interface LaunchpadListener {
@@ -33,6 +36,7 @@ export interface Setting {
   bgColors: number[][];
   tapColors: number[][];
   bgAnimation: BackgroundAnimation;
+  registerApplications: string[];
 }
 
 export type Api = {
@@ -45,4 +49,7 @@ export type Api = {
   selectFile: () => Promise<string>;
   changeBgAnimation: (anim: BackgroundAnimation) => Promise<void>;
   changePage: (page: 'global' | 'button') => Promise<void>;
+  addApplication: (apppath: string) => Promise<void>;
+  removeApplication: (apppath: string) => Promise<void>;
+  setCurrentApplication: (apppath: string) => Promise<Setting>;
 };

@@ -21,20 +21,25 @@ import {
   stopBackgroundAnimation,
 } from './launchpad';
 import {
+  addRegisterApplications,
   getActions,
   getBgAnimation,
   getBgColors,
+  getRegisterApplications,
   getTapColors,
+  removeRegisterApplications,
   saveAction,
   saveBgAnimation,
   saveBgColor,
   saveTapColor,
+  setCurrentApplication,
 } from './store';
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
-import { watchForgroundApp } from './foregroundapp';
+import { watchForegroundApp } from './foregroundapp';
+import { autoUpdater } from 'electron-updater';
 
 const root = __dirname;
 
@@ -92,6 +97,10 @@ const showPreferences = () => {
     hideDock();
   });
   showDock();
+
+  // 設定を開いた時はデフォルトを必ず開く。
+  setCurrentApplication('');
+  startBackgroundAnimation();
 };
 
 const hideDock = () => {
@@ -131,6 +140,7 @@ const bindIpc = (window: BrowserWindow) => {
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
+      registerApplications: getRegisterApplications(),
     };
     return s;
   });
@@ -189,6 +199,30 @@ const bindIpc = (window: BrowserWindow) => {
       applyLaunchpad();
     }
     currentPage = page;
+  });
+
+  ipcMain.removeHandler(IpcKeys.ADD_APPLICATION);
+  ipcMain.handle(IpcKeys.ADD_APPLICATION, async (_, apppath) => {
+    addRegisterApplications(apppath);
+  });
+
+  ipcMain.removeHandler(IpcKeys.REMOVE_APPLICATION);
+  ipcMain.handle(IpcKeys.REMOVE_APPLICATION, async (_, apppath) => {
+    removeRegisterApplications(apppath);
+  });
+
+  ipcMain.removeHandler(IpcKeys.SET_CURRENT_APPLICATION);
+  ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
+    setCurrentApplication(apppath);
+    startBackgroundAnimation();
+    const s: Setting = {
+      actions: getActions(),
+      tapColors: getTapColors(),
+      bgColors: getBgColors(),
+      bgAnimation: getBgAnimation(),
+      registerApplications: getRegisterApplications(),
+    };
+    return s;
   });
 };
 
@@ -256,11 +290,18 @@ app.whenReady().then(async () => {
   setupTray();
   backgroundProcesses.push(initLaunchpad());
   backgroundProcesses.push(
-    watchForgroundApp((appname: string) => {
-      console.log(appname);
+    watchForegroundApp((apppath: string) => {
+      if (settingWindow) {
+        return;
+      }
+      setCurrentApplication(apppath);
+      startBackgroundAnimation();
+      console.log(apppath);
     })
   );
   setupShortcut();
+
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => 1);

@@ -10,8 +10,10 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src"
   },
+  "include": ["src", "jest.setup.ts"],
   "ts-node": {
     "compilerOptions": {
       "target": "ES2015",
