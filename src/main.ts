@@ -39,10 +39,10 @@ import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
 import { isMac } from './util';
 import { watchForegroundApp } from './foregroundapp';
-import { autoUpdater } from 'electron-updater';
 
 import { execSync } from 'child_process';
-import plist from 'simple-plist';
+import bplist from 'bplist-parser';
+import plist from 'plist';
 import fs from 'fs';
 import tempy from 'tempy';
 
@@ -138,14 +138,14 @@ const bindIpc = (window: BrowserWindow) => {
   });
 
   ipcMain.removeHandler(IpcKeys.LOAD_SETTING);
-  ipcMain.handle(IpcKeys.LOAD_SETTING, () => {
+  ipcMain.handle(IpcKeys.LOAD_SETTING, async () => {
     const s: Setting = {
       // shortcuts: getShortcuts(),
       actions: getActions(),
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplicationsWithIcon(),
+      registerApplications: await getRegisterApplicationsWithIcon(),
     };
     return s;
   });
@@ -225,7 +225,7 @@ const bindIpc = (window: BrowserWindow) => {
       tapColors: getTapColors(),
       bgColors: getBgColors(),
       bgAnimation: getBgAnimation(),
-      registerApplications: getRegisterApplicationsWithIcon(),
+      registerApplications: await getRegisterApplicationsWithIcon(),
     };
     return s;
   });
@@ -305,8 +305,6 @@ app.whenReady().then(async () => {
     })
   );
   setupShortcut();
-
-  autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => 1);
@@ -325,19 +323,29 @@ const disposeApp = () => {
   settingWindow = null;
 };
 
-const getRegisterApplicationsWithIcon = (): RegisterApplication[] => {
+const getRegisterApplicationsWithIcon = (): Promise<RegisterApplication[]> => {
   const apppaths = getRegisterApplications();
-  return apppaths.map((apppath) => ({
-    apppath,
-    icon: getAppIcon(apppath),
-  }));
+  return Promise.all(
+    apppaths.map(async (apppath) => ({
+      apppath,
+      icon: await getAppIcon(apppath),
+    }))
+  );
 };
 
-const getAppIcon = (apppath: string): string => {
+const loadPlist = async (plistFile: string): Promise<any> => {
+  try {
+    const [parsed] = await bplist.parseFile(plistFile);
+    return parsed;
+  } catch (e) {
+    return plist.parse(fs.readFileSync(plistFile, 'utf8'));
+  }
+};
+
+const getAppIcon = async (apppath: string): Promise<string> => {
   const plistFile = path.join(apppath, 'Contents', 'Info.plist');
-  const parsed = plist.readFileSync(plistFile);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+
+  const parsed = await loadPlist(plistFile);
   const icon = parsed['CFBundleIconFile'].replace('.icns', '');
 
   const icnsFile = path.join(apppath, 'Contents', 'Resources', `${icon}.icns`);
