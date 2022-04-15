@@ -5,11 +5,13 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TailwindCss from 'tailwindcss';
 import Autoprefixer from 'autoprefixer';
 
+global.__dirname = path.resolve(path.dirname(''));
+
 const config: Configuration = {
   mode: 'development',
   target: 'web',
   node: {
-    __dirname: false,
+    __dirname: true,
     __filename: false,
   },
   resolve: {
@@ -34,7 +36,7 @@ const config: Configuration = {
         test: /\.(m?js|node)$/,
         parser: { amd: false },
         use: {
-          loader: '@marshallofsound/webpack-asset-relocator-loader',
+          loader: '@vercel/webpack-asset-relocator-loader',
           options: {
             outputAssetBase: 'native_modules',
           },

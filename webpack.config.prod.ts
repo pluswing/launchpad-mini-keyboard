@@ -6,11 +6,12 @@ import TailwindCss from 'tailwindcss';
 import Autoprefixer from 'autoprefixer';
 
 const isDev = process.env.NODE_ENV === 'development';
+global.__dirname = path.resolve(path.dirname(''));
 
 const base: Configuration = {
   mode: isDev ? 'development' : 'production',
   node: {
-    __dirname: false,
+    __dirname: true,
     __filename: false,
   },
   resolve: {
@@ -32,7 +33,7 @@ const base: Configuration = {
         test: /\.(m?js|node)$/,
         parser: { amd: true },
         use: {
-          loader: '@marshallofsound/webpack-asset-relocator-loader',
+          loader: '@vercel/webpack-asset-relocator-loader',
           options: {
             outputAssetBase: 'native_modules',
           },
