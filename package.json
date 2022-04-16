@@ -22,7 +22,7 @@
     "serve": "electron .",
     "build": "cross-env NODE_ENV=\"development\" webpack --config webpack.config.prod.ts --progress",
     "build:prod": "cross-env NODE_ENV=\"production\" webpack --config webpack.config.prod.ts --progress",
-    "build:pack": "ts-node ./scripts/build.ts",
+    "build:pack": "electron-builder",
     "package": "run-s clean build:prod copy:assets build:pack",
     "preprocess": "run-s clean build:prod copy:assets",
     "lint": "run-s lint:*",

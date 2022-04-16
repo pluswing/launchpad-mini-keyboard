@@ -61,7 +61,7 @@
     }
   },
   "dmg": {
-    "icon": "assets/dmg.icns",
+    "icon": "assets/icon.icns",
     "sign": false
   },
   "linux": {
