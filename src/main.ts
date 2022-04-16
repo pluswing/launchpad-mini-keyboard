@@ -42,7 +42,7 @@ import { watchForegroundApp } from './foregroundapp';
 import { autoUpdater } from 'electron-updater';
 
 import { execSync } from 'child_process';
-import plist from 'simple-plist';
+// import plist from 'simple-plist';
 import fs from 'fs';
 import tempy from 'tempy';
 
@@ -335,10 +335,14 @@ const getRegisterApplicationsWithIcon = (): RegisterApplication[] => {
 
 const getAppIcon = (apppath: string): string => {
   const plistFile = path.join(apppath, 'Contents', 'Info.plist');
-  const parsed = plist.readFileSync(plistFile);
+  //const parsed = plist.readFileSync(plistFile);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
+  const parsed = { CFBundleIconFile: '' };
   const icon = parsed['CFBundleIconFile'].replace('.icns', '');
+  if (!icon) {
+    return '';
+  }
 
   const icnsFile = path.join(apppath, 'Contents', 'Resources', `${icon}.icns`);
 
