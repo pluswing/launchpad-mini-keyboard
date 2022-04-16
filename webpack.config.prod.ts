@@ -6,7 +6,6 @@ import TailwindCss from 'tailwindcss';
 import Autoprefixer from 'autoprefixer';
 
 const isDev = process.env.NODE_ENV === 'development';
-global.__dirname = path.resolve(path.dirname(''));
 
 const base: Configuration = {
   mode: isDev ? 'development' : 'production',
@@ -80,6 +79,44 @@ const base: Configuration = {
   devtool: isDev ? 'inline-source-map' : undefined,
 };
 
+const electronModule = {
+  rules: [
+    {
+      test: /\.(j|t)sx?$/,
+      exclude: /node_modules/,
+      use: [
+        { loader: 'ts-loader' },
+        { loader: 'ifdef-loader', options: { DEBUG: false } },
+      ],
+    },
+    {
+      test: /\.css$/,
+      use: [
+        MiniCssExtractPlugin.loader,
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: isDev,
+            importLoaders: 1,
+          },
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: {
+              plugins: [TailwindCss, Autoprefixer],
+            },
+          },
+        },
+      ],
+    },
+    {
+      test: /\.(ico|gif|jpe?g|png|svg|webp|ttf|otf|eot|woff?2?)$/,
+      type: 'asset/resource',
+    },
+  ],
+};
+
 const main: Configuration = {
   ...base,
   target: 'electron-main',
@@ -99,6 +136,7 @@ const preload: Configuration = {
 const renderer: Configuration = {
   ...base,
   target: 'web',
+  module: electronModule,
   entry: {
     index: './src/web/index.tsx',
   },
