@@ -45,6 +45,7 @@ import bplist from 'bplist-parser';
 import plist from 'plist';
 import fs from 'fs';
 import tempy from 'tempy';
+import { autoUpdater } from 'electron-updater';
 
 const root = __dirname;
 
@@ -305,6 +306,8 @@ app.whenReady().then(async () => {
     })
   );
   setupShortcut();
+
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => 1);
