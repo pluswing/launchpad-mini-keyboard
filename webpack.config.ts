@@ -5,13 +5,11 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TailwindCss from 'tailwindcss';
 import Autoprefixer from 'autoprefixer';
 
-global.__dirname = path.resolve(path.dirname(''));
-
 const config: Configuration = {
   mode: 'development',
   target: 'web',
   node: {
-    __dirname: true,
+    __dirname: false,
     __filename: false,
   },
   resolve: {
@@ -28,20 +26,6 @@ const config: Configuration = {
   },
   module: {
     rules: [
-      {
-        test: /\.node$/,
-        loader: 'node-loader',
-      },
-      {
-        test: /\.(m?js|node)$/,
-        parser: { amd: false },
-        use: {
-          loader: '@vercel/webpack-asset-relocator-loader',
-          options: {
-            outputAssetBase: 'native_modules',
-          },
-        },
-      },
       {
         test: /\.(j|t)sx?$/,
         exclude: /node_modules/,

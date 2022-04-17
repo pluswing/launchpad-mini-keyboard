@@ -347,9 +347,11 @@ const loadPlist = async (plistFile: string): Promise<any> => {
 
 const getAppIcon = async (apppath: string): Promise<string> => {
   const plistFile = path.join(apppath, 'Contents', 'Info.plist');
-
   const parsed = await loadPlist(plistFile);
   const icon = parsed['CFBundleIconFile'].replace('.icns', '');
+  if (!icon) {
+    return '';
+  }
 
   const icnsFile = path.join(apppath, 'Contents', 'Resources', `${icon}.icns`);
 
