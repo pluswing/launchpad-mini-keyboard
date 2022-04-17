@@ -7,6 +7,59 @@ import Autoprefixer from 'autoprefixer';
 
 const isDev = process.env.NODE_ENV === 'development';
 
+const baseModuleRules = [
+  {
+    test: /\.(j|t)sx?$/,
+    exclude: /node_modules/,
+    use: [
+      { loader: 'ts-loader' },
+      { loader: 'ifdef-loader', options: { DEBUG: false } },
+    ],
+  },
+  {
+    test: /\.css$/,
+    use: [
+      MiniCssExtractPlugin.loader,
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: isDev,
+          importLoaders: 1,
+        },
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          postcssOptions: {
+            plugins: [TailwindCss, Autoprefixer],
+          },
+        },
+      },
+    ],
+  },
+  {
+    test: /\.(ico|gif|jpe?g|png|svg|webp|ttf|otf|eot|woff?2?)$/,
+    type: 'asset/resource',
+  },
+];
+
+const nativeModulesRule = [
+  {
+    test: /\.node$/,
+    loader: 'node-loader',
+  },
+  {
+    test: /\.(m?js|node)$/,
+    parser: { amd: true },
+    use: {
+      loader: '@vercel/webpack-asset-relocator-loader',
+      options: {
+        outputAssetBase: 'native_modules',
+      },
+    },
+  },
+];
+
 const base: Configuration = {
   mode: isDev ? 'development' : 'production',
   node: {
@@ -23,98 +76,12 @@ const base: Configuration = {
     assetModuleFilename: 'assets/[name][ext]',
   },
   module: {
-    rules: [
-      {
-        test: /\.node$/,
-        loader: 'node-loader',
-      },
-      {
-        test: /\.(m?js|node)$/,
-        parser: { amd: true },
-        use: {
-          loader: '@vercel/webpack-asset-relocator-loader',
-          options: {
-            outputAssetBase: 'native_modules',
-          },
-        },
-      },
-      {
-        test: /\.(j|t)sx?$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'ts-loader' },
-          { loader: 'ifdef-loader', options: { DEBUG: false } },
-        ],
-      },
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: isDev,
-              importLoaders: 1,
-            },
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [TailwindCss, Autoprefixer],
-              },
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(ico|gif|jpe?g|png|svg|webp|ttf|otf|eot|woff?2?)$/,
-        type: 'asset/resource',
-      },
-    ],
+    rules: [...nativeModulesRule, ...baseModuleRules],
   },
   stats: 'errors-only',
   performance: { hints: false },
   optimization: { minimize: !isDev },
   devtool: isDev ? 'inline-source-map' : undefined,
-};
-
-const electronModule = {
-  rules: [
-    {
-      test: /\.(j|t)sx?$/,
-      exclude: /node_modules/,
-      use: [
-        { loader: 'ts-loader' },
-        { loader: 'ifdef-loader', options: { DEBUG: false } },
-      ],
-    },
-    {
-      test: /\.css$/,
-      use: [
-        MiniCssExtractPlugin.loader,
-        {
-          loader: 'css-loader',
-          options: {
-            sourceMap: isDev,
-            importLoaders: 1,
-          },
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            postcssOptions: {
-              plugins: [TailwindCss, Autoprefixer],
-            },
-          },
-        },
-      ],
-    },
-    {
-      test: /\.(ico|gif|jpe?g|png|svg|webp|ttf|otf|eot|woff?2?)$/,
-      type: 'asset/resource',
-    },
-  ],
 };
 
 const main: Configuration = {
@@ -136,7 +103,9 @@ const preload: Configuration = {
 const renderer: Configuration = {
   ...base,
   target: 'web',
-  module: electronModule,
+  module: {
+    rules: baseModuleRules,
+  },
   entry: {
     index: './src/web/index.tsx',
   },
