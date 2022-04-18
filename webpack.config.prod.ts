@@ -63,7 +63,7 @@ const nativeModulesRule = [
 const base: Configuration = {
   mode: isDev ? 'development' : 'production',
   node: {
-    __dirname: true,
+    __dirname: false,
     __filename: false,
   },
   resolve: {
