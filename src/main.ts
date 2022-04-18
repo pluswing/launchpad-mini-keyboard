@@ -37,7 +37,7 @@ import {
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
 import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
-import { isMac } from './util';
+import { isMac, isWindows } from './util';
 import { watchForegroundApp } from './foregroundapp';
 
 import { execSync } from 'child_process';
@@ -346,6 +346,8 @@ const loadPlist = async (plistFile: string): Promise<any> => {
 };
 
 const getAppIcon = async (apppath: string): Promise<string> => {
+  // v0.3.0リリースのため、一時的に無効化
+  if (isMac() || isWindows()) return '';
   const plistFile = path.join(apppath, 'Contents', 'Info.plist');
   const parsed = await loadPlist(plistFile);
   const icon = parsed['CFBundleIconFile'].replace('.icns', '');
