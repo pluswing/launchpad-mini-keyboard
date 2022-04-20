@@ -10,8 +10,6 @@ import {
   Shortcut,
 } from '../actions';
 import { range } from '../util';
-import { BlackButton } from './components/BlackButton';
-import { Button as WhiteButton } from './components/Button';
 import { Select } from './components/Select';
 import {
   BackgroundAnimation,
@@ -25,171 +23,24 @@ import {
   WaterdropAnimation,
 } from '../backgrounds';
 import { RegisterApplication } from 'ipc';
+import {
+  Button,
+  DOWN,
+  LEFT,
+  RIGHT,
+  UP,
+  SESSION,
+  DRUMS,
+  KEYS,
+  USER,
+  ICON,
+  WHITE,
+  DISCLOSURE,
+  STOP_SOLO_MUTE,
+  drawButton,
+} from './components/Buttons';
 
 const api = window.api;
-
-interface Black {
-  type: 'black';
-  content: JSX.Element;
-}
-
-interface Icon {
-  type: 'icon';
-  f: (connected: boolean) => JSX.Element;
-}
-
-interface White {
-  type: 'white';
-}
-type Button = Black | Icon | White;
-
-const UP: Button = {
-  type: 'black',
-  content: (
-    <svg
-      className="h-8 w-8 text-white"
-      style={{ transform: 'rotate(270deg)' }}
-      viewBox="0 0 24 24"
-      fill="white"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="8 6 17 12 8 18 8 6" />
-    </svg>
-  ),
-};
-
-const DOWN: Button = {
-  type: 'black',
-  content: (
-    <svg
-      className="h-8 w-8 text-white"
-      style={{ transform: 'rotate(90deg)' }}
-      viewBox="0 0 24 24"
-      fill="white"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="8 6 17 12 8 18 8 6" />
-    </svg>
-  ),
-};
-
-const LEFT: Button = {
-  type: 'black',
-  content: (
-    <svg
-      className="h-8 w-8 text-white"
-      style={{ transform: 'rotate(180deg)' }}
-      viewBox="0 0 24 24"
-      fill="white"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="8 6 17 12 8 18 8 6" />
-    </svg>
-  ),
-};
-
-const RIGHT: Button = {
-  type: 'black',
-  content: (
-    <svg
-      className="h-8 w-8 text-white"
-      style={{ transform: 'rotate(0deg)' }}
-      viewBox="0 0 24 24"
-      fill="white"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="8 6 17 12 8 18 8 6" />
-    </svg>
-  ),
-};
-
-const SESSION: Button = {
-  type: 'black',
-  content: <span className="text-white text-xs">Session</span>,
-};
-
-const DRUMS: Button = {
-  type: 'black',
-  content: <span className="text-white text-xs">Drums</span>,
-};
-
-const KEYS: Button = {
-  type: 'black',
-  content: <span className="text-white text-xs">Keys</span>,
-};
-
-const USER: Button = {
-  type: 'black',
-  content: <span className="text-white text-xs">User</span>,
-};
-
-const ICON: Button = {
-  type: 'icon',
-  f: (connected: boolean) => (
-    <svg
-      className={`h-12 w-12 ${connected ? 'text-red-500' : 'text-gray-500'}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M13 10V3L4 14h7v7l9-11h-7z"
-      />
-    </svg>
-  ),
-};
-
-const DISCLOSURE: Button = {
-  type: 'black',
-  content: (
-    <svg
-      className="h-6 w-6 text-white"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <polyline points="9 6 15 12 9 18" />
-    </svg>
-  ),
-};
-
-const STOP_SOLO_MUTE: Button = {
-  type: 'black',
-  content: (
-    <span className="text-white text-xs">
-      Stop
-      <br />
-      Solo
-      <br />
-      Mute
-    </span>
-  ),
-};
-
-const WHITE: Button = {
-  type: 'white',
-};
 
 const BUTTONS: Button[][] = [
   [UP, DOWN, LEFT, RIGHT, SESSION, DRUMS, KEYS, USER, ICON],
@@ -399,35 +250,9 @@ export const App = (): JSX.Element => {
         {BUTTONS.map((line, y) => {
           return line.map((b, x) => {
             const selected = current.x == x && current.y == y;
-            if (b.type == 'black') {
-              return (
-                <BlackButton
-                  onClick={() => showButtonSetting(x, y)}
-                  color={colors[y][x]}
-                  selected={selected}
-                >
-                  {b.content}
-                </BlackButton>
-              );
-            } else if (b.type == 'icon') {
-              return (
-                <BlackButton
-                  onClick={() => showButtonSetting(x, y)}
-                  color={colors[y][x]}
-                  selected={selected}
-                >
-                  {b.f(connected)}
-                </BlackButton>
-              );
-            } else if (b.type == 'white') {
-              return (
-                <WhiteButton
-                  onClick={() => showButtonSetting(x, y)}
-                  color={colors[y][x]}
-                  selected={selected}
-                />
-              );
-            }
+            return drawButton(b, { x, y }, colors, selected, connected, () => {
+              showButtonSetting(x, y);
+            });
           });
         })}
       </div>
