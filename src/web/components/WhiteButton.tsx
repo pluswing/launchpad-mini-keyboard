@@ -5,7 +5,11 @@ interface Props {
   color: number;
   selected: boolean;
 }
-export const Button = ({ onClick, color, selected }: Props): JSX.Element => {
+export const WhiteButton = ({
+  onClick,
+  color,
+  selected,
+}: Props): JSX.Element => {
   const c = COLOR_PALETTE[color].html;
   const cs = `#${c.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
   return (

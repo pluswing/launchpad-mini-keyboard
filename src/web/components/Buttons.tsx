@@ -1,6 +1,5 @@
-import { Point } from 'draw';
 import { BlackButton } from './BlackButton';
-import { Button as WhiteButton } from './Button';
+import { WhiteButton } from './WhiteButton';
 
 interface Black {
   type: 'black';
@@ -168,8 +167,7 @@ export const WHITE: Button = {
 
 export const drawButton = (
   button: Button,
-  point: Point,
-  colors: number[][],
+  color: number,
   selected: boolean,
   connected: boolean,
   onClick: () => void
@@ -177,31 +175,19 @@ export const drawButton = (
   switch (button.type) {
     case 'black':
       return (
-        <BlackButton
-          onClick={onClick}
-          color={colors[point.y][point.x]}
-          selected={selected}
-        >
+        <BlackButton onClick={onClick} color={color} selected={selected}>
           {button.content}
         </BlackButton>
       );
     case 'icon':
       return (
-        <BlackButton
-          onClick={onClick}
-          color={colors[point.y][point.x]}
-          selected={selected}
-        >
+        <BlackButton onClick={onClick} color={color} selected={selected}>
           {button.f(connected)}
         </BlackButton>
       );
     case 'white':
       return (
-        <WhiteButton
-          onClick={onClick}
-          color={colors[point.y][point.x]}
-          selected={selected}
-        />
+        <WhiteButton onClick={onClick} color={color} selected={selected} />
       );
   }
 };

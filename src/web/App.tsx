@@ -250,7 +250,8 @@ export const App = (): JSX.Element => {
         {BUTTONS.map((line, y) => {
           return line.map((b, x) => {
             const selected = current.x == x && current.y == y;
-            return drawButton(b, { x, y }, colors, selected, connected, () => {
+            const color = colors[y][x];
+            return drawButton(b, color, selected, connected, () => {
               showButtonSetting(x, y);
             });
           });
