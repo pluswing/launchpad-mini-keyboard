@@ -1,5 +1,5 @@
 import { Input, Output } from 'midi';
-import { COLOR_PALETTE } from '../constants';
+import { COLOR_PALETTE } from '../color_palette';
 import {
   copyImage,
   getPixel,

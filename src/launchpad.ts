@@ -7,7 +7,7 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from './backgrounds';
-import { COLOR_PALETTE } from './constants';
+import { COLOR_PALETTE } from './color_palette';
 import {
   Color,
   fillImage,

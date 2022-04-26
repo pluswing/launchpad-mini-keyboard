@@ -1,3 +1,5 @@
+import { range } from './util';
+
 // action
 export type Keys = string[];
 
@@ -28,3 +30,6 @@ export type Action = Shortcut | AppLaunch | Mouse;
 export const defaultAction = (): Action => {
   return { type: 'shortcut', shortcuts: [[]] };
 };
+
+export const actionGrid = (): Action[][] =>
+  range(9).map(() => range(9).map(() => defaultAction()));

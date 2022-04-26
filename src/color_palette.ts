@@ -22,3 +22,6 @@ export const COLOR_PALETTE = [
     };
   }),
 ];
+
+export const colorGrid = (): number[][] =>
+  range(9).map(() => range(9).map(() => 0));

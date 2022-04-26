@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toPoint } from '../draw';
 import {
   Action,
+  actionGrid,
   AppLaunch,
   defaultAction,
   Edge,
@@ -39,6 +40,8 @@ import {
   STOP_SOLO_MUTE,
   drawButton,
 } from './components/Buttons';
+import { colorGrid } from '../color_palette';
+import { mouseEditor } from './actioneditors';
 
 const api = window.api;
 
@@ -54,10 +57,15 @@ const BUTTONS: Button[][] = [
   [WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, STOP_SOLO_MUTE],
 ];
 
-const colorGrid = (): number[][] => range(9).map(() => range(9).map(() => 0));
+const isMac = () => {
+  const ua = window.navigator.userAgent.toUpperCase();
+  return ua.indexOf('MAC OS') !== -1;
+};
 
-const actionGrid = (): Action[][] =>
-  range(9).map(() => range(9).map(() => defaultAction()));
+const highlightTab = (b: boolean) =>
+  b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
+
+type Field = [string, number, number, number, (e: any) => void];
 
 export const App = (): JSX.Element => {
   const [connected, setConnected] = useState(false);
@@ -142,11 +150,6 @@ export const App = (): JSX.Element => {
     actions[current.y][current.x] = newAct;
     setActions([...actions]);
     api.changeAction(current.x, current.y, newAct);
-  };
-
-  const isMac = () => {
-    const ua = window.navigator.userAgent.toUpperCase();
-    return ua.indexOf('MAC OS') !== -1;
   };
 
   const onKeyDown = (e: any, i: number) => {
@@ -260,14 +263,12 @@ export const App = (): JSX.Element => {
     </div>
   );
 
-  const highlightTab = (b: boolean) =>
-    b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
-
   const setTabPage = (tab: Tab) => {
     setTab(tab);
     api.changePage(tab == Tab.GLOBAL ? 'global' : 'button');
   };
 
+  // TODO
   const tabHeader = (
     <div className="flex flex-wrap text-center">
       <div
@@ -337,23 +338,6 @@ export const App = (): JSX.Element => {
     );
   };
 
-  const mouseEditor = (action: Mouse) => {
-    return (
-      <div className="flex flex-wrap m-2">
-        <select
-          className="w-full p-3"
-          value={action.edge}
-          onChange={setMouseEdge}
-        >
-          <option value={Edge.TOP_LEFT}>左上</option>
-          <option value={Edge.TOP_RIGHT}>右上</option>
-          <option value={Edge.BOTTOM_LEFT}>左下</option>
-          <option value={Edge.BOTTOM_RIGHT}>右下</option>
-        </select>
-      </div>
-    );
-  };
-
   const selectAppLaunchFile = async () => {
     const res = await api.selectFile();
     updateAction((act) => {
@@ -392,7 +376,7 @@ export const App = (): JSX.Element => {
       return shortcutEditor(action);
     }
     if (action.type == 'mouse') {
-      return mouseEditor(action);
+      return mouseEditor(setMouseEdge, action);
     }
     if (action.type == 'applaunch') {
       return appLaunchEditor(action);
@@ -436,8 +420,6 @@ export const App = (): JSX.Element => {
     }
     return;
   };
-
-  type Field = [string, number, number, number, (e: any) => void];
 
   const slider = (
     name: string,

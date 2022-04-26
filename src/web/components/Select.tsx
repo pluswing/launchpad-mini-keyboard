@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { COLOR_PALETTE } from '../../constants';
+import { COLOR_PALETTE } from '../../color_palette';
 
 interface Props {
   prefix: string;
