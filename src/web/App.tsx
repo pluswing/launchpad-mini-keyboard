@@ -1,4 +1,3 @@
-import keycode from 'keycode';
 import { useCallback, useEffect, useState } from 'react';
 import { toPoint } from '../draw';
 import {
@@ -8,9 +7,7 @@ import {
   defaultAction,
   Edge,
   Mouse,
-  Shortcut,
 } from '../actions';
-import { range } from '../util';
 import { Select } from './components/Select';
 import {
   BackgroundAnimation,
@@ -41,7 +38,7 @@ import {
   drawButton,
 } from './components/Buttons';
 import { colorGrid } from '../color_palette';
-import { mouseEditor } from './actioneditors';
+import { actionEditor } from './actioneditors';
 
 const api = window.api;
 
@@ -152,76 +149,6 @@ export const App = (): JSX.Element => {
     api.changeAction(current.x, current.y, newAct);
   };
 
-  const onKeyDown = (e: any, i: number) => {
-    e.preventDefault();
-    const onSpecialKey = e.altKey || e.ctrlKey || e.metaKey || e.shiftKey;
-    const specialKeys = [
-      'ctrl',
-      'shift',
-      'alt',
-      'left command',
-      'right command',
-      'shift',
-    ];
-    if (onSpecialKey && specialKeys.includes(keycode(e))) {
-      // special keyの単押しなので無視。
-      return;
-    }
-
-    if (!keycode(e)) {
-      // なぜか一部nullが返ることがあるので一旦無視。
-      return;
-    }
-
-    const s = [
-      e.ctrlKey ? (isMac() ? '⌃' : 'ctrl') : '',
-      e.altKey ? (isMac() ? '⌥' : 'alt') : '',
-      e.shiftKey ? (isMac() ? '⇧' : 'shift') : '',
-      e.metaKey ? (isMac() ? '⌘' : 'super') : '',
-      keycode(e).toUpperCase(),
-    ].filter((v) => v);
-
-    // TODO shortcut以外のアクションの場合の対応
-    const act = actions[current.y][current.x] as Shortcut;
-    act.shortcuts[i] = s;
-
-    setAction({ ...act });
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, act);
-  };
-
-  const addShortcut = () => {
-    const act = actions[current.y][current.x] as Shortcut;
-    act.shortcuts.push([]);
-    setAction({ ...act });
-    setActions([...actions]);
-  };
-
-  const removeShortcut = (index: number) => {
-    const act = actions[current.y][current.x] as Shortcut;
-    act.shortcuts = act.shortcuts.filter((s, i) => i !== index);
-    setAction({ ...act });
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, act);
-  };
-
-  const setMouseEdge = (e: any) => {
-    const edge = parseInt(e.target.value, 10);
-    updateAction((act: Action) => {
-      (act as Mouse).edge = edge;
-      return act;
-    });
-  };
-
-  const updateAction = (update: (action: Action) => Action) => {
-    const act = actions[current.y][current.x];
-    const newAct = update(act);
-    actions[current.y][current.x] = newAct;
-    setAction({ ...newAct });
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, newAct);
-  };
-
   const changeBgColor = useCallback(
     (v) => {
       setBgColor(v);
@@ -286,101 +213,11 @@ export const App = (): JSX.Element => {
     </div>
   );
 
-  const shortcutEditor = (action: Shortcut) => {
-    return (
-      <>
-        {action.shortcuts.map((s, i) => (
-          <div key={i} className="flex flex-wrap">
-            <input
-              type="text"
-              value={s.join(isMac() ? '' : ' + ')}
-              onKeyDown={(e) => onKeyDown(e, i)}
-              placeholder="shortcut key"
-              className="p-2 rounded m-2 flex-grow"
-            />
-            <button className="m-2" onClick={() => removeShortcut(i)}>
-              <svg
-                className="h-8 w-8 text-white"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-        ))}
-        <div className="flex flex-wrap justify-end">
-          <button className="m-2" onClick={addShortcut}>
-            <svg
-              className="h-8 w-8 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="16" />
-              <line x1="8" y1="12" x2="16" y2="12" />
-            </svg>
-          </button>
-        </div>
-      </>
-    );
-  };
-
-  const selectAppLaunchFile = async () => {
-    const res = await api.selectFile();
-    updateAction((act) => {
-      (act as AppLaunch).appName = res;
-      return act;
-    });
-  };
-
-  const appLaunchEditor = (action: AppLaunch) => {
-    return (
-      <div className="flex flex-wrap m-2">
-        <div className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll">
-          {action.appName || '[選択してください]'}
-        </div>
-        <button onClick={selectAppLaunchFile} className="p-3">
-          <svg
-            className="h-8 w-8 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-      </div>
-    );
-  };
-
-  const actionEditor = (action: Action) => {
-    if (action.type == 'shortcut') {
-      return shortcutEditor(action);
-    }
-    if (action.type == 'mouse') {
-      return mouseEditor(setMouseEdge, action);
-    }
-    if (action.type == 'applaunch') {
-      return appLaunchEditor(action);
-    }
+  const actionEditorOnChange = (action: Action) => {
+    setAction({ ...action });
+    actions[current.y][current.x] = { ...action };
+    setActions([...actions]);
+    api.changeAction(current.x, current.y, action);
   };
 
   const tabButton = (
@@ -396,7 +233,7 @@ export const App = (): JSX.Element => {
           <option value="applaunch">アプリケーション起動</option>
         </select>
       </div>
-      {actionEditor(action)}
+      {actionEditor(actionEditorOnChange, action)}
       <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
       <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
     </>
