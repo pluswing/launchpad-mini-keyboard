@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Button, drawButton } from 'web/components/Buttons';
 
 describe(`${__dirname}`, () => {
@@ -35,5 +36,16 @@ describe(`${__dirname}`, () => {
       drawButton(button, 0, true, false, () => 1)
     );
     expect(container2.getElementsByClassName('animate-ping').length).toBe(1);
+  });
+
+  test('click', async () => {
+    const button: Button = {
+      type: 'white',
+    };
+    const onClick = jest.fn();
+    const { container } = render(drawButton(button, 0, false, false, onClick));
+    expect(onClick).toBeCalledTimes(0);
+    await userEvent.click(container);
+    expect(onClick).toBeCalledTimes(1);
   });
 });
