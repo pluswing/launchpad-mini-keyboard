@@ -43,9 +43,9 @@ describe(`${__dirname}`, () => {
       type: 'white',
     };
     const onClick = jest.fn();
-    const { container } = render(drawButton(button, 0, false, false, onClick));
+    render(drawButton(button, 0, false, false, onClick));
     expect(onClick).toBeCalledTimes(0);
-    await userEvent.click(container);
+    await userEvent.click(screen.getByRole('top_view'));
     expect(onClick).toBeCalledTimes(1);
   });
 });
