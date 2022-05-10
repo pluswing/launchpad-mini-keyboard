@@ -308,6 +308,11 @@ app.whenReady().then(async () => {
   setupShortcut();
 
   autoUpdater.checkForUpdatesAndNotify();
+
+  // for test
+  if (process.argv.find((v) => v === '--autoopen')) {
+    showPreferences();
+  }
 });
 
 app.on('window-all-closed', () => 1);
