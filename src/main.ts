@@ -22,6 +22,7 @@ import {
 } from './launchpad';
 import {
   addRegisterApplications,
+  clearStore,
   getActions,
   getBgAnimation,
   getBgColors,
@@ -95,7 +96,7 @@ const showPreferences = () => {
   bindIpc(settingWindow);
 
   if (isDev) settingWindow.webContents.openDevTools({ mode: 'detach' });
-  settingWindow.loadFile('dist/index.html');
+  settingWindow.loadFile(path.join(__dirname, 'index.html'));
 
   settingWindow.on('closed', () => {
     settingWindow = null;
@@ -311,6 +312,7 @@ app.whenReady().then(async () => {
 
   // for test
   if (process.argv.find((v) => v === '--autoopen')) {
+    clearStore();
     showPreferences();
   }
 });

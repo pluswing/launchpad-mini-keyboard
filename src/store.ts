@@ -34,7 +34,11 @@ const store = new Store({
     },
   },
 });
-// store.clear();
+
+// for test
+export const clearStore = () => {
+  store.clear();
+};
 
 const ACTIONS = 'actions';
 const BG_COLORS = 'bgColors';
