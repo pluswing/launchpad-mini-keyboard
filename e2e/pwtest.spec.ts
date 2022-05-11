@@ -1,65 +1,77 @@
-import { test, expect, _electron, Page, Locator } from '@playwright/test';
+import {
+  test,
+  expect,
+  _electron,
+  Page,
+  Locator,
+  ElectronApplication,
+} from '@playwright/test';
+import { exec } from 'child_process';
 
-test('basic test', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-  const title = page.locator('.navbar__inner .navbar__title');
-  await expect(title).toHaveText('Playwright');
-});
+test.describe('e2e', () => {
+  let electronApp: ElectronApplication;
+  let window: Page;
 
-test('electron test', async () => {
-  // dev:tsc, dev:webpack, copy:assets
-  const electronApp = await _electron.launch({
-    args: ['dist/main.js', '--autoopen'],
+  test.beforeAll(async () => {
+    const run = async (command: string) => {
+      return new Promise<void>((resolve) => {
+        const p = exec(command);
+        p.stdout?.on('data', (data) => {
+          console.log(data);
+        });
+        p.on('exit', () => {
+          resolve();
+        });
+      });
+    };
+    // await run('npm run dev:tsc');
+    // await run('npm run dev:webpack');
+    // await run('npm run copy:assets');
   });
 
-  const window = await electronApp.firstWindow();
+  test.beforeEach(async () => {
+    electronApp = await _electron.launch({
+      args: ['dist/main.js', '--autoopen'],
+    });
 
-  await tapNote(window, 1, 1);
-  await expectShortcut(window, 0, '');
-  await inputShortcut(window, 0, 'A');
-  await expectShortcut(window, 0, 'A');
+    window = await electronApp.firstWindow();
+  });
 
-  await tapNote(window, 2, 2);
-  await expectShortcut(window, 0, '');
-  await inputShortcut(window, 0, 'B');
-  await expectShortcut(window, 0, 'B');
+  test.afterEach(async () => {
+    await electronApp.close();
+  });
 
-  await tapNote(window, 1, 1);
-  await expectShortcut(window, 0, 'A');
+  test('senario 01', async () => {
+    await tapNote(1, 1);
+    await expect(shortcut(0)).toHaveValue('');
+    await shortcut(0).type('A');
+    await expect(shortcut(0)).toHaveValue('A');
 
-  await tapNote(window, 2, 2);
-  await expectShortcut(window, 0, 'B');
+    await tapNote(2, 2);
+    await expect(shortcut(0)).toHaveValue('');
+    await shortcut(0).type('B');
+    await expect(shortcut(0)).toHaveValue('B');
 
-  await electronApp.close();
+    await tapNote(1, 1);
+    await expect(shortcut(0)).toHaveValue('A');
 
-  expect(1).toBe(1);
+    await tapNote(2, 2);
+    await expect(shortcut(0)).toHaveValue('B');
+  });
+
+  // test('senario 02', async () => {
+  // });
+
+  const tapNote = async (x: number, y: number): Promise<void> => {
+    const index = x + 1 + y * 9;
+    await window.click(
+      `#root > div > p:nth-child(1) > div > div > div:nth-child(${index})`
+    );
+  };
+
+  const shortcut = (n: number): Locator => {
+    return window.locator(
+      `#root > div > p:nth-child(2) > div > div:nth-child(${n + 3}) > input`
+    );
+  };
 });
-
-const tapNote = async (page: Page, x: number, y: number): Promise<void> => {
-  const index = x + 1 + y * 9;
-  await page.click(
-    `#root > div > p:nth-child(1) > div > div > div:nth-child(${index})`
-  );
-};
-
-const shortcutElement = (page: Page, n: number): Locator => {
-  return page.locator(
-    `#root > div > p:nth-child(2) > div > div:nth-child(${n + 3}) > input`
-  );
-};
-
-const inputShortcut = async (
-  page: Page,
-  n: number,
-  value: string
-): Promise<void> => {
-  await shortcutElement(page, n).type(value);
-};
-
-const expectShortcut = async (
-  page: Page,
-  n: number,
-  value: string
-): Promise<void> => {
-  await expect(await shortcutElement(page, n).inputValue()).toBe(value);
-};
