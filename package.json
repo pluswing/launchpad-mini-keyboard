@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@nut-tree/nut-js": "^2.0.1",
+    "active-win": "^7.7.2",
     "bplist-parser": "^0.3.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.1",
