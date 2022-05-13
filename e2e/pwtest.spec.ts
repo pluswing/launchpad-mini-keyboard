@@ -74,4 +74,71 @@ test.describe('e2e', () => {
       `#root > div > p:nth-child(2) > div > div:nth-child(${n + 3}) > input`
     );
   };
+
+  const changeGlobalTab = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeButtonTab = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeShortcutMode = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeMouseMode = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeLanchAppMode = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeMouseCorner = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const setLaunchApp = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeBgColor = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeTapColor = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const addShortcut = async (): Promise<void> => {
+    // TODO implements
+  };
+  const removeShortcut = async (n: number): Promise<void> => {
+    // TODO implements
+  };
+
+  const addApplication = async (apppath: string): Promise<void> => {
+    // TODO implements
+  };
+
+  const removeApplication = async (): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeApplication = async (apppath: string): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeBgAnimtionType = async (type: string): Promise<void> => {
+    // TODO implements
+  };
+
+  const changeBgAnimationSlider = async (
+    type: string,
+    value: number
+  ): Promise<void> => {
+    // TODO implements
+  };
+  // ....
 });
