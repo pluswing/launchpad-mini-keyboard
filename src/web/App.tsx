@@ -11,14 +11,8 @@ import {
 import { Select } from './components/Select';
 import {
   BackgroundAnimation,
-  BreathAnimation,
   defaultAnimationData,
-  Direction,
   noneAnimation,
-  NoneAnimation,
-  RainbowAnimation,
-  StaticColorAnimation,
-  WaterdropAnimation,
 } from '../backgrounds';
 import { RegisterApplication } from 'ipc';
 import {
@@ -39,6 +33,7 @@ import {
 } from './components/Buttons';
 import { colorGrid } from '../color_palette';
 import { actionEditor } from './actioneditors';
+import { backgroundEditor } from './backgroundeditor';
 
 const api = window.api;
 
@@ -54,15 +49,8 @@ const BUTTONS: Button[][] = [
   [WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, STOP_SOLO_MUTE],
 ];
 
-const isMac = () => {
-  const ua = window.navigator.userAgent.toUpperCase();
-  return ua.indexOf('MAC OS') !== -1;
-};
-
 const highlightTab = (b: boolean) =>
   b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
-
-type Field = [string, number, number, number, (e: any) => void];
 
 export const App = (): JSX.Element => {
   const [connected, setConnected] = useState(false);
@@ -242,199 +230,6 @@ export const App = (): JSX.Element => {
     </>
   );
 
-  const backgroundEditor = (bgAnim: BackgroundAnimation) => {
-    if (bgAnim.type == 'none') {
-      return noneEditor(bgAnim);
-    }
-    if (bgAnim.type == 'rainbow') {
-      return rainbowEditor(bgAnim);
-    }
-    if (bgAnim.type == 'static_color') {
-      return staticColorEditor(bgAnim);
-    }
-    if (bgAnim.type == 'breath') {
-      return breathEditor(bgAnim);
-    }
-    if (bgAnim.type == 'waterdrop') {
-      return waterdropEditor(bgAnim);
-    }
-    return;
-  };
-
-  const slider = (
-    name: string,
-    value: number,
-    min: number,
-    max: number,
-    onChange: (e: any) => void
-  ) => {
-    return (
-      <div className="flex flex-wrap w-full pt-3 pb-3">
-        <label className="pr-3 text-gray-200 w-24">{name}</label>
-        <input
-          className="flex-grow"
-          type="range"
-          value={value}
-          min={min}
-          max={max}
-          step="1"
-          onInput={onChange}
-        />
-      </div>
-    );
-  };
-
-  const staticColorEditor = (anim: StaticColorAnimation) => {
-    const fields: Field[] = [
-      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
-      [
-        'SATURATION',
-        anim.saturation * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'saturation', 100),
-      ],
-      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
-    ];
-    return (
-      <div className="flex flex-wrap m-2">
-        {fields.map((f) => slider(...f))}
-      </div>
-    );
-  };
-
-  const breathEditor = (anim: BreathAnimation) => {
-    const fields: Field[] = [
-      ['SPEED', anim.speed, 1, 10, changeAnimParam(anim, 'speed')],
-      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
-      [
-        'SATURATION',
-        anim.saturation * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'saturation', 100),
-      ],
-      [
-        'MIN_VALUE',
-        anim.min_value * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'min_value', 100),
-      ],
-      [
-        'MAX_VALUE',
-        anim.max_value * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'max_value', 100),
-      ], // TODO min < maxに必ずなるように制御
-    ];
-    return (
-      <div className="flex flex-wrap m-2">
-        {fields.map((f) => slider(...f))}
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
-            RANDOM
-          </label>
-          <input
-            className="m-2"
-            id="breath_random"
-            type="checkbox"
-            checked={anim.random}
-            onChange={(e) => {
-              const v = e.target.checked;
-              const newAnim = { ...anim, random: v };
-              setBgAnimation(newAnim);
-              api.changeBgAnimation(newAnim);
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const waterdropEditor = (anim: WaterdropAnimation) => {
-    const fields: Field[] = [
-      ['TIME', anim.time, 1, 20, changeAnimParam(anim, 'time')],
-      ['SIZE', anim.size, 1, 4, changeAnimParam(anim, 'size')],
-      ['HUE', anim.hue, 0, 359, changeAnimParam(anim, 'hue')],
-      [
-        'SATURATION',
-        anim.saturation * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'saturation', 100),
-      ],
-      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
-    ];
-    return (
-      <div className="flex flex-wrap m-2">
-        {fields.map((f) => slider(...f))}
-        <div className="flex flex-wrap w-full pt-3 pb-3">
-          <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
-            RANDOM
-          </label>
-          <input
-            className="m-2"
-            id="breath_random"
-            type="checkbox"
-            checked={anim.random}
-            onChange={(e) => {
-              const v = e.target.checked;
-              const newAnim = { ...anim, random: v };
-              setBgAnimation(newAnim);
-              api.changeBgAnimation(newAnim);
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const noneEditor = (_: NoneAnimation) => {
-    return <div className="flex flex-wrap m-2"></div>;
-  };
-
-  const changeAnimParam = (anim: BackgroundAnimation, key: string, div = 1) => {
-    return (e: any) => {
-      const newValue = parseInt(e.target.value, 10) / div;
-      const newAnim = { ...anim, [key]: newValue };
-      setBgAnimation(newAnim);
-      api.changeBgAnimation(newAnim);
-    };
-  };
-
-  const rainbowEditor = (anim: RainbowAnimation) => {
-    const fields: Field[] = [
-      ['INTERVAL', anim.interval, 1, 60, changeAnimParam(anim, 'interval')],
-      [
-        'SATURATION',
-        anim.saturation * 100,
-        1,
-        100,
-        changeAnimParam(anim, 'saturation', 100),
-      ],
-      ['VALUE', anim.value * 100, 1, 100, changeAnimParam(anim, 'value', 100)],
-    ];
-
-    return (
-      <div className="flex flex-wrap m-2">
-        {fields.map((f) => slider(...f))}
-        <select
-          id="directionType"
-          className="w-full p-3"
-          value={anim.direction}
-          onChange={changeAnimParam(anim, 'direction')}
-        >
-          <option value={Direction.LEFT}>右から左</option>
-          <option value={Direction.RIGHT}>左から右</option>
-          <option value={Direction.UP}>下から上</option>
-          <option value={Direction.DOWN}>上から下</option>
-        </select>
-      </div>
-    );
-  };
-
   const changeBgAnimationType = (e: any) => {
     const type = e.target.value;
     const newBgAnim = defaultAnimationData(type);
@@ -531,6 +326,11 @@ export const App = (): JSX.Element => {
     );
   };
 
+  const onChangeBgAnimation = (bgAnim: BackgroundAnimation): void => {
+    setBgAnimation(bgAnim);
+    api.changeBgAnimation(bgAnim);
+  };
+
   const tabGlobal = (
     <>
       {appSelector()}
@@ -549,7 +349,7 @@ export const App = (): JSX.Element => {
           <option value="waterdrop">水滴</option>
         </select>
       </div>
-      {backgroundEditor(bgAnimation)}
+      {backgroundEditor(bgAnimation, onChangeBgAnimation)}
     </>
   );
 
