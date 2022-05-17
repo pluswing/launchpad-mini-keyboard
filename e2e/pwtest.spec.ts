@@ -7,6 +7,7 @@ import {
   ElectronApplication,
 } from '@playwright/test';
 import { exec } from 'child_process';
+import { windowsStore } from 'process';
 
 test.describe('e2e', () => {
   let electronApp: ElectronApplication;
@@ -41,7 +42,7 @@ test.describe('e2e', () => {
     await electronApp.close();
   });
 
-  test('senario 01', async () => {
+  test('change shotcut setting', async () => {
     await tapNote(1, 1);
     await expect(shortcut(0)).toHaveValue('');
     await shortcut(0).type('A');
@@ -59,8 +60,35 @@ test.describe('e2e', () => {
     await expect(shortcut(0)).toHaveValue('B');
   });
 
-  // test('senario 02', async () => {
-  // });
+  test('change tab', async () => {
+    // 初期はGlobal
+    await expect(globalTab()).toHaveClass(tabHighlight);
+    await expect(buttonTab()).not.toHaveClass(tabHighlight);
+
+    // noteタップで、buttonタブに移動。
+    await tapNote(1, 1);
+    await expect(globalTab()).not.toHaveClass(tabHighlight);
+    await expect(buttonTab()).toHaveClass(tabHighlight);
+
+    await globalTab().click();
+    await expect(globalTab()).toHaveClass(tabHighlight);
+    await expect(buttonTab()).not.toHaveClass(tabHighlight);
+  });
+
+  test('bgAnimation', async () => {
+    await expect(bgAnimtionType()).toHaveValue('none');
+    await bgAnimtionType().selectOption('rainbow');
+    const dt = window.locator('#directionType');
+    await dt.selectOption('2');
+  });
+
+  // const wait = (ms: number): Promise<void> => {
+  //   return new Promise((r) => {
+  //     setTimeout(() => {
+  //       r();
+  //     }, ms);
+  //   });
+  // };
 
   const tapNote = async (x: number, y: number): Promise<void> => {
     const index = x + 1 + y * 9;
@@ -75,32 +103,26 @@ test.describe('e2e', () => {
     );
   };
 
-  const changeGlobalTab = async (): Promise<void> => {
-    // TODO implements
+  const globalTab = (): Locator => {
+    return window.locator('#globalTab');
   };
 
-  const changeButtonTab = async (): Promise<void> => {
-    // TODO implements
+  const buttonTab = (): Locator => {
+    return window.locator('#buttonTab');
   };
 
-  const changeShortcutMode = async (): Promise<void> => {
-    // TODO implements
-  };
+  const tabHighlight = /bg-gray-200/;
 
-  const changeMouseMode = async (): Promise<void> => {
-    // TODO implements
-  };
-
-  const changeLanchAppMode = async (): Promise<void> => {
-    // TODO implements
+  const actionType = (): Locator => {
+    return window.locator('#actionType');
   };
 
   const changeMouseCorner = async (): Promise<void> => {
     // TODO implements
   };
 
-  const setLaunchApp = async (): Promise<void> => {
-    // TODO implements
+  const appSelect = (): Locator => {
+    return window.locator('#appSelect');
   };
 
   const changeBgColor = async (): Promise<void> => {
@@ -130,8 +152,8 @@ test.describe('e2e', () => {
     // TODO implements
   };
 
-  const changeBgAnimtionType = async (type: string): Promise<void> => {
-    // TODO implements
+  const bgAnimtionType = (): Locator => {
+    return window.locator('#bgAnimationType');
   };
 
   const changeBgAnimationSlider = async (

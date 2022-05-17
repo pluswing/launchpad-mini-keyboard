@@ -199,12 +199,14 @@ export const App = (): JSX.Element => {
   const tabHeader = (
     <div className="flex flex-wrap text-center">
       <div
+        id="globalTab"
         onClick={() => setTabPage(Tab.GLOBAL)}
         className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.GLOBAL)}`}
       >
         GLOBAL
       </div>
       <div
+        id="buttonTab"
         onClick={() => setTabPage(Tab.BUTTON)}
         className={`w-1/2 border-b-2 py-2 ${highlightTab(tab == Tab.BUTTON)}`}
       >
@@ -224,6 +226,7 @@ export const App = (): JSX.Element => {
     <>
       <div className="flex flex-wrap m-2">
         <select
+          id="actionType"
           className="w-full p-3"
           value={action.type}
           onChange={setActionType}
@@ -418,6 +421,7 @@ export const App = (): JSX.Element => {
       <div className="flex flex-wrap m-2">
         {fields.map((f) => slider(...f))}
         <select
+          id="directionType"
           className="w-full p-3"
           value={anim.direction}
           onChange={changeAnimParam(anim, 'direction')}
@@ -474,7 +478,12 @@ export const App = (): JSX.Element => {
   const appSelector = () => {
     return (
       <div className="flex flex-wrap m-2">
-        <select className="w-full p-3" value={currentApp} onChange={changeApp}>
+        <select
+          id="appSelect"
+          className="w-full p-3"
+          value={currentApp}
+          onChange={changeApp}
+        >
           <option value="">DEFAULT</option>
           {appList.map((a) => (
             <option key={a.apppath} value={a.apppath}>
@@ -528,6 +537,7 @@ export const App = (): JSX.Element => {
       <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
       <div className="flex flex-wrap m-2">
         <select
+          id="bgAnimationType"
           className="w-full p-3"
           value={bgAnimation.type}
           onChange={changeBgAnimationType}
