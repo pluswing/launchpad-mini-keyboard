@@ -34,6 +34,8 @@ import {
 import { colorGrid } from '../color_palette';
 import { actionEditor } from './actioneditors';
 import { backgroundEditor } from './backgroundeditor';
+import { appSelector } from './appselector';
+import { setCurrentApplication } from 'store';
 
 const api = window.api;
 
@@ -240,22 +242,33 @@ export const App = (): JSX.Element => {
   const [appList, setAppList] = useState([] as RegisterApplication[]);
   const [currentApp, setCurrentApp] = useState('');
 
-  const changeApp = async (e: any) => {
-    await _changeApp(e.target.value);
+  const onChangeBgAnimation = (bgAnim: BackgroundAnimation): void => {
+    setBgAnimation(bgAnim);
+    api.changeBgAnimation(bgAnim);
   };
 
-  const _changeApp = async (apppath: string) => {
+  const onChangeAppSelector = async (apppath: string) => {
     setCurrentApp(apppath);
-    const data = await api.setCurrentApplication(apppath);
-    // loadSettingをもう一回やる？ => これ採用。
-    setActions(data.actions);
-    setBgColors(data.bgColors);
-    setTapColors(data.tapColors);
-    setBgAnimation(data.bgAnimation);
-    setAppList(data.registerApplications);
+    api.setCurrentApplication(apppath);
+    // const data = await api.setCurrentApplication(apppath);
+    // // loadSettingをもう一回やる？ => これ採用。
+    // setActions(data.actions);
+    // setBgColors(data.bgColors);
+    // setTapColors(data.tapColors);
+    // setBgAnimation(data.bgAnimation);
+    // setAppList(data.registerApplications);
   };
 
-  const addApp = async () => {
+  const onRemoveAppSelector = (apppath: string): void => {
+    const list = [...appList.filter((a) => a.apppath !== apppath)];
+    api.removeApplication(apppath);
+    setAppList(list);
+    setCurrentApp('');
+    api.setCurrentApplication('');
+  };
+
+  const onAddAppSelector = async (): Promise<void> => {
+    const api = window.api;
     const path = await api.selectFile();
     if (!path) return;
     await api.addApplication(path);
@@ -263,77 +276,15 @@ export const App = (): JSX.Element => {
     setAppList(data.registerApplications);
   };
 
-  const removeApp = async () => {
-    const list = [...appList.filter((a) => a.apppath !== currentApp)];
-    setAppList(list);
-    api.removeApplication(currentApp);
-    _changeApp('');
-  };
-
-  const appSelector = () => {
-    return (
-      <div className="flex flex-wrap m-2">
-        <select
-          id="appSelect"
-          className="w-full p-3"
-          value={currentApp}
-          onChange={changeApp}
-        >
-          <option value="">DEFAULT</option>
-          {appList.map((a) => (
-            <option key={a.apppath} value={a.apppath}>
-              {a.apppath}
-            </option>
-          ))}
-        </select>
-        <div className="flex flex-wrap w-full justify-end">
-          <button className="m-2" onClick={() => removeApp()}>
-            <svg
-              className="h-8 w-8 text-white"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" />
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-          <div className="flex flex-wrap justify-end">
-            <button className="m-2" onClick={addApp}>
-              <svg
-                className="h-8 w-8 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="12" x2="16" y2="12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const onChangeBgAnimation = (bgAnim: BackgroundAnimation): void => {
-    setBgAnimation(bgAnim);
-    api.changeBgAnimation(bgAnim);
-  };
-
   const tabGlobal = (
     <>
-      {appSelector()}
+      {appSelector(
+        appList,
+        currentApp,
+        onChangeAppSelector,
+        onRemoveAppSelector,
+        onAddAppSelector
+      )}
       <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
       <div className="flex flex-wrap m-2">
         <select
