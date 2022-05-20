@@ -7,23 +7,22 @@ const isMac = () => {
 };
 
 export const actionEditor = (
-  onChange: (action: Action) => void,
-  action: Action
-) => {
-  if (action.type == 'shortcut') {
-    return shortcutEditor(onChange, action);
-  }
-  if (action.type == 'mouse') {
-    return mouseEditor(onChange, action);
-  }
-  if (action.type == 'applaunch') {
-    return appLaunchEditor(onChange, action);
+  action: Action,
+  onChange: (action: Action) => void
+): JSX.Element => {
+  switch (action.type) {
+    case 'shortcut':
+      return shortcutEditor(action, onChange);
+    case 'mouse':
+      return mouseEditor(action, onChange);
+    case 'applaunch':
+      return appLaunchEditor(action, onChange);
   }
 };
 
 export const shortcutEditor = (
-  onChange: (action: Shortcut) => void,
-  action: Shortcut
+  action: Shortcut,
+  onChange: (action: Shortcut) => void
 ) => {
   const add = () => {
     action.shortcuts.push([]);
@@ -121,9 +120,9 @@ export const shortcutEditor = (
 };
 
 export const mouseEditor = (
-  onChange: (action: Action) => void,
-  action: Mouse
-) => {
+  action: Mouse,
+  onChange: (action: Action) => void
+): JSX.Element => {
   const setMouseEdge = (e: any) => {
     const edge = parseInt(e.target.value, 10);
     action.edge = edge;
@@ -147,9 +146,9 @@ export const mouseEditor = (
 };
 
 export const appLaunchEditor = (
-  onChange: (action: Action) => void,
-  action: AppLaunch
-) => {
+  action: AppLaunch,
+  onChange: (action: Action) => void
+): JSX.Element => {
   const selectAppLaunchFile = async () => {
     const api = window.api;
     const res = await api.selectFile();
