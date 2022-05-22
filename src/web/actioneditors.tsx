@@ -78,6 +78,7 @@ export const shortcutEditor = (
             onKeyDown={(e) => onKeyDown(e, i)}
             placeholder="shortcut key"
             className="p-2 rounded m-2 flex-grow"
+            onChange={() => 1}
           />
           <button className="m-2" onClick={() => remove(i)}>
             <svg

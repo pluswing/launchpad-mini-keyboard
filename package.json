@@ -31,7 +31,8 @@
     "prepare": "git config --local core.hooksPath hooks",
     "copy:assets": "node scripts/copy_assets.js",
     "test": "NODE_PATH=./src jest --config ./jest.config.json",
-    "test:watch": "npm run test-jest -- --watch"
+    "test:watch": "npm run test-jest -- --watch",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@nut-tree/nut-js": "^2.0.1",
