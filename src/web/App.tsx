@@ -118,26 +118,6 @@ export const App = (): JSX.Element => {
   const [bgColor, setBgColor] = useState(0);
   const [tapColor, setTapColor] = useState(0);
 
-  const setActionType = (e: any) => {
-    const type = e.target.value;
-    const act = actions[current.y][current.x];
-    if (act.type === type) {
-      return;
-    }
-
-    let newAct = defaultAction();
-    if (type == 'mouse') {
-      newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
-    }
-    if (type == 'applaunch') {
-      newAct = { type: 'applaunch', appName: '' } as AppLaunch;
-    }
-    setAction({ ...newAct });
-    actions[current.y][current.x] = newAct;
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, newAct);
-  };
-
   const changeBgColor = useCallback(
     (v) => {
       setBgColor(v);
@@ -213,18 +193,6 @@ export const App = (): JSX.Element => {
 
   const tabButton = (
     <>
-      <div className="flex flex-wrap m-2">
-        <select
-          id="actionType"
-          className="w-full p-3"
-          value={action.type}
-          onChange={setActionType}
-        >
-          <option value="shortcut">キーボードショートカット</option>
-          <option value="mouse">マウス操作</option>
-          <option value="applaunch">アプリケーション起動</option>
-        </select>
-      </div>
       {actionEditor(action, actionEditorOnChange)}
       <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
       <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />

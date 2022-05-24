@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Shortcut } from 'actions';
-import { actionEditor } from 'web/actioneditors';
+import { AppLaunch, Edge, Mouse, Shortcut } from 'actions';
+import { _actionEditor as actionEditor } from 'web/actioneditors';
 
 describe(`${__dirname}`, () => {
   test('shortcut', async () => {
@@ -45,6 +45,55 @@ describe(`${__dirname}`, () => {
     expect(onChange.mock.calls[0][0]).toEqual({
       type: 'shortcut',
       shortcuts: [['B']],
+    });
+  });
+
+  it('mouse', async () => {
+    const action: Mouse = {
+      type: 'mouse',
+      edge: Edge.TOP_LEFT,
+    };
+    const onChange = jest.fn();
+    render(actionEditor(action, onChange));
+    expect(screen.getByRole('combobox')).toHaveValue(`${Edge.TOP_LEFT}`);
+    expect(onChange).toBeCalledTimes(0);
+
+    await userEvent.selectOptions(
+      screen.getByRole('combobox'),
+      `${Edge.BOTTOM_LEFT}`
+    );
+    expect(onChange).toBeCalledTimes(1);
+    expect(onChange.mock.calls[0][0]).toEqual({
+      type: 'mouse',
+      edge: Edge.BOTTOM_LEFT,
+    });
+  });
+
+  it('applaunch', async () => {
+    const action: AppLaunch = {
+      type: 'applaunch',
+      appName: '',
+    };
+    const onChange = jest.fn();
+    render(actionEditor(action, onChange));
+    expect(screen.getByRole('appname')).toHaveTextContent(`[選択してください]`);
+    expect(onChange).toBeCalledTimes(0);
+
+    // mock
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.api = {
+      selectFile: async () => {
+        return 'SELECT FILE';
+      },
+    };
+
+    await userEvent.click(screen.getByRole('button'));
+    expect(onChange).toBeCalledTimes(1);
+
+    expect(onChange.mock.calls[0][0]).toEqual({
+      type: 'applaunch',
+      appName: 'SELECT FILE',
     });
   });
 });

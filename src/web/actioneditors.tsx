@@ -1,4 +1,11 @@
-import { Action, AppLaunch, Edge, Mouse, Shortcut } from '../actions';
+import {
+  Action,
+  AppLaunch,
+  defaultAction,
+  Edge,
+  Mouse,
+  Shortcut,
+} from '../actions';
 import keycode from 'keycode';
 
 const isMac = () => {
@@ -6,7 +13,48 @@ const isMac = () => {
   return ua.indexOf('MAC OS') !== -1;
 };
 
+const buildAction = (type: string) => {
+  let newAct = defaultAction();
+  if (type == 'mouse') {
+    newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
+  }
+  if (type == 'applaunch') {
+    newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+  }
+  return newAct;
+};
+
 export const actionEditor = (
+  action: Action,
+  onChange: (action: Action) => void
+): JSX.Element => {
+  const changeActionType = (e: any) => {
+    const type = e.target.value;
+    if (action.type === type) {
+      return;
+    }
+    onChange(buildAction(type));
+  };
+  return (
+    <>
+      <div className="flex flex-wrap m-2">
+        <select
+          id="actionType"
+          className="w-full p-3"
+          value={action.type}
+          onChange={changeActionType}
+        >
+          <option value="shortcut">キーボードショートカット</option>
+          <option value="mouse">マウス操作</option>
+          <option value="applaunch">アプリケーション起動</option>
+        </select>
+      </div>
+      {_actionEditor(action, onChange)}
+    </>
+  );
+};
+
+export const _actionEditor = (
   action: Action,
   onChange: (action: Action) => void
 ): JSX.Element => {
@@ -159,7 +207,10 @@ export const appLaunchEditor = (
 
   return (
     <div className="flex flex-wrap m-2">
-      <div className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll">
+      <div
+        className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll"
+        role="appname"
+      >
         {action.appName || '[選択してください]'}
       </div>
       <button onClick={selectAppLaunchFile} className="p-3">
