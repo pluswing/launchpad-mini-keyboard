@@ -32,8 +32,8 @@ import {
   drawButton,
 } from './components/Buttons';
 import { colorGrid } from '../color_palette';
-import { actionEditor } from './actioneditors';
-import { backgroundEditor } from './backgroundeditor';
+import { ActionEditor } from './actioneditors';
+import { BackgroundEditor } from './backgroundeditor';
 import { AppSelector } from './appselector';
 
 const api = window.api;
@@ -193,18 +193,11 @@ export const App = (): JSX.Element => {
 
   const tabButton = (
     <>
-      {actionEditor(action, actionEditorOnChange)}
+      <ActionEditor action={action} onChange={actionEditorOnChange} />
       <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
       <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
     </>
   );
-
-  const changeBgAnimationType = (e: any) => {
-    const type = e.target.value;
-    const newBgAnim = defaultAnimationData(type);
-    setBgAnimation(newBgAnim);
-    api.changeBgAnimation(newBgAnim);
-  };
 
   const [appList, setAppList] = useState([] as RegisterApplication[]);
 
@@ -247,21 +240,8 @@ export const App = (): JSX.Element => {
         onAdd={onAddAppSelector}
       />
       <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
-      <div className="flex flex-wrap m-2">
-        <select
-          id="bgAnimationType"
-          className="w-full p-3"
-          value={bgAnimation.type}
-          onChange={changeBgAnimationType}
-        >
-          <option value="none">なし</option>
-          <option value="rainbow">虹色</option>
-          <option value="static_color">静的</option>
-          <option value="breath">呼吸</option>
-          <option value="waterdrop">水滴</option>
-        </select>
-      </div>
-      {backgroundEditor(bgAnimation, onChangeBgAnimation)}
+
+      <BackgroundEditor bgAnim={bgAnimation} onChange={onChangeBgAnimation} />
     </>
   );
 

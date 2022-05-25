@@ -27,6 +27,17 @@ export interface Mouse {
 
 export type Action = Shortcut | AppLaunch | Mouse;
 
+export const buildAction = (type: string) => {
+  let newAct = defaultAction();
+  if (type == 'mouse') {
+    newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
+  }
+  if (type == 'applaunch') {
+    newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+  }
+  return newAct;
+};
+
 export const defaultAction = (): Action => {
   return { type: 'shortcut', shortcuts: [[]] };
 };

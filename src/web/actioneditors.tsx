@@ -1,7 +1,7 @@
 import {
   Action,
   AppLaunch,
-  defaultAction,
+  buildAction,
   Edge,
   Mouse,
   Shortcut,
@@ -13,21 +13,12 @@ const isMac = () => {
   return ua.indexOf('MAC OS') !== -1;
 };
 
-const buildAction = (type: string) => {
-  let newAct = defaultAction();
-  if (type == 'mouse') {
-    newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
-  }
-  if (type == 'applaunch') {
-    newAct = { type: 'applaunch', appName: '' } as AppLaunch;
-  }
-  return newAct;
-};
+interface Props {
+  action: Action;
+  onChange: (action: Action) => void;
+}
 
-export const actionEditor = (
-  action: Action,
-  onChange: (action: Action) => void
-): JSX.Element => {
+export const ActionEditor = ({ action, onChange }: Props): JSX.Element => {
   const changeActionType = (e: any) => {
     const type = e.target.value;
     if (action.type === type) {

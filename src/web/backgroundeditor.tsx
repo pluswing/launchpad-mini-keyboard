@@ -1,6 +1,7 @@
 import {
   BackgroundAnimation,
   BreathAnimation,
+  defaultAnimationData,
   Direction,
   NoneAnimation,
   RainbowAnimation,
@@ -10,26 +11,53 @@ import {
 
 type Field = [string, number, number, number, (e: any) => void];
 
-export const backgroundEditor = (
+interface Props {
+  bgAnim: BackgroundAnimation;
+  onChange: (bgAnim: BackgroundAnimation) => void;
+}
+
+export const BackgroundEditor = ({ bgAnim, onChange }: Props): JSX.Element => {
+  const changeBgAnimationType = (e: any) => {
+    const type = e.target.value;
+    onChange(defaultAnimationData(type));
+  };
+  return (
+    <>
+      <div className="flex flex-wrap m-2">
+        <select
+          id="bgAnimationType"
+          className="w-full p-3"
+          value={bgAnim.type}
+          onChange={changeBgAnimationType}
+        >
+          <option value="none">なし</option>
+          <option value="rainbow">虹色</option>
+          <option value="static_color">静的</option>
+          <option value="breath">呼吸</option>
+          <option value="waterdrop">水滴</option>
+        </select>
+      </div>
+      {_backgroundEditor(bgAnim, onChange)}
+    </>
+  );
+};
+
+export const _backgroundEditor = (
   bgAnim: BackgroundAnimation,
   onChange: (bgAnim: BackgroundAnimation) => void
-) => {
-  if (bgAnim.type == 'none') {
-    return noneEditor(bgAnim);
+): JSX.Element => {
+  switch (bgAnim.type) {
+    case 'none':
+      return noneEditor(bgAnim);
+    case 'rainbow':
+      return rainbowEditor(bgAnim, onChange);
+    case 'static_color':
+      return staticColorEditor(bgAnim, onChange);
+    case 'breath':
+      return breathEditor(bgAnim, onChange);
+    case 'waterdrop':
+      return waterdropEditor(bgAnim, onChange);
   }
-  if (bgAnim.type == 'rainbow') {
-    return rainbowEditor(bgAnim, onChange);
-  }
-  if (bgAnim.type == 'static_color') {
-    return staticColorEditor(bgAnim, onChange);
-  }
-  if (bgAnim.type == 'breath') {
-    return breathEditor(bgAnim, onChange);
-  }
-  if (bgAnim.type == 'waterdrop') {
-    return waterdropEditor(bgAnim, onChange);
-  }
-  return;
 };
 
 const noneEditor = (_: NoneAnimation) => {

@@ -1,16 +1,57 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppLaunch, Edge, Mouse, Shortcut } from 'actions';
-import { _actionEditor as actionEditor } from 'web/actioneditors';
+import { ActionEditor } from 'web/actioneditors';
 
 describe(`${__dirname}`, () => {
+  test('action type', async () => {
+    const action: Shortcut = {
+      type: 'shortcut',
+      shortcuts: [['A']],
+    };
+    const onChange = jest.fn();
+    render(<ActionEditor action={action} onChange={onChange} />);
+    expect(onChange).toBeCalledTimes(0);
+
+    await userEvent.selectOptions(screen.getAllByRole('combobox')[0], 'mouse');
+
+    expect(onChange).toBeCalledTimes(1);
+    expect(onChange.mock.calls[0][0]).toEqual({
+      type: 'mouse',
+      edge: Edge.TOP_LEFT,
+    });
+
+    await userEvent.selectOptions(
+      screen.getAllByRole('combobox')[0],
+      'applaunch'
+    );
+
+    expect(onChange).toBeCalledTimes(2);
+    expect(onChange.mock.calls[1][0]).toEqual({
+      type: 'applaunch',
+      appName: '',
+    });
+
+    await userEvent.selectOptions(
+      screen.getAllByRole('combobox')[0],
+      'shortcut'
+    );
+
+    // FIXME なぜかonChangeが呼び出されない
+    // expect(onChange).toBeCalledTimes(3);
+    // expect(onChange.mock.calls[2][0]).toEqual({
+    //   type: 'shortcut',
+    //   shortcuts: [[]],
+    // });
+  });
+
   test('shortcut', async () => {
     const action: Shortcut = {
       type: 'shortcut',
       shortcuts: [['A']],
     };
     const onChange = jest.fn();
-    render(actionEditor(action, onChange));
+    render(<ActionEditor action={action} onChange={onChange} />);
     expect(screen.getByRole('textbox')).toHaveValue('A');
     expect(screen.getAllByRole('textbox').length).toBe(1);
     expect(screen.getAllByRole('button').length).toBe(2);
@@ -31,7 +72,7 @@ describe(`${__dirname}`, () => {
       shortcuts: [['A'], ['B']],
     };
     const onChange = jest.fn();
-    render(actionEditor(action, onChange));
+    render(<ActionEditor action={action} onChange={onChange} />);
     expect(screen.getAllByRole('textbox').length).toBe(2);
     expect(screen.getAllByRole('button').length).toBe(3);
     expect(screen.getAllByRole('textbox')[0]).toHaveValue('A');
@@ -54,12 +95,12 @@ describe(`${__dirname}`, () => {
       edge: Edge.TOP_LEFT,
     };
     const onChange = jest.fn();
-    render(actionEditor(action, onChange));
-    expect(screen.getByRole('combobox')).toHaveValue(`${Edge.TOP_LEFT}`);
+    render(<ActionEditor action={action} onChange={onChange} />);
+    expect(screen.getAllByRole('combobox')[1]).toHaveValue(`${Edge.TOP_LEFT}`);
     expect(onChange).toBeCalledTimes(0);
 
     await userEvent.selectOptions(
-      screen.getByRole('combobox'),
+      screen.getAllByRole('combobox')[1],
       `${Edge.BOTTOM_LEFT}`
     );
     expect(onChange).toBeCalledTimes(1);
@@ -75,7 +116,7 @@ describe(`${__dirname}`, () => {
       appName: '',
     };
     const onChange = jest.fn();
-    render(actionEditor(action, onChange));
+    render(<ActionEditor action={action} onChange={onChange} />);
     expect(screen.getByRole('appname')).toHaveTextContent(`[選択してください]`);
     expect(onChange).toBeCalledTimes(0);
 
