@@ -140,6 +140,14 @@ const breathEditor = (
   anim: BreathAnimation,
   onChange: (bgAnim: BackgroundAnimation) => void
 ) => {
+  const onChangeLocal = (bgAnim: BackgroundAnimation) => {
+    if (bgAnim.type != 'breath') return;
+    const minValue = Math.min(bgAnim.min_value, bgAnim.max_value);
+    const maxValue = Math.max(bgAnim.min_value, bgAnim.max_value);
+    bgAnim.min_value = minValue;
+    bgAnim.max_value = maxValue;
+    onChange(bgAnim);
+  };
   const fields: Field[] = [
     ['SPEED', anim.speed, 1, 10, changeAnimParam(onChange, anim, 'speed')],
     ['HUE', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
@@ -155,14 +163,14 @@ const breathEditor = (
       anim.min_value * 100,
       1,
       100,
-      changeAnimParam(onChange, anim, 'min_value', 100),
+      changeAnimParam(onChangeLocal, anim, 'min_value', 100),
     ],
     [
       'MAX_VALUE',
       anim.max_value * 100,
       1,
       100,
-      changeAnimParam(onChange, anim, 'max_value', 100),
+      changeAnimParam(onChangeLocal, anim, 'max_value', 100),
     ], // TODO min < maxに必ずなるように制御
   ];
   return (

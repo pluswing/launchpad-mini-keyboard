@@ -102,7 +102,6 @@ export const shortcutEditor = (
       keycode(e).toUpperCase(),
     ].filter((v) => v);
 
-    // TODO shortcut以外のアクションの場合の対応
     action.shortcuts[i] = s;
     onChange(action);
   };

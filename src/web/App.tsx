@@ -32,7 +32,7 @@ import {
   drawButton,
 } from './components/Buttons';
 import { colorGrid } from '../color_palette';
-import { ActionEditor } from './actioneditors';
+import { ActionEditor } from './actioneditor';
 import { BackgroundEditor } from './backgroundeditor';
 import { AppSelector } from './appselector';
 
@@ -164,7 +164,6 @@ export const App = (): JSX.Element => {
     api.changePage(tab == Tab.GLOBAL ? 'global' : 'button');
   };
 
-  // TODO
   const tabHeader = (
     <div className="flex flex-wrap text-center">
       <div

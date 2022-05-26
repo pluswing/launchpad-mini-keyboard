@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppLaunch, Edge, Mouse, Shortcut } from 'actions';
-import { ActionEditor } from 'web/actioneditors';
+import { ActionEditor } from 'web/actioneditor';
 
 describe(`${__dirname}`, () => {
   test('action type', async () => {
@@ -31,18 +31,27 @@ describe(`${__dirname}`, () => {
       type: 'applaunch',
       appName: '',
     });
+  });
 
+  test('action type 2', async () => {
+    const action: Mouse = {
+      type: 'mouse',
+      edge: Edge.TOP_LEFT,
+    };
+
+    const onChange = jest.fn();
+    render(<ActionEditor action={action} onChange={onChange} />);
+    expect(onChange).toBeCalledTimes(0);
     await userEvent.selectOptions(
       screen.getAllByRole('combobox')[0],
       'shortcut'
     );
 
-    // FIXME なぜかonChangeが呼び出されない
-    // expect(onChange).toBeCalledTimes(3);
-    // expect(onChange.mock.calls[2][0]).toEqual({
-    //   type: 'shortcut',
-    //   shortcuts: [[]],
-    // });
+    expect(onChange).toBeCalledTimes(1);
+    expect(onChange.mock.calls[0][0]).toEqual({
+      type: 'shortcut',
+      shortcuts: [[]],
+    });
   });
 
   test('shortcut', async () => {
