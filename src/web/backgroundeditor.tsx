@@ -171,7 +171,7 @@ const breathEditor = (
       1,
       100,
       changeAnimParam(onChangeLocal, anim, 'max_value', 100),
-    ], // TODO min < maxに必ずなるように制御
+    ],
   ];
   return (
     <div className="flex flex-wrap m-2">

@@ -108,6 +108,5 @@ export const defaultAnimationData = (type: string): BackgroundAnimation => {
       random: false,
     };
   }
-  // FIXME
   return noneAnimation();
 };
