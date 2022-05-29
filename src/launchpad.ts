@@ -7,8 +7,9 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from './backgrounds';
-import { COLOR_PALETTE } from './constants';
+import { COLOR_PALETTE } from './color_palette';
 import {
+  blendImage,
   Color,
   fillImage,
   getPixel,
@@ -297,34 +298,50 @@ const defaultOnNote = (p: Point) => {
   applyLaunchpadByIndexes(b);
 };
 
-const waterdrop = (p: Point) => {
-  stopAnimation(); // FIXME 仮置き。複数アニメの合成
-  const STEP_SCALE = 10;
-  const anim = getBgAnimation() as WaterdropAnimation;
+let drops: Array<{
+  point: Point;
+  step: number;
+  hue: number;
+  remove: boolean;
+}> = [];
 
+const waterdrop = (p: Point) => {
+  const anim = getBgAnimation() as WaterdropAnimation;
   let hue = 0;
   hue = anim.hue;
   if (anim.random) {
     hue = randomInt(359);
   }
 
-  let step = 0;
-  startAnimation(() => {
-    step += 1;
-    if (step >= STEP_SCALE) {
-      if (step >= STEP_SCALE + anim.time) {
-        stopAnimation();
-        applyLaunchpad();
-      }
-      return;
-    }
+  drops.push({ point: p, step: 0, hue, remove: false });
+};
 
-    // 円を描画する
-    const image = filledCircle({
-      center: p,
-      r: anim.size * (step / STEP_SCALE),
-      color: hsv(hue, anim.saturation, anim.value),
-    });
+const waterdropAnimation = () => {
+  stopBackgroundAnimation();
+
+  const STEP_SCALE = 10;
+  const anim = getBgAnimation() as WaterdropAnimation;
+
+  startAnimation(() => {
+    const image = drops.reduce((image, d) => {
+      d.step += 1;
+      if (d.step >= STEP_SCALE) {
+        if (d.step >= STEP_SCALE + anim.time) {
+          d.remove = true;
+        }
+        return image;
+      }
+      // 円を描画する
+      const circle = filledCircle({
+        center: d.point,
+        r: anim.size * (d.step / STEP_SCALE),
+        color: hsv(d.hue, anim.saturation, anim.value),
+      });
+      return blendImage(image, circle);
+    }, newImage());
+
+    drops = drops.filter((d) => !d.remove);
+
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
   }, 30);
@@ -341,7 +358,7 @@ const staticBackground = () => {
 
 // 呼吸
 const breathBackground = () => {
-  stopAnimation();
+  stopBackgroundAnimation();
 
   let lastStep = 0;
   let step = 0;
@@ -367,7 +384,6 @@ const breathBackground = () => {
 const clearBackgroundAnimation = () => {
   stopBackgroundAnimation();
   applyLaunchpad();
-  console.log('clearBackgroundAnimation');
 };
 
 interface AnimDef {
@@ -393,7 +409,7 @@ const ANIMATION_DEFINITION: { [key: string]: AnimDef } = {
     onNote: defaultOnNote,
   },
   waterdrop: {
-    background: clearBackgroundAnimation,
+    background: waterdropAnimation,
     onNote: waterdrop,
   },
 };

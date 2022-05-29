@@ -1,3 +1,5 @@
+import { range } from './util';
+
 // action
 export type Keys = string[];
 
@@ -25,6 +27,20 @@ export interface Mouse {
 
 export type Action = Shortcut | AppLaunch | Mouse;
 
+export const buildAction = (type: string) => {
+  let newAct = defaultAction();
+  if (type == 'mouse') {
+    newAct = { type: 'mouse', edge: Edge.TOP_LEFT } as Mouse;
+  }
+  if (type == 'applaunch') {
+    newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+  }
+  return newAct;
+};
+
 export const defaultAction = (): Action => {
   return { type: 'shortcut', shortcuts: [[]] };
 };
+
+export const actionGrid = (): Action[][] =>
+  range(9).map(() => range(9).map(() => defaultAction()));

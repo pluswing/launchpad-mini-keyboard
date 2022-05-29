@@ -1,4 +1,4 @@
-import { COLOR_PALETTE } from '../../constants';
+import { COLOR_PALETTE } from '../../color_palette';
 
 interface Props {
   onClick?: () => void;
@@ -18,6 +18,7 @@ export const WhiteButton = ({
         <div className="animate-ping absolute m-3 w-10 h-10 bg-blue-50"></div>
       )}
       <div
+        role="top_view"
         className="relative w-16 h-16 bg-blue-50"
         style={{ backgroundColor: cs }}
         onClick={onClick}

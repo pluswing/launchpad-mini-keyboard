@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src"
   },
-  "include": ["src", "jest.setup.ts"],
+  "include": ["src", "jest.setup.ts", "e2e/test.spec.ts"],
   "ts-node": {
     "compilerOptions": {
       "target": "ES2015",
