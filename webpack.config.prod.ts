@@ -90,6 +90,8 @@ const main: Configuration = {
   entry: {
     main: './src/main.ts',
   },
+  // see: https://www.utakata.work/entry/2020/05/11/231612
+  externals: [{ '../build/Debug/iconv.node': 'debug-iconv-node' }],
 };
 
 const preload: Configuration = {
