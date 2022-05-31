@@ -328,13 +328,13 @@ const waterdropAnimation = () => {
       if (d.step >= STEP_SCALE) {
         if (d.step >= STEP_SCALE + anim.time) {
           d.remove = true;
+          return image;
         }
-        return image;
       }
       // 円を描画する
       const circle = filledCircle({
         center: d.point,
-        r: anim.size * (d.step / STEP_SCALE),
+        r: anim.size * Math.min(1, d.step / STEP_SCALE),
         color: hsv(d.hue, anim.saturation, anim.value),
       });
       return blendImage(image, circle);
@@ -360,7 +360,7 @@ const staticBackground = () => {
 const breathBackground = () => {
   stopBackgroundAnimation();
 
-  let lastStep = 0;
+  let lastStep = 360;
   let step = 0;
   let hue = 0;
   startAnimation(() => {
