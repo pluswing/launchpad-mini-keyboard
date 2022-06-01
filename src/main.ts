@@ -222,14 +222,6 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
     setCurrentApplication(apppath);
     startBackgroundAnimation();
-    const s: Setting = {
-      actions: getActions(),
-      tapColors: getTapColors(),
-      bgColors: getBgColors(),
-      bgAnimation: getBgAnimation(),
-      registerApplications: await getRegisterApplicationsWithIcon(),
-    };
-    return s;
   });
 };
 

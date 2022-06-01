@@ -1,18 +1,21 @@
 import { RegisterApplication } from 'ipc';
-import { useState } from 'react';
 
 interface Props {
+  app: string;
   appList: RegisterApplication[];
   onChange: (apppath: string) => void;
-  onRemove: (apppath: string) => void;
-  onAdd: (apppath: string) => void;
+  onRemove: () => void;
+  onAdd: () => void;
 }
 
-export const AppSelector = ({ appList, onChange, onRemove, onAdd }: Props) => {
-  const [currentApp, setCurrentApp] = useState('');
-
+export const AppSelector = ({
+  app,
+  appList,
+  onChange,
+  onRemove,
+  onAdd,
+}: Props) => {
   const changeApp = async (e: any) => {
-    setCurrentApp(e.target.value);
     onChange(e.target.value);
   };
 
@@ -21,7 +24,7 @@ export const AppSelector = ({ appList, onChange, onRemove, onAdd }: Props) => {
       <select
         id="appSelect"
         className="w-full p-3"
-        value={currentApp}
+        value={app}
         onChange={changeApp}
       >
         <option value="">DEFAULT</option>
@@ -32,7 +35,7 @@ export const AppSelector = ({ appList, onChange, onRemove, onAdd }: Props) => {
         ))}
       </select>
       <div className="flex flex-wrap w-full justify-end">
-        <button className="m-2" onClick={() => onRemove(currentApp)}>
+        <button className="m-2" onClick={onRemove}>
           <svg
             className="h-8 w-8 text-white"
             width="24"
@@ -50,7 +53,7 @@ export const AppSelector = ({ appList, onChange, onRemove, onAdd }: Props) => {
           </svg>
         </button>
         <div className="flex flex-wrap justify-end">
-          <button className="m-2" onClick={() => onAdd(currentApp)}>
+          <button className="m-2" onClick={onAdd}>
             <svg
               className="h-8 w-8 text-white"
               viewBox="0 0 24 24"

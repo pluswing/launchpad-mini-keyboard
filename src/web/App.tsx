@@ -1,19 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toPoint } from '../draw';
-import {
-  Action,
-  actionGrid,
-  AppLaunch,
-  defaultAction,
-  Edge,
-  Mouse,
-} from '../actions';
+import { Action, actionGrid, defaultAction } from '../actions';
 import { Select } from './components/Select';
-import {
-  BackgroundAnimation,
-  defaultAnimationData,
-  noneAnimation,
-} from '../backgrounds';
+import { BackgroundAnimation, noneAnimation } from '../backgrounds';
 import { RegisterApplication } from 'ipc';
 import {
   Button,
@@ -50,6 +39,11 @@ const BUTTONS: Button[][] = [
   [WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, STOP_SOLO_MUTE],
 ];
 
+enum Tab {
+  GLOBAL,
+  BUTTON,
+}
+
 const highlightTab = (b: boolean) =>
   b ? 'bg-gray-200 border-blue-400' : 'bg-gray-400 border-gray-500';
 
@@ -77,6 +71,13 @@ export const App = (): JSX.Element => {
     },
   });
 
+  // data
+  const [actions, setActions] = useState(actionGrid());
+  const [bgColors, setBgColors] = useState(colorGrid());
+  const [tapColors, setTapColors] = useState(colorGrid());
+  const [bgAnimation, setBgAnimation] = useState(noneAnimation());
+  const [appList, setAppList] = useState([] as RegisterApplication[]);
+
   // on mounted
   useEffect(() => {
     api.ready();
@@ -89,22 +90,22 @@ export const App = (): JSX.Element => {
     });
   }, []);
 
-  // data
-  const [actions, setActions] = useState(actionGrid());
-  const [bgColors, setBgColors] = useState(colorGrid());
-  const [tapColors, setTapColors] = useState(colorGrid());
-  const [bgAnimation, setBgAnimation] = useState(noneAnimation());
+  // main & sidebar
+  const [action, setAction] = useState<Action>(defaultAction());
+  const [bgColor, setBgColor] = useState(0);
+  const [tapColor, setTapColor] = useState(0);
 
-  // sidebar
-  enum Tab {
-    GLOBAL,
-    BUTTON,
-  }
-  const [tab, setTab] = useState(Tab.GLOBAL);
+  // main
   const [current, setCurrent] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   });
+
+  const [tab, setTab] = useState(Tab.GLOBAL);
+  const setTabPage = (tab: Tab) => {
+    setTab(tab);
+    api.changePage(tab == Tab.GLOBAL ? 'global' : 'button');
+  };
 
   const showButtonSetting = (x: number, y: number) => {
     setCurrent({ x, y });
@@ -113,30 +114,6 @@ export const App = (): JSX.Element => {
     setTapColor(tapColors[y][x]);
     setTabPage(Tab.BUTTON);
   };
-
-  const [action, setAction] = useState<Action>(defaultAction());
-  const [bgColor, setBgColor] = useState(0);
-  const [tapColor, setTapColor] = useState(0);
-
-  const changeBgColor = useCallback(
-    (v) => {
-      setBgColor(v);
-      bgColors[current.y][current.x] = v;
-      setBgColors([...bgColors]);
-      api.changeBgColor(current.x, current.y, v);
-    },
-    [setBgColor, setBgColors, current, bgColors]
-  );
-
-  const changeTapColor = useCallback(
-    (v) => {
-      setTapColor(v);
-      tapColors[current.y][current.x] = v;
-      setTapColors([...tapColors]);
-      api.changeTapColor(current.x, current.y, v);
-    },
-    [setTapColor, setTapColors, current, tapColors]
-  );
 
   const colors = onDown ? tapColors : bgColors;
 
@@ -159,9 +136,94 @@ export const App = (): JSX.Element => {
     </div>
   );
 
-  const setTabPage = (tab: Tab) => {
-    setTab(tab);
-    api.changePage(tab == Tab.GLOBAL ? 'global' : 'button');
+  // tab global
+  const [currentApp, setCurrentApp] = useState('');
+
+  const onChangeAppSelector = async (apppath: string) => {
+    setCurrentApp(apppath);
+    await api.setCurrentApplication(apppath);
+    const data = await api.loadSetting();
+    setActions(data.actions);
+    setBgColors(data.bgColors);
+    setTapColors(data.tapColors);
+    setBgAnimation(data.bgAnimation);
+    setAppList(data.registerApplications);
+  };
+
+  const onAddAppSelector = async () => {
+    const path = await api.selectFile();
+    if (!path) return;
+    await api.addApplication(path);
+    const data = await api.loadSetting();
+    setAppList(data.registerApplications);
+  };
+
+  const onRemoveAppSelector = async () => {
+    const list = [...appList.filter((a) => a.apppath !== currentApp)];
+    setAppList(list);
+    api.removeApplication(currentApp);
+    onChangeAppSelector('');
+  };
+
+  const onChangeBgAnimation = (bgAnim: BackgroundAnimation): void => {
+    setBgAnimation(bgAnim);
+    api.changeBgAnimation(bgAnim);
+  };
+
+  const tabGlobal = (
+    <>
+      <AppSelector
+        app={currentApp}
+        appList={appList}
+        onChange={onChangeAppSelector}
+        onRemove={onRemoveAppSelector}
+        onAdd={onAddAppSelector}
+      />
+      <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
+
+      <BackgroundEditor bgAnim={bgAnimation} onChange={onChangeBgAnimation} />
+    </>
+  );
+
+  // tabButton
+  const actionEditorOnChange = (action: Action) => {
+    setAction({ ...action });
+    actions[current.y][current.x] = { ...action };
+    setActions([...actions]);
+    api.changeAction(current.x, current.y, action);
+  };
+
+  const changeBgColor = useCallback(
+    (v) => {
+      setBgColor(v);
+      bgColors[current.y][current.x] = v;
+      setBgColors([...bgColors]);
+      api.changeBgColor(current.x, current.y, v);
+    },
+    [setBgColor, setBgColors, current, bgColors]
+  );
+
+  const changeTapColor = useCallback(
+    (v) => {
+      setTapColor(v);
+      tapColors[current.y][current.x] = v;
+      setTapColors([...tapColors]);
+      api.changeTapColor(current.x, current.y, v);
+    },
+    [setTapColor, setTapColors, current, tapColors]
+  );
+
+  const tabButton = (
+    <>
+      <ActionEditor action={action} onChange={actionEditorOnChange} />
+      <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
+      <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
+    </>
+  );
+
+  const tabContents = {
+    [Tab.GLOBAL]: tabGlobal,
+    [Tab.BUTTON]: tabButton,
   };
 
   const tabHeader = (
@@ -182,72 +244,6 @@ export const App = (): JSX.Element => {
       </div>
     </div>
   );
-
-  const actionEditorOnChange = (action: Action) => {
-    setAction({ ...action });
-    actions[current.y][current.x] = { ...action };
-    setActions([...actions]);
-    api.changeAction(current.x, current.y, action);
-  };
-
-  const tabButton = (
-    <>
-      <ActionEditor action={action} onChange={actionEditorOnChange} />
-      <Select prefix="tap color" value={tapColor} onChange={changeTapColor} />
-      <Select prefix="bg color" value={bgColor} onChange={changeBgColor} />
-    </>
-  );
-
-  const [appList, setAppList] = useState([] as RegisterApplication[]);
-
-  const onChangeAppSelector = async (apppath: string) => {
-    const data = await api.setCurrentApplication(apppath);
-    // loadSettingをもう一回やる？ => これ採用。
-    setActions(data.actions);
-    setBgColors(data.bgColors);
-    setTapColors(data.tapColors);
-    setBgAnimation(data.bgAnimation);
-    setAppList(data.registerApplications);
-  };
-
-  const onAddAppSelector = async (apppath: string) => {
-    const path = await api.selectFile();
-    if (!path) return;
-    await api.addApplication(path);
-    const data = await api.setCurrentApplication(apppath);
-    setAppList(data.registerApplications);
-  };
-
-  const onRemoveAppSelector = async (apppath: string) => {
-    const list = [...appList.filter((a) => a.apppath !== apppath)];
-    setAppList(list);
-    api.removeApplication(apppath);
-    onChangeAppSelector('');
-  };
-
-  const onChangeBgAnimation = (bgAnim: BackgroundAnimation): void => {
-    setBgAnimation(bgAnim);
-    api.changeBgAnimation(bgAnim);
-  };
-
-  const tabGlobal = (
-    <>
-      <AppSelector
-        appList={appList}
-        onChange={onChangeAppSelector}
-        onRemove={onRemoveAppSelector}
-        onAdd={onAddAppSelector}
-      />
-      <div className="w-full border-t-2 border-b-2 border-gray-200"></div>
-
-      <BackgroundEditor bgAnim={bgAnimation} onChange={onChangeBgAnimation} />
-    </>
-  );
-
-  const tabContents = {
-    [Tab.GLOBAL]: tabGlobal,
-    [Tab.BUTTON]: tabButton,
-  };
 
   const side = (
     <div className="bg-gray-600 h-full">
