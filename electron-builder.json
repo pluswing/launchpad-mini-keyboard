@@ -1,6 +1,9 @@
 {
   "productName": "Launch Deck",
   "copyright": "© 2021 pluswing.",
+  "appId": "jp.co.pluswing.launchdeck",
+  "afterSign": "scripts/notarize.js",
+  "asar": false,
   "files": ["dist/**/*"],
   "directories": {
     "output": "release"
@@ -31,13 +34,16 @@
     "artifactName": "${productName}-${version}-${platform}-${arch}-installer.${ext}"
   },
   "mac": {
-    "identity": null,
     "icon": "assets/icon.icns",
     "category": "public.app-category.developer-tools",
     "artifactName": "${productName}-${version}-${platform}-${arch}.${ext}",
     "target": {
       "target": "default"
     },
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist",
     "extendInfo": {
       "CFBundleName": "Launch Deck",
       "CFBundleDisplayName": "Launch Deck",

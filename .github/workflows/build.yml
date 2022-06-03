@@ -27,3 +27,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           build_script_name: 'preprocess'
+        env:
+          APPLEID: ${{ secrets.APPLEID }}
+          APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
+          ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
