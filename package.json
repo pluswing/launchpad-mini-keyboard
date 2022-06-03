@@ -8,7 +8,7 @@
     "url": "https://github.com/pluswing/launchpad-mini-keyboard"
   },
   "engines": {
-    "node": ">=16.13.0"
+    "node": ">=16.15.1"
   },
   "main": "dist/main.js",
   "scripts": {
@@ -102,6 +102,6 @@
     "wait-on": "^6.0.0"
   },
   "volta": {
-    "node": "16.13.0"
+    "node": "16.15.1"
   }
 }
