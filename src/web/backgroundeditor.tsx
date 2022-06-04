@@ -30,11 +30,11 @@ export const BackgroundEditor = ({ bgAnim, onChange }: Props): JSX.Element => {
           value={bgAnim.type}
           onChange={changeBgAnimationType}
         >
-          <option value="none">なし</option>
-          <option value="rainbow">虹色</option>
-          <option value="static_color">静的</option>
-          <option value="breath">呼吸</option>
-          <option value="waterdrop">水滴</option>
+          <option value="none">None</option>
+          <option value="rainbow">Rainbow</option>
+          <option value="static_color">Static</option>
+          <option value="breath">Breath</option>
+          <option value="waterdrop">Water drop</option>
         </select>
       </div>
       {_backgroundEditor(bgAnim, onChange)}
@@ -70,21 +70,21 @@ const rainbowEditor = (
 ) => {
   const fields: Field[] = [
     [
-      'INTERVAL',
+      'Speed',
       anim.interval,
       1,
       60,
       changeAnimParam(onChange, anim, 'interval'),
     ],
     [
-      'SATURATION',
+      'Saturation',
       anim.saturation * 100,
       1,
       100,
       changeAnimParam(onChange, anim, 'saturation', 100),
     ],
     [
-      'VALUE',
+      'Brightness',
       anim.value * 100,
       1,
       100,
@@ -101,10 +101,10 @@ const rainbowEditor = (
         value={anim.direction}
         onChange={changeAnimParam(onChange, anim, 'direction')}
       >
-        <option value={Direction.LEFT}>右から左</option>
-        <option value={Direction.RIGHT}>左から右</option>
-        <option value={Direction.UP}>下から上</option>
-        <option value={Direction.DOWN}>上から下</option>
+        <option value={Direction.LEFT}>Right to left</option>
+        <option value={Direction.RIGHT}>Left to right</option>
+        <option value={Direction.UP}>Bottom to up</option>
+        <option value={Direction.DOWN}>Up to bottom</option>
       </select>
     </div>
   );
@@ -115,16 +115,16 @@ const staticColorEditor = (
   onChange: (bgAnim: BackgroundAnimation) => void
 ) => {
   const fields: Field[] = [
-    ['HUE', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
+    ['Hue', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
     [
-      'SATURATION',
+      'Saturation',
       anim.saturation * 100,
       1,
       100,
       changeAnimParam(onChange, anim, 'saturation', 100),
     ],
     [
-      'VALUE',
+      'Brightness',
       anim.value * 100,
       1,
       100,
@@ -149,24 +149,24 @@ const breathEditor = (
     onChange(bgAnim);
   };
   const fields: Field[] = [
-    ['SPEED', anim.speed, 1, 10, changeAnimParam(onChange, anim, 'speed')],
-    ['HUE', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
+    ['Speed', anim.speed, 1, 10, changeAnimParam(onChange, anim, 'speed')],
+    ['Hue', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
     [
-      'SATURATION',
+      'Saturation',
       anim.saturation * 100,
       1,
       100,
       changeAnimParam(onChange, anim, 'saturation', 100),
     ],
     [
-      'MIN_VALUE',
+      'Brightness(min)',
       anim.min_value * 100,
       1,
       100,
       changeAnimParam(onChangeLocal, anim, 'min_value', 100),
     ],
     [
-      'MAX_VALUE',
+      'Brightness(max)',
       anim.max_value * 100,
       1,
       100,
@@ -177,11 +177,13 @@ const breathEditor = (
     <div className="flex flex-wrap m-2">
       {fields.map((f) => slider(...f))}
       <div className="flex flex-wrap w-full pt-3 pb-3">
-        <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
-          RANDOM
+        <label
+          className="pr-3 text-gray-200 w-24 text-xs"
+          htmlFor="breath_random"
+        >
+          Random color
         </label>
         <input
-          className="m-2"
           id="breath_random"
           type="checkbox"
           checked={anim.random}
@@ -201,18 +203,18 @@ const waterdropEditor = (
   onChange: (bgAnim: BackgroundAnimation) => void
 ) => {
   const fields: Field[] = [
-    ['TIME', anim.time, 1, 20, changeAnimParam(onChange, anim, 'time')],
-    ['SIZE', anim.size, 1, 4, changeAnimParam(onChange, anim, 'size')],
-    ['HUE', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
+    ['Time left', anim.time, 1, 20, changeAnimParam(onChange, anim, 'time')],
+    ['Size', anim.size, 1, 4, changeAnimParam(onChange, anim, 'size')],
+    ['hue', anim.hue, 0, 359, changeAnimParam(onChange, anim, 'hue')],
     [
-      'SATURATION',
+      'Saturation',
       anim.saturation * 100,
       1,
       100,
       changeAnimParam(onChange, anim, 'saturation', 100),
     ],
     [
-      'VALUE',
+      'Brightness',
       anim.value * 100,
       1,
       100,
@@ -223,11 +225,13 @@ const waterdropEditor = (
     <div className="flex flex-wrap m-2">
       {fields.map((f) => slider(...f))}
       <div className="flex flex-wrap w-full pt-3 pb-3">
-        <label className="pr-3 text-gray-200 w-24" htmlFor="breath_random">
-          RANDOM
+        <label
+          className="pr-3 text-gray-200 w-24 text-xs"
+          htmlFor="breath_random"
+        >
+          Random color
         </label>
         <input
-          className="m-2"
           id="breath_random"
           type="checkbox"
           checked={anim.random}
@@ -264,7 +268,7 @@ const slider = (
 ) => {
   return (
     <div className="flex flex-wrap w-full pt-3 pb-3">
-      <label className="pr-3 text-gray-200 w-24">{name}</label>
+      <label className="pr-3 text-gray-200 w-24 text-xs">{name}</label>
       <input
         className="flex-grow"
         type="range"

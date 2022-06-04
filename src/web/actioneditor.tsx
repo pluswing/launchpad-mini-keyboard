@@ -35,9 +35,9 @@ export const ActionEditor = ({ action, onChange }: Props): JSX.Element => {
           value={action.type}
           onChange={changeActionType}
         >
-          <option value="shortcut">キーボードショートカット</option>
-          <option value="mouse">マウス操作</option>
-          <option value="applaunch">アプリケーション起動</option>
+          <option value="shortcut">Key Stroke</option>
+          <option value="mouse">Move Mouse</option>
+          <option value="applaunch">Launch App</option>
         </select>
       </div>
       {_actionEditor(action, onChange)}
@@ -175,10 +175,10 @@ export const mouseEditor = (
         value={action.edge}
         onChange={setMouseEdge}
       >
-        <option value={Edge.TOP_LEFT}>左上</option>
-        <option value={Edge.TOP_RIGHT}>右上</option>
-        <option value={Edge.BOTTOM_LEFT}>左下</option>
-        <option value={Edge.BOTTOM_RIGHT}>右下</option>
+        <option value={Edge.TOP_LEFT}>top-left</option>
+        <option value={Edge.TOP_RIGHT}>top-right</option>
+        <option value={Edge.BOTTOM_LEFT}>bottom-left</option>
+        <option value={Edge.BOTTOM_RIGHT}>bottom-right</option>
       </select>
     </div>
   );
@@ -201,7 +201,7 @@ export const appLaunchEditor = (
         className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll"
         role="appname"
       >
-        {action.appName || '[選択してください]'}
+        {action.appName || '[No select]'}
       </div>
       <button onClick={selectAppLaunchFile} className="p-3">
         <svg
