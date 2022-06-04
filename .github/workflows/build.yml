@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, windows-2019]
+        os: [macos-latest]
 
     steps:
       - name: Check out Git repository
@@ -27,12 +27,22 @@ jobs:
           node-version: '16.13.0'
 
       - name: Build/release Electron app
-        uses: pluswing/action-electron-builder@master
-        with:
-          github_token: ${{ secrets.github_token }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          build_script_name: 'preprocess'
+        run: |
+          npm i
+          npm run preprocess
+          export CSC_LINK="$MAC_CERTS"
+          export CSC_KEY_PASSWORD="$MAC_CERTS_PASSWORD"
+          ./node_modules/.bin/electron-builder --mac --x64 --publish=always
+          ./node_modules/.bin/electron-builder --mac --arm64 --publish=always
+          export CSC_LINK="$WINDOWS_CERTS"
+          export CSC_KEY_PASSWORD="$WINDOWS_CERTS_PASSWORD"
+          ./node_modules/.bin/electron-builder --windows --x64 --publish=always
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLEID: ${{ secrets.APPLEID }}
           APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
           ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
+          MAC_CERTS: ${{ secrets.MAC_CERTS }}
+          MAC_CERTS_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
+          WINDOWS_CERTS: ${{ secrets.WINDOWS_CERTS }}
+          WINDOWS_CERTS_PASSWORD: ${{ secrets.WINDOWS_CERTS_PASSWORD }}
