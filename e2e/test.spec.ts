@@ -7,7 +7,6 @@ import {
   ElectronApplication,
 } from '@playwright/test';
 import { exec } from 'child_process';
-import { windowsStore } from 'process';
 
 test.describe('e2e', () => {
   let electronApp: ElectronApplication;

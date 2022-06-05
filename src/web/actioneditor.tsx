@@ -201,7 +201,7 @@ export const appLaunchEditor = (
         className="flex-grow text-gray-100 h-8 w-8 py-3 overflow-x-scroll"
         role="appname"
       >
-        {action.appName || '[No select]'}
+        {action.appName || '[Not selected]'}
       </div>
       <button onClick={selectAppLaunchFile} className="p-3">
         <svg

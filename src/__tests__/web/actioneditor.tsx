@@ -126,7 +126,7 @@ describe(`${__dirname}`, () => {
     };
     const onChange = jest.fn();
     render(<ActionEditor action={action} onChange={onChange} />);
-    expect(screen.getByRole('appname')).toHaveTextContent(`[選択してください]`);
+    expect(screen.getByRole('appname')).toHaveTextContent(`[Not selected]`);
     expect(onChange).toBeCalledTimes(0);
 
     // mock
