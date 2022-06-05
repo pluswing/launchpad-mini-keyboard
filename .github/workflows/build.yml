@@ -48,7 +48,7 @@ jobs:
           npm i node-gyp
           npm i
           npm run preprocess
-          ./node_modules/.bin/electron-builder --win --x64 --publish=always
+          ./node_modules/.bin/electron-builder.exe --win --x64 --publish=always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.WINDOWS_CERTS }}
