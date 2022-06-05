@@ -43,6 +43,7 @@ jobs:
       - name: Build/release Electron app
         if: runner.os == 'Windows'
         run: |
+          npm i node-gyp
           npm i
           npm run preprocess
           ./node_modules/.bin/electron-builder --win --x64 --publish=always
