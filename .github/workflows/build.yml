@@ -32,8 +32,7 @@ jobs:
           npm run preprocess
           export CSC_LINK="$MAC_CERTS"
           export CSC_KEY_PASSWORD="$MAC_CERTS_PASSWORD"
-          ./node_modules/.bin/electron-builder --mac --x64 --publish=always
-          ./node_modules/.bin/electron-builder --mac --arm64 --publish=always
+          ./node_modules/.bin/electron-builder --mac --x64 --arm64 --publish=always
           export CSC_LINK="$WINDOWS_CERTS"
           export CSC_KEY_PASSWORD="$WINDOWS_CERTS_PASSWORD"
           ./node_modules/.bin/electron-builder --windows --x64 --publish=always
