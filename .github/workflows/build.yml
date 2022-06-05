@@ -31,7 +31,7 @@ jobs:
         run: |
           npm i
           npm run preprocess
-          ./node_modules/.bin/electron-builder --mac --x64 --arm64 --publish=always
+          npm exec electron-builder -- --mac --x64 --arm64 --publish=always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLEID: ${{ secrets.APPLEID }}
@@ -43,9 +43,10 @@ jobs:
       - name: Build/release Electron app
         if: runner.os == 'Windows'
         run: |
+          npm i node-gyp
           npm i
           npm run preprocess
-          ./node_modules/.bin/electron-builder --win --x64 --publish=always
+          npm exec electron-builder -- --win --x64 --publish=always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.WINDOWS_CERTS }}
