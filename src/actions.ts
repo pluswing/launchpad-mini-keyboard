@@ -8,11 +8,6 @@ export interface Shortcut {
   shortcuts: Keys[]; // [["d", "ctrl"], ["a", "shift"]]
 }
 
-export interface AppLaunch {
-  type: 'applaunch';
-  appName: string; // "premiere pro.app"
-}
-
 export enum Edge {
   TOP_LEFT,
   TOP_RIGHT,
@@ -25,7 +20,17 @@ export interface Mouse {
   edge: Edge;
 }
 
-export type Action = Shortcut | AppLaunch | Mouse;
+export interface AppLaunch {
+  type: 'applaunch';
+  appName: string; // "premiere pro.app"
+}
+
+export interface RunCommand {
+  type: 'run_command';
+  command: string;
+}
+
+export type Action = Shortcut | Mouse | AppLaunch | RunCommand;
 
 export const buildAction = (type: string) => {
   let newAct = defaultAction();
@@ -34,6 +39,9 @@ export const buildAction = (type: string) => {
   }
   if (type == 'applaunch') {
     newAct = { type: 'applaunch', appName: '' } as AppLaunch;
+  }
+  if (type == 'run_command') {
+    newAct = { type: 'run_command', command: '' } as RunCommand;
   }
   return newAct;
 };

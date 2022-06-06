@@ -80,3 +80,7 @@ export const launchAppForMac = (filePath: string) => {
 export const launchAppForWindows = (filePath: string) => {
   execSync(`"${filePath}"`);
 };
+
+export const runCommand = (command: string) => {
+  exec(command);
+};

@@ -37,7 +37,12 @@ import {
 } from './store';
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
-import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
+import {
+  launchApp,
+  mouseToEdge,
+  runCommand,
+  typeKeystroke,
+} from './system_actions';
 import { isMac, isWindows } from './util';
 import { watchForegroundApp } from './foregroundapp';
 
@@ -273,6 +278,9 @@ const runShortcut = (p: Point) => {
   }
   if (act.type == 'applaunch') {
     launchApp(act.appName);
+  }
+  if (act.type == 'run_command') {
+    runCommand(act.command);
   }
 };
 

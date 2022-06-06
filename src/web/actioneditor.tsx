@@ -4,6 +4,7 @@ import {
   buildAction,
   Edge,
   Mouse,
+  RunCommand,
   Shortcut,
 } from '../actions';
 import keycode from 'keycode';
@@ -38,6 +39,7 @@ export const ActionEditor = ({ action, onChange }: Props): JSX.Element => {
           <option value="shortcut">Key Stroke</option>
           <option value="mouse">Move Mouse</option>
           <option value="applaunch">Launch App</option>
+          <option value="run_command">Custom Command</option>
         </select>
       </div>
       {_actionEditor(action, onChange)}
@@ -56,6 +58,8 @@ export const _actionEditor = (
       return mouseEditor(action, onChange);
     case 'applaunch':
       return appLaunchEditor(action, onChange);
+    case 'run_command':
+      return runCommandEditor(action, onChange);
   }
 };
 
@@ -218,6 +222,28 @@ export const appLaunchEditor = (
           />
         </svg>
       </button>
+    </div>
+  );
+};
+
+export const runCommandEditor = (
+  action: RunCommand,
+  onChange: (action: Action) => void
+): JSX.Element => {
+  const changeCommand = (e: any) => {
+    action.command = e.target.value;
+    onChange(action);
+  };
+
+  return (
+    <div className="flex flex-wrap m-2">
+      <input
+        type="text"
+        value={action.command}
+        placeholder="command"
+        className="p-2 rounded m-2 flex-grow"
+        onChange={changeCommand}
+      />
     </div>
   );
 };
