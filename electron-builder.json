@@ -3,7 +3,6 @@
   "copyright": "© 2021 pluswing.",
   "appId": "jp.co.pluswing.launchdeck",
   "afterSign": "scripts/notarize.js",
-  "asar": false,
   "files": ["dist/**/*"],
   "directories": {
     "output": "release"
@@ -40,10 +39,6 @@
     "target": {
       "target": "default"
     },
-    "hardenedRuntime": true,
-    "gatekeeperAssess": false,
-    "entitlements": "build/entitlements.mac.plist",
-    "entitlementsInherit": "build/entitlements.mac.plist",
     "extendInfo": {
       "CFBundleName": "Launch Deck",
       "CFBundleDisplayName": "Launch Deck",

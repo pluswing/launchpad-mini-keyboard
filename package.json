@@ -1,7 +1,7 @@
 {
   "name": "launch_deck",
   "description": "",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
     "build:prod": "cross-env NODE_ENV=\"production\" webpack --config webpack.config.prod.ts --progress",
     "build:pack": "electron-builder",
     "package": "run-s clean build:prod copy:assets build:pack",
-    "preprocess": "run-s clean build:prod copy:assets",
+    "preprocess": "run-s clean build:prod copy:assets tsc",
+    "tsc": "tsc -p tsconfig.main.json",
     "lint": "run-s lint:*",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix",
     "lint:prettier": "prettier --write .",
