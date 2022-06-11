@@ -88,6 +88,7 @@ const showPreferences = () => {
   settingWindow = new BrowserWindow({
     ...size,
     resizable: false,
+    title: 'Launch Deck',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
