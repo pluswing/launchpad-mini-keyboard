@@ -4,6 +4,7 @@ const modifierKeyMap: { [key: string]: string } = {
   '⇧': 'shift',
   '⌘': 'command',
   control: 'control',
+  ctrl: 'control',
   alt: 'alt',
   shift: 'shift',
   command: 'command',

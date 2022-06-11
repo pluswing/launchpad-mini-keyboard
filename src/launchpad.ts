@@ -39,7 +39,12 @@ let connected = false;
 export const initLaunchpad = (): NodeJS.Timer => {
   return setInterval(() => {
     // 接続監視処理
-    inputIndex = searchMidi(input, 'LPMiniMK3 MIDI');
+    if (isMac()) {
+      inputIndex = searchMidi(input, 'LPMiniMK3 MIDI');
+    } else {
+      inputIndex = searchMidi(input, 'MIDIIN2 (LPMiniMK3 MIDI)');
+    }
+
     let outputIndex = searchMidi(output, 'LPMiniMK3 MIDI');
     HEADER[5] = 0x0d;
 
@@ -91,8 +96,6 @@ let launchpadListener: LaunchpadListener = {
 
 export const setLaunchpadListener = (listener: LaunchpadListener): void => {
   launchpadListener = listener;
-
-  console.log('setLaunchpadListener', connected);
   if (connected) {
     launchpadListener.connected();
   }

@@ -253,7 +253,7 @@ export const App = (): JSX.Element => {
   );
 
   return (
-    <div className="flex flex-wrap">
+    <div className="flex flex-wrap" style={{ width: 990 }}>
       <p style={{ width: 690 }}>{main}</p>
       <p style={{ width: 300 }}>{side}</p>
     </div>

@@ -84,10 +84,7 @@ const showPreferences = () => {
     return;
   }
 
-  const size = isMac()
-    ? { width: 690 + 300, height: 718 }
-    : { width: 1003, height: 745 };
-
+  const size = { width: 690 + 300, height: 718 };
   settingWindow = new BrowserWindow({
     ...size,
     resizable: false,
@@ -303,7 +300,6 @@ app.whenReady().then(async () => {
       }
       setCurrentApplication(apppath);
       startBackgroundAnimation();
-      console.log(apppath);
     })
   );
   setupShortcut();
