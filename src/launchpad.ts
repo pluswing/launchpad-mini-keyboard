@@ -7,8 +7,9 @@ import {
   StaticColorAnimation,
   WaterdropAnimation,
 } from './backgrounds';
-import { COLOR_PALETTE } from './constants';
+import { COLOR_PALETTE } from './color_palette';
 import {
+  blendImage,
   Color,
   fillImage,
   getPixel,
@@ -38,7 +39,12 @@ let connected = false;
 export const initLaunchpad = (): NodeJS.Timer => {
   return setInterval(() => {
     // 接続監視処理
-    inputIndex = searchMidi(input, 'LPMiniMK3 MIDI');
+    if (isMac()) {
+      inputIndex = searchMidi(input, 'LPMiniMK3 MIDI');
+    } else {
+      inputIndex = searchMidi(input, 'MIDIIN2 (LPMiniMK3 MIDI)');
+    }
+
     let outputIndex = searchMidi(output, 'LPMiniMK3 MIDI');
     HEADER[5] = 0x0d;
 
@@ -90,8 +96,6 @@ let launchpadListener: LaunchpadListener = {
 
 export const setLaunchpadListener = (listener: LaunchpadListener): void => {
   launchpadListener = listener;
-
-  console.log('setLaunchpadListener', connected);
   if (connected) {
     launchpadListener.connected();
   }
@@ -297,34 +301,50 @@ const defaultOnNote = (p: Point) => {
   applyLaunchpadByIndexes(b);
 };
 
-const waterdrop = (p: Point) => {
-  stopAnimation(); // FIXME 仮置き。複数アニメの合成
-  const STEP_SCALE = 10;
-  const anim = getBgAnimation() as WaterdropAnimation;
+let drops: Array<{
+  point: Point;
+  step: number;
+  hue: number;
+  remove: boolean;
+}> = [];
 
+const waterdrop = (p: Point) => {
+  const anim = getBgAnimation() as WaterdropAnimation;
   let hue = 0;
   hue = anim.hue;
   if (anim.random) {
     hue = randomInt(359);
   }
 
-  let step = 0;
-  startAnimation(() => {
-    step += 1;
-    if (step >= STEP_SCALE) {
-      if (step >= STEP_SCALE + anim.time) {
-        stopAnimation();
-        applyLaunchpad();
-      }
-      return;
-    }
+  drops.push({ point: p, step: 0, hue, remove: false });
+};
 
-    // 円を描画する
-    const image = filledCircle({
-      center: p,
-      r: anim.size * (step / STEP_SCALE),
-      color: hsv(hue, anim.saturation, anim.value),
-    });
+const waterdropAnimation = () => {
+  stopBackgroundAnimation();
+
+  const STEP_SCALE = 10;
+  const anim = getBgAnimation() as WaterdropAnimation;
+
+  startAnimation(() => {
+    const image = drops.reduce((image, d) => {
+      d.step += 1;
+      if (d.step >= STEP_SCALE) {
+        if (d.step >= STEP_SCALE + anim.time) {
+          d.remove = true;
+          return image;
+        }
+      }
+      // 円を描画する
+      const circle = filledCircle({
+        center: d.point,
+        r: anim.size * Math.min(1, d.step / STEP_SCALE),
+        color: hsv(d.hue, anim.saturation, anim.value),
+      });
+      return blendImage(image, circle);
+    }, newImage());
+
+    drops = drops.filter((d) => !d.remove);
+
     const control = createBgButtonColorImage();
     drawLaunchpad(output, stackImage(image, control));
   }, 30);
@@ -341,9 +361,9 @@ const staticBackground = () => {
 
 // 呼吸
 const breathBackground = () => {
-  stopAnimation();
+  stopBackgroundAnimation();
 
-  let lastStep = 0;
+  let lastStep = 360;
   let step = 0;
   let hue = 0;
   startAnimation(() => {
@@ -367,7 +387,6 @@ const breathBackground = () => {
 const clearBackgroundAnimation = () => {
   stopBackgroundAnimation();
   applyLaunchpad();
-  console.log('clearBackgroundAnimation');
 };
 
 interface AnimDef {
@@ -393,7 +412,7 @@ const ANIMATION_DEFINITION: { [key: string]: AnimDef } = {
     onNote: defaultOnNote,
   },
   waterdrop: {
-    background: clearBackgroundAnimation,
+    background: waterdropAnimation,
     onNote: waterdrop,
   },
 };

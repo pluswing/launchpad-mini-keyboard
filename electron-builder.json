@@ -1,6 +1,8 @@
 {
   "productName": "Launch Deck",
   "copyright": "© 2021 pluswing.",
+  "appId": "jp.co.pluswing.launchdeck",
+  "afterSign": "scripts/notarize.js",
   "files": ["dist/**/*"],
   "directories": {
     "output": "release"
@@ -31,7 +33,6 @@
     "artifactName": "${productName}-${version}-${platform}-${arch}-installer.${ext}"
   },
   "mac": {
-    "identity": null,
     "icon": "assets/icon.icns",
     "category": "public.app-category.developer-tools",
     "artifactName": "${productName}-${version}-${platform}-${arch}.${ext}",

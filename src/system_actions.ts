@@ -43,7 +43,7 @@ end tell
 
 const typeKeyboardForWindows = async (s: ShortcutKey): Promise<void> => {
   const keymap: { [key: string]: number } = {
-    ctrl: Key.LeftControl,
+    control: Key.LeftControl,
     alt: Key.LeftAlt,
     shift: Key.LeftShift,
     super: Key.LeftSuper,
@@ -79,4 +79,8 @@ export const launchAppForMac = (filePath: string) => {
 
 export const launchAppForWindows = (filePath: string) => {
   execSync(`"${filePath}"`);
+};
+
+export const runCommand = (command: string) => {
+  exec(command);
 };

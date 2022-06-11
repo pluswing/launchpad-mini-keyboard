@@ -1,4 +1,4 @@
-import { COLOR_PALETTE } from '../../constants';
+import { COLOR_PALETTE } from '../../color_palette';
 
 interface Props {
   onClick?: () => void;

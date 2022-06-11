@@ -56,5 +56,5 @@ export type Api = {
   changePage: (page: 'global' | 'button') => Promise<void>;
   addApplication: (apppath: string) => Promise<void>;
   removeApplication: (apppath: string) => Promise<void>;
-  setCurrentApplication: (apppath: string) => Promise<Setting>;
+  setCurrentApplication: (apppath: string) => Promise<void>;
 };

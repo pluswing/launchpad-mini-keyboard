@@ -1,7 +1,7 @@
 {
   "name": "launch_deck",
   "description": "",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,14 +24,16 @@
     "build:prod": "cross-env NODE_ENV=\"production\" webpack --config webpack.config.prod.ts --progress",
     "build:pack": "electron-builder",
     "package": "run-s clean build:prod copy:assets build:pack",
-    "preprocess": "run-s clean build:prod copy:assets",
+    "preprocess": "run-s clean build:prod copy:assets tsc",
+    "tsc": "tsc -p tsconfig.main.json",
     "lint": "run-s lint:*",
     "lint:eslint": "eslint . --ext .ts,.tsx --fix",
     "lint:prettier": "prettier --write .",
     "prepare": "git config --local core.hooksPath hooks",
     "copy:assets": "node scripts/copy_assets.js",
     "test": "NODE_PATH=./src jest --config ./jest.config.json",
-    "test:watch": "npm run test-jest -- --watch"
+    "test:watch": "npm run test-jest -- --watch",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@nut-tree/nut-js": "^2.0.1",
@@ -48,10 +50,11 @@
   },
   "devDependencies": {
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@playwright/test": "^1.21.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.4",
     "@testing-library/react-hooks": "^7.0.2",
-    "@testing-library/user-event": "^14.0.4",
+    "@testing-library/user-event": "^14.1.1",
     "@types/jest": "^27.4.1",
     "@types/mini-css-extract-plugin": "^2.4.0",
     "@types/node": "^16.11.10",
@@ -63,8 +66,9 @@
     "autoprefixer": "^10.4.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.5.1",
-    "electron": "^16.0.5",
+    "electron": "16.0.5",
     "electron-builder": "^22.14.5",
+    "electron-notarize": "^1.2.1",
     "eslint-plugin-jest": "^26.1.3",
     "eslint-plugin-jest-dom": "^4.0.1",
     "eslint-plugin-testing-library": "^5.2.1",

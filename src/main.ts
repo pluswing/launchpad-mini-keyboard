@@ -22,6 +22,7 @@ import {
 } from './launchpad';
 import {
   addRegisterApplications,
+  clearStore,
   getActions,
   getBgAnimation,
   getBgColors,
@@ -36,7 +37,12 @@ import {
 } from './store';
 import { Point, toPoint } from './draw';
 import { Action } from './actions';
-import { launchApp, mouseToEdge, typeKeystroke } from './system_actions';
+import {
+  launchApp,
+  mouseToEdge,
+  runCommand,
+  typeKeystroke,
+} from './system_actions';
 import { isMac, isWindows } from './util';
 import { watchForegroundApp } from './foregroundapp';
 
@@ -78,13 +84,11 @@ const showPreferences = () => {
     return;
   }
 
-  const size = isMac()
-    ? { width: 690 + 300, height: 718 }
-    : { width: 1003, height: 745 };
-
+  const size = { width: 690 + 300, height: 718 };
   settingWindow = new BrowserWindow({
     ...size,
     resizable: false,
+    title: 'Launch Deck',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -95,7 +99,7 @@ const showPreferences = () => {
   bindIpc(settingWindow);
 
   if (isDev) settingWindow.webContents.openDevTools({ mode: 'detach' });
-  settingWindow.loadFile('dist/index.html');
+  settingWindow.loadFile(path.join(__dirname, 'index.html'));
 
   settingWindow.on('closed', () => {
     settingWindow = null;
@@ -221,14 +225,6 @@ const bindIpc = (window: BrowserWindow) => {
   ipcMain.handle(IpcKeys.SET_CURRENT_APPLICATION, async (_, apppath) => {
     setCurrentApplication(apppath);
     startBackgroundAnimation();
-    const s: Setting = {
-      actions: getActions(),
-      tapColors: getTapColors(),
-      bgColors: getBgColors(),
-      bgAnimation: getBgAnimation(),
-      registerApplications: await getRegisterApplicationsWithIcon(),
-    };
-    return s;
   });
 };
 
@@ -281,6 +277,9 @@ const runShortcut = (p: Point) => {
   if (act.type == 'applaunch') {
     launchApp(act.appName);
   }
+  if (act.type == 'run_command') {
+    runCommand(act.command);
+  }
 };
 
 app.whenReady().then(async () => {
@@ -302,12 +301,17 @@ app.whenReady().then(async () => {
       }
       setCurrentApplication(apppath);
       startBackgroundAnimation();
-      console.log(apppath);
     })
   );
   setupShortcut();
 
   autoUpdater.checkForUpdatesAndNotify();
+
+  // for test
+  if (process.argv.find((v) => v === '--autoopen')) {
+    clearStore();
+    showPreferences();
+  }
 });
 
 app.on('window-all-closed', () => 1);
