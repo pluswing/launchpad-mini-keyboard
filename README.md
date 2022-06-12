@@ -2,7 +2,7 @@
 
 # Turn your Launch pad into a customizable shortcut keyboard!
 
-! [](. /docs/images/keystoroke.png)
+![](./docs/images/keystoroke.png)
 
 # Compatible models
 
