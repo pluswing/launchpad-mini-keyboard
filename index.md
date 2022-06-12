@@ -11,7 +11,8 @@
 
 # Download
 
-https://github.com/pluswing/launchpad-mini-keyboard/releases
+[https://github.com/pluswing/launchpad-mini-keyboard/releases](https://github.com/pluswing/launchpad-mini-keyboard/releases)
+
 
 # Features
 
