@@ -8,6 +8,7 @@ const modifierKeyMap: { [key: string]: string } = {
   alt: 'alt',
   shift: 'shift',
   command: 'command',
+  super: 'super',
 };
 
 const keyMap: { [key: string]: string } = {
