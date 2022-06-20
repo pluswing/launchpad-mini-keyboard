@@ -3,6 +3,7 @@ import {
   AppLaunch,
   buildAction,
   Edge,
+  Keys,
   Mouse,
   RunCommand,
   Shortcut,
@@ -110,16 +111,39 @@ export const shortcutEditor = (
     onChange(action);
   };
 
+  const superKey = (keys: Keys): boolean => {
+    return !!keys.find((k) => k === 'super');
+  };
+
+  const setSuperKey = (e: any, keys: Keys, i: number): void => {
+    keys = keys.filter((k) => k !== 'super');
+    if (e.target.checked) {
+      keys.push('super');
+    }
+    action.shortcuts[i] = keys;
+    onChange(action);
+  };
+
   return (
     <>
       {action.shortcuts.map((s, i) => (
         <div key={i} className="flex flex-wrap">
+          {!isMac() && (
+            <label className="text-gray-100 mt-4 ml-2">
+              <input
+                type="checkbox"
+                checked={superKey(s)}
+                onChange={(e) => setSuperKey(e, s, i)}
+              />{' '}
+              WIN
+            </label>
+          )}
           <input
             type="text"
             value={s.join(isMac() ? '' : ' + ')}
             onKeyDown={(e) => onKeyDown(e, i)}
             placeholder="shortcut key"
-            className="p-2 rounded m-2 flex-grow"
+            className={`p-2 rounded m-2 ${isMac() ? 'flex-grow' : 'w-44'}`}
             onChange={() => 1}
           />
           <button className="m-2" onClick={() => remove(i)}>
